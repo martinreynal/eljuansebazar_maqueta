@@ -1,31 +1,90 @@
 # El Juanse Bazar · Bazar a medida
 
-Catálogo digital del bazar, versión provisoria (maqueta con productos de demostración).
-Las consultas y cotizaciones se hacen por WhatsApp: +54 9 11 2676-3257.
+Catálogo digital del bazar con cotizaciones por WhatsApp y panel administrador.
+No hay carrito ni pagos: los visitantes arman una lista de consulta y la envían por WhatsApp.
 
-## Archivos
+- **Tienda:** inicio, catálogo con buscador por SKU o palabra clave, categorías, ofertas, ficha de producto, lista de consulta, favoritos, preguntas frecuentes, sección de personalización con logo y catálogo PDF (`/catalogo.pdf`, se genera solo).
+- **Panel (`/admin`):** productos con fotos, disponibilidad y stock, categorías, textos de la portada, preguntas frecuentes, trabajos con logo, configuración (WhatsApp, horarios, mostrar u ocultar precios) y estadísticas.
 
-| Archivo | Para qué sirve |
+## Tecnología
+
+| Parte | Herramienta |
 |---|---|
-| `index.html` | La página completa: tienda, catálogo, fichas, lista de consulta y panel administrador. |
-| `catalogo-el-juanse-bazar.pdf` | Catálogo descargable. El botón "Descargar catálogo en PDF" apunta a este archivo. |
-| `favicon.png` | Ícono de la pestaña del navegador. |
-| `apple-touch-icon.png` | Ícono cuando alguien guarda la web en la pantalla de inicio del celular. |
-| `og-image.png` | Imagen que aparece al compartir el link por WhatsApp o redes. |
+| Web | Next.js 15 (App Router) + React 19 + TypeScript |
+| Estilos | Tailwind CSS 4 + hoja de estilos propia (`src/app/globals.css`) |
+| Íconos | Lucide |
+| Base de datos, login y fotos | Supabase (PostgreSQL, Auth, Storage) |
+| Hosting | Vercel |
+| PDF | @react-pdf/renderer |
 
-Todos los archivos tienen que estar en la misma carpeta (la raíz del repo).
+## Estructura
 
-## Panel administrador
+```
+src/
+  app/                  páginas (tienda) y rutas
+    admin/              panel: login, módulos y acciones del servidor (actions.ts)
+    api/events/         registro anónimo de estadísticas
+    catalogo.pdf/       PDF del catálogo generado al vuelo
+  components/           componentes de la tienda y del panel (components/admin)
+  lib/                  datos, formato, WhatsApp, imágenes, clientes de Supabase
+supabase/migrations/    esquema de la base y datos de demostración
+public/                 logo, íconos, imagen para compartir
+```
 
-Entrar a `/#admin` o desde el link "Panel administrador" del pie de página.
+## Supabase
 
-En esta versión los cambios del panel no se guardan: se ven solo en la pestaña de quien los hace y se pierden al recargar. La clave es una barrera liviana del navegador, no una protección real. Antes de conectar una base de datos hay que reemplazarla por un inicio de sesión validado en el servidor (Supabase Auth).
+El proyecto **el-juanse-bazar** (región São Paulo) ya está creado, con las tablas, la seguridad (RLS) y los datos de demostración cargados. Los archivos de `supabase/migrations/` quedan como referencia.
 
-## Cómo actualizar la web
+Seguridad:
+- El público solo puede **leer** lo publicado y registrar estadísticas anónimas.
+- Solo los usuarios cargados en la tabla `admins` pueden crear, editar o borrar.
+- Las fotos se guardan en el bucket público `media`; solo los administradores pueden subir o borrar.
 
-1. Reemplazá el archivo que cambió (por ejemplo `index.html`) en GitHub.
-2. Vercel publica la nueva versión solo, en uno o dos minutos.
+### Crear el usuario administrador
 
-## Próxima etapa
+1. Supabase → **Authentication → Users → Add user → Create new user**.
+2. Email del administrador y la clave elegida. Marcá **Auto Confirm User**.
+3. Darle permisos de administrador: en **SQL Editor** ejecutá (con el email real):
 
-Pasar a Next.js + Supabase (base de datos, inicio de sesión real y fotos de productos) para que el panel guarde los cambios y el PDF se genere solo con los productos cargados.
+```sql
+insert into public.admins (user_id)
+select id from auth.users where email = 'email@ejemplo.com';
+```
+
+4. Recomendado: **Authentication → Sign In / Providers → Email** → desactivar **Allow new users to sign up**, para que nadie más pueda crear cuentas.
+
+## Vercel
+
+1. **Settings → General → Framework Preset:** `Next.js` (dejá Build Command y Output Directory por defecto).
+2. **Settings → Environment Variables** (para Production y Preview):
+
+| Variable | Valor |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://ujhzhyraalxcblchnztu.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | la clave **publishable** del proyecto (Supabase → Project Settings → API Keys) |
+| `NEXT_PUBLIC_SITE_URL` | la dirección pública, por ejemplo `https://eljuansebazar.vercel.app` |
+
+3. **Deployments → Redeploy** después de cargar las variables.
+
+Sin las variables de Supabase la web funciona igual, pero muestra los datos de demostración incluidos en el código y el panel no permite ingresar.
+
+## Probar en la compu
+
+```bash
+npm install
+cp .env.example .env.local   # completar con los datos de arriba
+npm run dev                  # http://localhost:3000
+```
+
+## Uso diario
+
+- Todo se edita desde `/admin`. Los cambios se ven en la tienda enseguida.
+- Las fotos se achican y se convierten a JPEG automáticamente al subirlas.
+- Mientras un producto no tenga fotos, la tienda muestra un dibujo ilustrativo.
+- El aviso de la franja superior se cambia o se oculta en **Diseño y textos**.
+- Las estadísticas registran visitas y clics en WhatsApp sin datos personales. Un clic es una consulta iniciada, no una venta.
+
+## Costos a tener en cuenta
+
+- **Vercel Hobby** (gratis) es solo para uso no comercial. Para la web del bazar en funcionamiento corresponde el plan Pro.
+- **Supabase Free** pausa los proyectos después de una semana sin actividad. Si la web tiene poco tráfico, conviene el plan Pro.
