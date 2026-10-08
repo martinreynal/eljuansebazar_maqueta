@@ -1,5 +1,7 @@
-export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-export const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+// Datos públicos del proyecto de Supabase (pensados para ir en la web; no son secretos).
+// Se pueden reemplazar con variables de entorno sin tocar el código.
+export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://ujhzhyraalxcblchnztu.supabase.co";
+export const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "sb_publishable_my4388lrihmY770RDDQ4-g_VbWJz4qA";
 
 /** true cuando las variables de Supabase están cargadas. Sin ellas, la tienda muestra los datos de demostración. */
 export const hasSupabase = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);

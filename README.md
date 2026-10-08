@@ -55,8 +55,10 @@ select id from auth.users where email = 'email@ejemplo.com';
 
 ## Vercel
 
-1. **Settings → General → Framework Preset:** `Next.js` (dejá Build Command y Output Directory por defecto).
-2. **Settings → Environment Variables** (para Production y Preview):
+No hace falta configurar nada: `vercel.json` indica que es un proyecto Next.js y los datos públicos de Supabase ya están en `src/lib/env.ts`.
+La dirección del sitio se toma sola del dominio de producción de Vercel.
+
+Opcional (para cambiar de proyecto de Supabase o fijar el dominio sin tocar el código), en **Settings → Environment Variables**:
 
 | Variable | Valor |
 |---|---|
@@ -64,9 +66,7 @@ select id from auth.users where email = 'email@ejemplo.com';
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | la clave **publishable** del proyecto (Supabase → Project Settings → API Keys) |
 | `NEXT_PUBLIC_SITE_URL` | la dirección pública, por ejemplo `https://eljuansebazar.vercel.app` |
 
-3. **Deployments → Redeploy** después de cargar las variables.
-
-Sin las variables de Supabase la web funciona igual, pero muestra los datos de demostración incluidos en el código y el panel no permite ingresar.
+Si cargás variables, hacé **Deployments → Redeploy** para que se apliquen.
 
 ## Probar en la compu
 
