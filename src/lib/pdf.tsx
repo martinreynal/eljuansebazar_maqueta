@@ -12,7 +12,7 @@ const s = StyleSheet.create({
   head: { borderBottomWidth: 1.5, borderBottomColor: C.ink, paddingBottom: 10, marginBottom: 16 },
   grid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" },
   card: { width: "31.5%", marginBottom: 16 },
-  img: { width: "100%", height: 150, borderRadius: 6, objectFit: "cover", marginBottom: 6 },
+  img: { width: "100%", height: 130, borderRadius: 6, objectFit: "contain", marginBottom: 6 },
   sku: { fontFamily: "Courier", fontSize: 8, color: C.ink2 },
   name: { fontSize: 10.5, fontFamily: "Helvetica-Bold", marginVertical: 2 },
   desc: { fontSize: 8.3, color: C.ink2 },
@@ -20,6 +20,9 @@ const s = StyleSheet.create({
   specK: { color: C.muted, width: 52, fontFamily: "Helvetica-Bold" },
   footer: { position: "absolute", bottom: 22, left: 40, right: 40, flexDirection: "row", justifyContent: "space-between", fontSize: 7, color: C.muted },
 });
+
+const PER_PAGE = 6;
+const chunk = <T,>(a: T[], n: number): T[][] => Array.from({ length: Math.ceil(a.length / n) }, (_, i) => a.slice(i * n, (i + 1) * n));
 
 export type PdfImages = { logo?: Buffer; byProduct: Map<string, Buffer | string> };
 
@@ -76,11 +79,15 @@ export function CatalogPdf({ data, images, base }: { data: StoreData; images: Pd
         <Footer />
       </Page>
 
-      {cats.map(({ c, items }) => (
-        <Page key={c.id} size="A4" style={s.page}>
-          <View style={s.head}><Text style={s.eyebrow}>{items.length} productos</Text><Text style={s.h2}>{c.name}</Text></View>
+      {/* Cada categoría se reparte en páginas de 6 productos: grillas largas rompen el armado del PDF */}
+      {cats.flatMap(({ c, items }) => chunk(items, PER_PAGE).map((group, gi, all) => (
+        <Page key={`${c.id}-${gi}`} size="A4" style={s.page}>
+          <View style={s.head}>
+            <Text style={s.eyebrow}>{items.length} productos{all.length > 1 ? ` · ${gi + 1} de ${all.length}` : ""}</Text>
+            <Text style={s.h2}>{c.name}</Text>
+          </View>
           <View style={s.grid}>
-            {items.map((p) => {
+            {group.map((p) => {
               const img = images.byProduct.get(p.id);
               return (
                 <View key={p.id} style={s.card} wrap={false}>
@@ -97,7 +104,7 @@ export function CatalogPdf({ data, images, base }: { data: StoreData; images: Pd
           </View>
           <Footer />
         </Page>
-      ))}
+      )))}
 
       <Page size="A4" style={s.page}>
         <View style={s.head}><Text style={s.eyebrow}>{settings.design.customEyebrow}</Text><Text style={s.h2}>Personalización con logo</Text></View>

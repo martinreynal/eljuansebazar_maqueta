@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   },
   serverExternalPackages: ["@resvg/resvg-js", "@react-pdf/renderer"],
   poweredByHeader: false,
-  outputFileTracingIncludes: { "/catalogo.pdf": ["./public/logo-light.png"] },
+  outputFileTracingIncludes: { "/catalogo.pdf": ["./public/logo-light.png", "./public/catalogo/mini/**"] },
   async headers() {
     return [
       {

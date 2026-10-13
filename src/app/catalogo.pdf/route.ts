@@ -5,15 +5,23 @@ import { renderToBuffer, type DocumentProps } from "@react-pdf/renderer";
 import { Resvg } from "@resvg/resvg-js";
 import { artSvg } from "@/lib/art";
 import { getStore } from "@/lib/data";
-import { mediaUrl, siteUrl } from "@/lib/env";
+import { isLocalImage, mediaUrl, miniImage, siteUrl } from "@/lib/env";
 import { CatalogPdf, type PdfImages } from "@/lib/pdf";
 
 // El PDF se regenera solo: como máximo cada hora, y al instante cuando se guarda algo en el panel.
 export const revalidate = 3600;
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 async function productImage(p: { images: string[]; placeholder: Parameters<typeof artSvg>[0]; name: string }): Promise<Buffer | string | undefined> {
-  const url = mediaUrl(p.images[0]);
+  const first = p.images[0];
+  if (first && isLocalImage(first)) {
+    // Foto del catálogo incluida en la web: se usa la versión chica para que el PDF no pese de más
+    try {
+      return await readFile(path.join(process.cwd(), "public", miniImage(first)));
+    } catch { /* si falta el archivo, se usa el dibujo */ }
+  }
+  const url = first && !isLocalImage(first) ? mediaUrl(first) : null;
   if (url) {
     try {
       const res = await fetch(url);

@@ -28,7 +28,7 @@ export function ProductDetail({ p, category, settings, base }: { p: Product; cat
             </button>
           ))}
         </div>
-        <div className="main-img"><ProductImage key={img} p={p} view={img} sizes="(max-width: 860px) 100vw, 55vw" priority /></div>
+        <div className="main-img"><ProductImage key={img} p={p} view={img} sizes="(max-width: 860px) 100vw, 55vw" priority full /></div>
       </div>
 
       <div className="pinfo">

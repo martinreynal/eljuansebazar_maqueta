@@ -100,7 +100,7 @@ export function CatalogClient({ products, categories, settings, base, preset, ti
           <div className="f-head only-m">Filtros<button className="icon-btn" onClick={() => setSheet(false)} aria-label="Cerrar filtros"><X /></button></div>
           <div className="f-group">
             <h4>Categoría</h4>
-            {categories.map((c) => (
+            {categories.filter((c) => !c.is_offers || products.some((p) => inCategory(p, c))).map((c) => (
               <label className="check" key={c.id}>
                 <input type="checkbox" checked={cats.includes(c.id)} onChange={() => { setCats((v) => toggle(v, c.id)); if (!cats.includes(c.id) && !c.is_offers) track("category_view", { category_id: c.id }); }} />
                 {c.name}<em>{products.filter((p) => inCategory(p, c)).length}</em>

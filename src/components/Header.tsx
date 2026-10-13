@@ -48,7 +48,8 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
       <input id={id} type="search" value={q} onChange={(e) => onSearch(e.target.value)} placeholder="Buscar por SKU o palabra clave (ej: V001, frascos)" aria-label="Buscar por SKU o palabra clave" autoComplete="off" />
     </form>
   );
-  const nav: [string, string][] = [["/", "Inicio"], ["/catalogo", "Catálogo"], ["/ofertas", "Ofertas"], ["/#personalizados", "Personalizados"], ["/#preguntas", "Preguntas"]];
+  const hasOffers = categories.some((c) => c.is_offers);
+  const nav: [string, string][] = [["/", "Inicio"], ["/catalogo", "Catálogo"], ...(hasOffers ? [["/ofertas", "Ofertas"] as [string, string]] : []), ["/#personalizados", "Personalizados"], ["/#preguntas", "Preguntas"]];
 
   return (
     <header className="hdr">
@@ -85,7 +86,7 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
         <div className="drawer-head"><h3>{name}</h3><button className="icon-btn" onClick={() => setMenu(false)} aria-label="Cerrar menú"><X /></button></div>
         <div className="drawer-body">
           <nav className="m-nav">
-            {([["/", House, "Inicio"], ["/catalogo", LayoutGrid, "Catálogo"], ["/ofertas", Tag, "Ofertas"], ["/#personalizados", Stamp, "Productos con tu logo"], ["/#preguntas", CircleHelp, "Preguntas frecuentes"], ["/favoritos", Heart, "Favoritos"], ["/lista", ClipboardList, "Lista de consulta"]] as const).map(([h, I, t]) => (
+            {([["/", House, "Inicio"], ["/catalogo", LayoutGrid, "Catálogo"], ["/ofertas", Tag, "Ofertas"], ["/#personalizados", Stamp, "Productos con tu logo"], ["/#preguntas", CircleHelp, "Preguntas frecuentes"], ["/favoritos", Heart, "Favoritos"], ["/lista", ClipboardList, "Lista de consulta"]] as const).filter(([h]) => hasOffers || h !== "/ofertas").map(([h, I, t]) => (
               <Link key={h} href={h} onClick={() => setMenu(false)}><I />{t}<ChevronRight /></Link>
             ))}
             <a href="/catalogo.pdf" target="_blank" rel="noopener"><FileDown />Catálogo en PDF<ChevronRight /></a>

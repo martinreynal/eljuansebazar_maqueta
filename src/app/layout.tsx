@@ -53,7 +53,8 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const { settings, categories } = await getStore();
+  const { settings, categories, products } = await getStore();
+  const hasOffers = products.some((p) => p.tag === "oferta");
   return (
     <html lang="es-AR" className={`${manrope.variable} ${dmMono.variable}`}>
       <body>
@@ -64,7 +65,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               name={settings.business_name}
               tagline={settings.tagline}
               whatsapp={settings.whatsapp}
-              categories={categories.map(({ id, slug, name, is_offers }) => ({ id, slug, name, is_offers }))}
+              categories={categories.filter((c) => hasOffers || !c.is_offers).map(({ id, slug, name, is_offers }) => ({ id, slug, name, is_offers }))}
             />
           </Suspense>
           <main id="main">{children}</main>

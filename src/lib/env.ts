@@ -15,9 +15,15 @@ export function siteUrl(fromSettings?: string): string {
   return raw.replace(/\/$/, "");
 }
 
-/** URL pública de un archivo del bucket "media". */
+/** Fotos del catálogo incluidas en la web (carpeta public/catalogo). */
+export const isLocalImage = (path: string) => path.startsWith("/");
+
+/** Versión chica (480 px) de una foto del catálogo, para tarjetas y PDF. */
+export const miniImage = (path: string) => path.replace(/^\/catalogo\//, "/catalogo/mini/");
+
+/** URL pública de una imagen: foto del catálogo (/catalogo/...) o archivo del bucket "media". */
 export function mediaUrl(path: string | null | undefined): string | null {
   if (!path) return null;
-  if (/^(https?:|data:)/.test(path)) return path;
+  if (/^(https?:|data:)/.test(path) || isLocalImage(path)) return path;
   return `${SUPABASE_URL}/storage/v1/object/public/media/${path}`;
 }

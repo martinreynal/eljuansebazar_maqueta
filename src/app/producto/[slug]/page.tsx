@@ -47,7 +47,7 @@ export default async function ProductPage({ params }: Params) {
       description: p.description,
       material: p.materials || undefined,
       category: category?.name,
-      image: p.images.map((i) => mediaUrl(i)),
+      image: p.images.map((i) => { const u = mediaUrl(i)!; return u.startsWith("/") ? `${base}${u}` : u; }),
       brand: { "@type": "Brand", name: settings.business_name },
       url: `${base}/producto/${p.slug}`,
     },

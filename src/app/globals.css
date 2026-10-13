@@ -490,3 +490,18 @@ section[id]{scroll-margin-top:140px}
 .seg .seg-link{border-radius:999px;padding:5px 10px;font-size:12.5px;font-weight:700;color:var(--ink-2)}
 .seg .seg-link[aria-pressed="true"]{background:var(--surface);color:var(--ink)}
 .hero-art .cap svg{width:14px;height:14px;transform:none!important}
+
+/* categorías de la portada: 8 por fila en escritorio */
+.cat-grid{grid-template-columns:repeat(8,minmax(0,1fr))}
+@media (max-width:1000px){.cat-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:560px){.cat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* fotos del catálogo sobre fondo blanco */
+.card-media,.main-img,.thumbs button,.cat-tile .ph,.rank .t,.li .t{background:#fff}
+/* ficha de producto: precio a cotizar y botones en celular */
+.pinfo .price.ask{font-size:15px;font-weight:600;color:var(--ink-2)}
+.cta-row{min-width:0}
+.cta-row .btn{min-width:0}
+@media (max-width:480px){
+  .buy-row{grid-template-columns:1fr}
+  .cta-row .btn:first-child{white-space:normal;line-height:1.2;text-align:center}
+}

@@ -33,6 +33,8 @@ function zodFail(e: z.ZodError): Result<never> {
 }
 
 const media = (sb: Awaited<ReturnType<typeof requireAdmin>>) => sb.storage.from("media");
+/** Solo se borran del almacenamiento las fotos subidas desde el panel (no las del catálogo incluido en la web). */
+const uploaded = (paths: string[]) => paths.filter((p) => !p.startsWith("/"));
 
 // ---------------------------------------------------------------- productos
 
@@ -54,7 +56,7 @@ const ProductInput = z.object({
   tag: z.enum(["", "nuevo", "oferta", "destacado"]),
   featured: z.boolean(),
   visible: z.boolean(),
-  images: z.array(z.string().regex(/^products\/[\w.-]+$/)).max(10),
+  images: z.array(z.string().regex(/^(products\/[\w.-]+|\/catalogo\/[\w.-]+)$/)).max(10),
 });
 export type ProductInputT = z.input<typeof ProductInput>;
 
@@ -78,7 +80,7 @@ export async function saveProduct(input: ProductInputT): Promise<Result<{ id: st
       ? { data: { id }, error: null }
       : await sb.from("products").insert(row).select("id").single();
     if (res.error) return fail(res.error);
-    if (removed.length) await media(sb).remove(removed);
+    if (uploaded(removed).length) await media(sb).remove(uploaded(removed));
     refresh();
     return { ok: true, data: { id: res.data!.id as string, slug } };
   } catch (e) {
@@ -114,7 +116,7 @@ export async function deleteProduct(id: string): Promise<Result> {
     const { data } = await sb.from("products").select("images").eq("id", id).single();
     const { error } = await sb.from("products").delete().eq("id", id);
     if (error) return fail(error);
-    const imgs = (data?.images as string[]) ?? [];
+    const imgs = uploaded((data?.images as string[]) ?? []);
     if (imgs.length) await media(sb).remove(imgs);
     refresh();
     return { ok: true };
