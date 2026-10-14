@@ -510,3 +510,4 @@ section[id]{scroll-margin-top:140px}
 .native-wrap{display:flex !important;align-items:center;justify-content:center;width:100%;height:100%;background:#fff}
 .native-wrap img{display:block;width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain}
 .mock figcaption .mono{white-space:nowrap}
+.hero-art a{background:#fff}
