@@ -3,7 +3,7 @@ import Link from "next/link";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { ListItem } from "@/lib/format";
 
-type Toast = { text: string; link?: [string, string] } | null;
+type Toast = { text: string; link?: [string, string]; action?: [string, () => void] } | null;
 
 type Ctx = {
   list: ListItem[];
@@ -12,9 +12,13 @@ type Ctx = {
   addToList: (sku: string, variant?: string, qty?: number) => void;
   setQty: (sku: string, variant: string, qty: number) => void;
   removeFromList: (sku: string, variant: string) => void;
+  restoreItem: (item: ListItem, index: number) => void;
+  setNote: (sku: string, variant: string, note: string) => void;
+  listNote: string;
+  setListNote: (note: string) => void;
   clearList: () => void;
   toggleFav: (sku: string) => boolean;
-  toast: (text: string, link?: [string, string]) => void;
+  toast: (text: string, link?: [string, string], action?: [string, () => void]) => void;
 };
 
 const StoreCtx = createContext<Ctx | null>(null);
@@ -38,6 +42,7 @@ function save(key: string, v: unknown) {
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [list, setList] = useState<ListItem[]>([]);
   const [favs, setFavs] = useState<string[]>([]);
+  const [listNote, setListNote] = useState("");
   const [ready, setReady] = useState(false);
   const [toastState, setToast] = useState<Toast>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -45,15 +50,17 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setList(load("list", []));
     setFavs(load("favs", []));
+    setListNote(load("listnote", ""));
     setReady(true);
   }, []);
   useEffect(() => { if (ready) save("list", list); }, [list, ready]);
   useEffect(() => { if (ready) save("favs", favs); }, [favs, ready]);
+  useEffect(() => { if (ready) save("listnote", listNote); }, [listNote, ready]);
 
-  const toast = useCallback((text: string, link?: [string, string]) => {
-    setToast({ text, link });
+  const toast = useCallback((text: string, link?: [string, string], action?: [string, () => void]) => {
+    setToast({ text, link, action });
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => setToast(null), 2800);
+    timer.current = setTimeout(() => setToast(null), action ? 5000 : 2800);
   }, []);
 
   const value = useMemo<Ctx>(
@@ -72,7 +79,18 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       setQty: (sku, variant, qty) =>
         setList((l) => l.map((x) => (x.sku === sku && x.variant === variant ? { ...x, qty: Math.max(1, Math.min(999, qty)) } : x))),
       removeFromList: (sku, variant) => setList((l) => l.filter((x) => !(x.sku === sku && x.variant === variant))),
-      clearList: () => setList([]),
+      restoreItem: (item, index) =>
+        setList((l) => {
+          if (l.some((x) => x.sku === item.sku && x.variant === item.variant)) return l;
+          const c = [...l];
+          c.splice(Math.min(index, c.length), 0, item);
+          return c;
+        }),
+      setNote: (sku, variant, note) =>
+        setList((l) => l.map((x) => (x.sku === sku && x.variant === variant ? { ...x, note: note.slice(0, 200) } : x))),
+      listNote,
+      setListNote: (note) => setListNote(note.slice(0, 600)),
+      clearList: () => { setList([]); setListNote(""); },
       toggleFav: (sku) => {
         const on = !favs.includes(sku);
         setFavs((f) => (on ? [...f, sku] : f.filter((x) => x !== sku)));
@@ -80,7 +98,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       },
       toast,
     }),
-    [list, favs, ready, toast],
+    [list, favs, ready, listNote, toast],
   );
 
   return (
@@ -91,6 +109,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           <>
             <span>{toastState.text}</span>
             {toastState.link && <Link href={toastState.link[1]}>{toastState.link[0]}</Link>}
+            {toastState.action && (
+              <button type="button" onClick={() => { toastState.action![1](); setToast(null); }}>{toastState.action[0]}</button>
+            )}
           </>
         )}
       </div>

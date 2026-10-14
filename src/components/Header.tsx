@@ -24,7 +24,6 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
   const [menu, setMenu] = useState(false);
   const [mSearch, setMSearch] = useState(false);
   const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const units = list.reduce((a, i) => a + i.qty, 0);
 
   useEffect(() => setQ(params.get("q") ?? ""), [params]);
   useEffect(() => setMenu(false), [pathname]);
@@ -68,7 +67,7 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
         <div className="hdr-actions">
           <button className="icon-btn only-m" onClick={() => setMSearch((s) => !s)} aria-label="Buscar" aria-expanded={mSearch}><Search /></button>
           <Link className="icon-btn only-d" href="/favoritos" aria-label="Favoritos"><Heart /><span className="badge" data-n={favs.length}>{favs.length}</span></Link>
-          <Link className="icon-btn" href="/lista" aria-label="Lista de consulta"><ClipboardList /><span className="badge" data-n={units}>{units}</span></Link>
+          <Link className="icon-btn" href="/lista" aria-label="Lista de consulta"><ClipboardList /><span className="badge" data-n={list.length}>{list.length}</span></Link>
           <WaLink href={waLink(whatsapp, msgGeneral(name))} channel="general" className="btn btn-wa btn-sm only-d">WhatsApp</WaLink>
         </div>
       </div>

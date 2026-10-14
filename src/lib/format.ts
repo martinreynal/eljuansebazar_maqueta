@@ -55,17 +55,28 @@ export function msgProduct(base: string, p: Product, variant?: string): string {
   return `Hola, quería consultar por *${p.name}*${variant ? ` (${variant})` : ""} | Código: ${p.sku}\n${productUrl(base, p)}\n\n¿Me podrían pasar una cotización y confirmar disponibilidad? Gracias.`;
 }
 
-export type ListItem = { sku: string; variant: string; qty: number };
+export type ListItem = { sku: string; variant: string; qty: number; note?: string };
 
-export function msgList(base: string, items: ListItem[], bySku: Map<string, Product>): string {
-  const lines = items
-    .map((i) => {
-      const p = bySku.get(i.sku);
-      if (!p) return "";
-      return `• ${p.name}${i.variant ? ` (${i.variant})` : ""} | Código: ${p.sku} | Cantidad: ${i.qty}\n  ${productUrl(base, p)}`;
-    })
-    .filter(Boolean);
-  return `Hola, quería consultar por los siguientes productos:\n\n${lines.join("\n")}\n\n¿Me podrían pasar una cotización y confirmar disponibilidad? Gracias.`;
+export const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+
+export function msgList(_base: string, items: ListItem[], bySku: Map<string, Product>, note = ""): string {
+  const valid = items.filter((i) => bySku.has(i.sku));
+  const lines = valid.map((i, n) => {
+    const p = bySku.get(i.sku)!;
+    const out = [`${n + 1}. *${p.name}*${i.variant ? ` (${i.variant})` : ""}`, `   Código: ${p.sku}  |  Cantidad: ${i.qty}`];
+    const obs = i.note?.trim();
+    if (obs) out.push(`   Obs.: ${obs.replace(/\s+/g, " ")}`);
+    return out.join("\n");
+  });
+  const units = valid.reduce((a, i) => a + i.qty, 0);
+  const general = note.trim();
+  return [
+    "Hola, quería pedir una cotización de los siguientes productos:",
+    lines.join("\n\n"),
+    `*Total: ${plural(valid.length, "producto", "productos")} · ${plural(units, "unidad", "unidades")}*`,
+    ...(general ? [`*Observaciones:*\n${general}`] : []),
+    "¿Me podrían confirmar precio y disponibilidad? Gracias.",
+  ].join("\n\n");
 }
 
 export const msgGeneral = (name: string) => `Hola, quería hacer una consulta sobre productos de ${name}.`;
