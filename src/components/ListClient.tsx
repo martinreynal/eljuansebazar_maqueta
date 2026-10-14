@@ -1,40 +1,14 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { ChevronDown, ClipboardList, Copy, MessageSquareText, Minus, Plus, Trash2, X } from "lucide-react";
+import { useState } from "react";
+import { ChevronDown, ClipboardList, Copy, MessageSquareText, Plus, Trash2, X } from "lucide-react";
 import { AVAILABILITY, formatPhone, msgList, plural, waLink, type ListItem } from "@/lib/format";
 import { track } from "@/lib/track";
 import type { Product, Settings } from "@/lib/types";
 import { ProductImage } from "./ProductImage";
 import { useStore } from "./store/StoreProvider";
 import { WaLink } from "./WaLink";
-
-/** Campo de cantidad: se puede escribir el número o usar los botones. */
-function QtyInput({ value, onChange, name }: { value: number; onChange: (n: number) => void; name: string }) {
-  const [draft, setDraft] = useState(String(value));
-  useEffect(() => setDraft(String(value)), [value]);
-  const commit = () => {
-    const n = parseInt(draft, 10);
-    if (Number.isFinite(n) && n >= 1) onChange(n);
-    else setDraft(String(value));
-  };
-  return (
-    <div className="qty" role="group" aria-label={`Cantidad de ${name}`}>
-      <button type="button" onClick={() => onChange(value - 1)} disabled={value <= 1} aria-label="Restar uno"><Minus /></button>
-      <input
-        inputMode="numeric"
-        pattern="[0-9]*"
-        aria-label="Cantidad"
-        value={draft}
-        onChange={(e) => setDraft(e.target.value.replace(/\D/g, "").slice(0, 3))}
-        onBlur={commit}
-        onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
-        onFocus={(e) => e.target.select()}
-      />
-      <button type="button" onClick={() => onChange(value + 1)} disabled={value >= 999} aria-label="Sumar uno"><Plus /></button>
-    </div>
-  );
-}
+import { QtyInput } from "./QtyInput";
 
 function Row({ i, p, index }: { i: ListItem; p: Product; index: number }) {
   const { setQty, removeFromList, restoreItem, setNote, toast } = useStore();

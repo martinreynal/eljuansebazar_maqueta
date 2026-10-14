@@ -14,7 +14,7 @@ export function Chrome({ name, whatsapp }: { name: string; whatsapp: string }) {
   const tabs = [["/", House, "Inicio"], ["/catalogo", LayoutGrid, "Catálogo"], ["/favoritos", Heart, "Favoritos"], ["/lista", ClipboardList, "Lista"]] as const;
   return (
     <>
-      {pathname !== "/lista" && <WaLink href={waLink(whatsapp, msgGeneral(name))} channel="general" className="wa-float" label="Consultanos por WhatsApp">
+      {pathname !== "/lista" && !pathname.startsWith("/producto/") && <WaLink href={waLink(whatsapp, msgGeneral(name))} channel="general" className="wa-float" label="Consultanos por WhatsApp">
         <span>Consultanos</span>
       </WaLink>}
       <nav className="tabbar" aria-label="Navegación principal">

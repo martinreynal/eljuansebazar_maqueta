@@ -51,8 +51,17 @@ export function formatPhone(n: string): string {
 
 export const productUrl = (base: string, p: Pick<Product, "slug">) => `${base}/producto/${p.slug}`;
 
-export function msgProduct(base: string, p: Product, variant?: string): string {
-  return `Hola, quería consultar por *${p.name}*${variant ? ` (${variant})` : ""} | Código: ${p.sku}\n${productUrl(base, p)}\n\n¿Me podrían pasar una cotización y confirmar disponibilidad? Gracias.`;
+export function msgProduct(base: string, p: Product, variant?: string, qty?: number): string {
+  const lines = [
+    "Hola, quería consultar por este producto:",
+    "",
+    `*${p.name}*${variant ? ` (${variant})` : ""}`,
+    `Código: ${p.sku}${qty ? `  |  Cantidad: ${qty}` : ""}`,
+    productUrl(base, p),
+    "",
+    "¿Me podrían confirmar precio y disponibilidad? Gracias.",
+  ];
+  return lines.join("\n");
 }
 
 export type ListItem = { sku: string; variant: string; qty: number; note?: string };
