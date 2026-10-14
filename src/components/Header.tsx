@@ -116,12 +116,12 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
         <div className="hdr-actions">
           <button className="icon-btn only-m" onClick={() => setMSearch((s) => !s)} aria-label={mSearch ? "Cerrar búsqueda" : "Buscar"} aria-expanded={mSearch}>{mSearch ? <X /> : <Search />}</button>
           <Link className="icon-btn only-d" href="/favoritos" aria-label={`Favoritos (${favs.length})`} title="Favoritos" aria-current={pathname === "/favoritos" ? "page" : undefined}>
-            <Heart /><span className="badge" data-n={favs.length}>{favs.length}</span>
+            <Heart /><span className="badge" data-n={favs.length} key={favs.length}>{favs.length}</span>
           </Link>
           <Link className={`list-btn ${list.length ? "has" : ""}`} href="/lista" aria-label={`Lista de consulta (${list.length} productos)`} title="Lista de consulta" aria-current={pathname === "/lista" ? "page" : undefined}>
             <ClipboardList />
             <span className="list-btn-t">Mi lista</span>
-            <span className="list-btn-n" data-n={list.length}>{list.length}</span>
+            <span className="list-btn-n" data-n={list.length} key={list.length}>{list.length}</span>
           </Link>
           <WaLink href={waHref} channel="general" className="btn btn-wa btn-sm hdr-wa only-d" label="Escribinos por WhatsApp"><span>WhatsApp</span></WaLink>
         </div>

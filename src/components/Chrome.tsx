@@ -24,7 +24,7 @@ export function Chrome({ name, whatsapp }: { name: string; whatsapp: string }) {
           return (
             <Link key={h} href={h} aria-current={current ? "page" : undefined}>
               <I /><span>{t}</span>
-              {n !== null && <span className="badge" data-n={n}>{n}</span>}
+              {n !== null && <span className="badge" data-n={n} key={n}>{n}</span>}
             </Link>
           );
         })}

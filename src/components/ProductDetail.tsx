@@ -1,12 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Clock, Heart, Info, ListPlus, MessageCircle, Minus, Plus, Truck } from "lucide-react";
+import { Check, Clock, Heart, Info, ListPlus, MessageCircle, Minus, Plus, Truck } from "lucide-react";
 import { AVAILABILITY, TAGS, money, msgProduct, priceShown, waLink } from "@/lib/format";
 import { track } from "@/lib/track";
 import type { Category, Product, Settings } from "@/lib/types";
 import { ProductImage } from "./ProductImage";
 import { useStore } from "./store/StoreProvider";
 import { WaLink } from "./WaLink";
+import { useFlash } from "./useFlash";
 
 export function ProductDetail({ p, category, settings, base }: { p: Product; category?: Category; settings: Settings; base: string }) {
   const { favs, toggleFav, addToList, toast } = useStore();
@@ -14,6 +15,8 @@ export function ProductDetail({ p, category, settings, base }: { p: Product; cat
   const [variant, setVariant] = useState(p.variants[0] ?? "");
   const [qty, setQty] = useState(1);
   const fav = favs.includes(p.sku);
+  const [added, flashAdded] = useFlash(1800);
+  const [pop, flashPop] = useFlash(500);
   const views = p.images.length ? p.images.map((_, i) => i) : [0, 1, 2];
 
   useEffect(() => { track("product_view", { product_id: p.id }); }, [p.id]);
@@ -64,8 +67,10 @@ export function ProductDetail({ p, category, settings, base }: { p: Product; cat
               <button onClick={() => setQty((q) => Math.min(999, q + 1))} aria-label="Sumar uno"><Plus /></button>
             </div>
             <div className="cta-row">
-              <button className="btn btn-ghost" onClick={() => { addToList(p.sku, variant, qty); toast(`${p.name} agregado a tu lista`, ["Ver lista", "/lista"]); }}><ListPlus />Agregar a la lista de consulta</button>
-              <button className={`btn btn-ghost sq fav-inline ${fav ? "on" : ""}`} style={{ width: 44 }} aria-pressed={fav} aria-label={`${fav ? "Quitar de" : "Agregar a"} favoritos`} onClick={() => { const on = toggleFav(p.sku); toast(on ? "Guardado en favoritos" : "Quitado de favoritos"); }}><Heart /></button>
+              <button className={`btn btn-ghost add-btn ${added ? "added" : ""}`} aria-live="polite" onClick={() => { addToList(p.sku, variant, qty); flashAdded(); toast(`${qty > 1 ? `${qty} unidades agregadas` : "Agregado"} a tu lista`, ["Ver lista", "/lista"]); }}>
+                <span className="pc-ic" key={added}>{added ? <Check /> : <ListPlus />}</span>{added ? "Agregado a tu lista" : "Agregar a la lista de consulta"}
+              </button>
+              <button className={`btn btn-ghost sq fav-inline ${fav ? "on" : ""} ${pop ? "pop" : ""}`} style={{ width: 44 }} aria-pressed={fav} aria-label={`${fav ? "Quitar de" : "Agregar a"} favoritos`} onClick={() => { const on = toggleFav(p.sku); if (on) flashPop(); toast(on ? "Guardado en favoritos" : "Quitado de favoritos"); }}><Heart /></button>
             </div>
           </div>
         </div>

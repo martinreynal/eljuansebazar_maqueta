@@ -681,3 +681,70 @@ section[id]{scroll-margin-top:84px}
 .nav-dd:has(> a[aria-current="page"]),.nav-dd:hover{background:var(--sand)}
 .nav .nav-dd > a,.nav .nav-dd > a:hover,.nav .nav-dd > a[aria-current="page"]{background:none}
 .nav-dd-btn,.nav-dd-btn:hover{background:none;margin-right:4px}
+
+/* ===== Microinteracciones ===== */
+:root{--ease:cubic-bezier(.2,.7,.2,1)}
+@keyframes mi-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes mi-pop{0%{transform:scale(1)}40%{transform:scale(1.28)}100%{transform:scale(1)}}
+@keyframes mi-bump{0%{transform:scale(.6)}55%{transform:scale(1.18)}100%{transform:scale(1)}}
+@keyframes mi-swap{from{opacity:0;transform:scale(.5) rotate(-20deg)}to{opacity:1;transform:none}}
+@keyframes mi-ring{from{box-shadow:0 0 0 0 color-mix(in srgb,var(--wa) 45%,transparent)}to{box-shadow:0 0 0 8px transparent}}
+
+/* botones */
+.btn{transition:transform .18s var(--ease),background .18s,border-color .18s,color .18s,box-shadow .18s,filter .18s}
+.btn-wa:hover,.btn-dark:hover{transform:translateY(-1px);box-shadow:0 6px 16px -8px rgba(0,0,0,.35)}
+.btn:active,.pc-btn:active,.icon-btn:active,.list-btn:active,.chip:active{transform:scale(.96)}
+.btn .lucide{transition:transform .2s var(--ease)}
+.btn-ghost:hover .lucide{transform:translateX(1px)}
+.icon-btn{transition:background .18s,transform .15s var(--ease)}
+.pc-btn{transition:background .18s,color .18s,border-color .18s,transform .15s var(--ease)}
+.pc-ic{display:inline-grid;place-items:center;animation:mi-swap .25s var(--ease)}
+.pc-btn-icon.in{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.pc-btn-icon.in:hover{background:var(--ink-2);border-color:var(--ink-2)}
+.pc-btn-icon.added,.pc-btn-icon.added:hover{background:var(--wa);border-color:var(--wa);color:var(--wa-ink);animation:mi-ring .6s ease-out}
+.add-btn.added,.add-btn.added:hover{background:var(--wa);border-color:var(--wa);color:var(--wa-ink);animation:mi-ring .6s ease-out}
+.add-btn .pc-ic .lucide{width:18px;height:18px}
+.pc-fav.pop svg,.fav-inline.pop svg{animation:mi-pop .45s var(--ease)}
+.fav-inline.on svg{fill:#C0392B;stroke:#C0392B}
+
+/* contadores */
+.badge:not([data-n="0"]),.list-btn-n:not([data-n="0"]){animation:mi-bump .35s var(--ease)}
+.list-btn{transition:border-color .18s,background .18s,transform .15s var(--ease)}
+.list-btn-n{transition:background .2s,color .2s}
+
+/* tarjetas */
+.pc{animation:mi-in .35s var(--ease) backwards;transition:border-color .25s,box-shadow .25s var(--ease),transform .25s var(--ease)}
+.pc-media img{transition:transform .5s var(--ease)}
+.pc-fav{transition:opacity .2s,transform .18s var(--ease),background .18s}
+.pc-name a{transition:color .15s}
+.pc:hover .pc-name a{color:var(--ink)}
+
+/* filtros */
+.check{border-radius:8px;transition:color .15s}
+.check:hover{color:var(--ink)}
+.check input{transition:transform .15s var(--ease)}
+.check input:checked{animation:mi-pop .3s var(--ease)}
+.check em{transition:color .15s}
+.chip{animation:mi-in .22s var(--ease) backwards;transition:background .15s,transform .15s var(--ease)}
+.chip .lucide{transition:transform .2s var(--ease)}
+.chip:hover .lucide{transform:rotate(90deg)}
+
+/* navegación */
+.nav a,.cats-bar a,.dd a{transition:background .18s,color .18s}
+.nav .dd a{transition:background .15s,color .15s,padding .18s var(--ease)}
+.nav .dd-grid a:hover{padding-left:16px}
+.dd-foot a .lucide{transition:transform .2s var(--ease)}
+.dd-foot a:hover .lucide{transform:translateX(2px)}
+.m-nav a{transition:background .15s,padding .18s var(--ease)}
+.m-nav a:hover{padding-left:8px}
+.tabbar a{transition:color .18s}
+.tabbar a .lucide{transition:transform .2s var(--ease)}
+.tabbar a[aria-current="page"] .lucide{transform:translateY(-1px) scale(1.08)}
+.m-search{animation:mi-in .2s var(--ease)}
+.lr{animation:mi-in .3s var(--ease) backwards}
+.search{transition:border-color .18s,box-shadow .18s}
+.search:focus-within{box-shadow:0 0 0 3px color-mix(in srgb,var(--ink) 10%,transparent)}
+.wa-float{transition:transform .2s var(--ease),box-shadow .2s}
+.wa-float:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(20,60,40,.28)}
+.toast{transition:opacity .25s var(--ease),transform .25s var(--ease)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}

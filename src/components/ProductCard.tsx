@@ -1,17 +1,21 @@
 "use client";
 import Link from "next/link";
-import { Heart, ListPlus } from "lucide-react";
+import { Check, ClipboardCheck, Heart, ListPlus } from "lucide-react";
 import { AVAILABILITY, TAGS, money, msgProduct, priceShown, waLink } from "@/lib/format";
 import type { Category, Product, Settings } from "@/lib/types";
 import { ProductImage } from "./ProductImage";
 import { useStore } from "./store/StoreProvider";
 import { WaLink } from "./WaLink";
+import { useFlash } from "./useFlash";
 
 export type CardCtx = { settings: Settings; base: string; categories: Category[] };
 
 export function ProductCard({ p, ctx, priority = false }: { p: Product; ctx: CardCtx; priority?: boolean }) {
-  const { favs, toggleFav, addToList, toast } = useStore();
+  const { favs, list, toggleFav, addToList, toast } = useStore();
   const fav = favs.includes(p.sku);
+  const inList = list.find((i) => i.sku === p.sku);
+  const [added, flashAdded] = useFlash();
+  const [pop, flashPop] = useFlash(500);
   const cat = ctx.categories.find((c) => c.id === p.category_id);
   const href = `/producto/${p.slug}`;
   const consult = waLink(ctx.settings.whatsapp, msgProduct(ctx.base, p));
@@ -22,11 +26,12 @@ export function ProductCard({ p, ctx, priority = false }: { p: Product; ctx: Car
       </Link>
       {p.tag && <span className={`pc-tag pc-tag-${p.tag}`}>{TAGS[p.tag]}</span>}
       <button
-        className={`pc-fav ${fav ? "on" : ""}`}
+        className={`pc-fav ${fav ? "on" : ""} ${pop ? "pop" : ""}`}
         aria-pressed={fav}
         aria-label={`${fav ? "Quitar de" : "Agregar a"} favoritos`}
         onClick={() => {
           const on = toggleFav(p.sku);
+          if (on) flashPop();
           toast(on ? "Guardado en favoritos" : "Quitado de favoritos", on ? ["Ver favoritos", "/favoritos"] : undefined);
         }}
       >
@@ -53,15 +58,16 @@ export function ProductCard({ p, ctx, priority = false }: { p: Product; ctx: Car
           <span>Consultar</span>
         </WaLink>
         <button
-          className="pc-btn pc-btn-icon"
-          aria-label={`Agregar ${p.name} a la lista de consulta`}
-          title="Agregar a la lista de consulta"
+          className={`pc-btn pc-btn-icon ${inList ? "in" : ""} ${added ? "added" : ""}`}
+          aria-label={inList ? `${p.name} está en tu lista (${inList.qty}). Sumar una unidad` : `Agregar ${p.name} a la lista de consulta`}
+          title={inList ? `En tu lista (${inList.qty}) · sumar una unidad` : "Agregar a la lista de consulta"}
           onClick={() => {
             addToList(p.sku, p.variants[0] ?? "", 1);
-            toast(`${p.name} agregado a tu lista`, ["Ver lista", "/lista"]);
+            flashAdded();
+            toast(inList ? `Sumaste una unidad (${inList.qty + 1} en total)` : `${p.sku} agregado a tu lista`, ["Ver lista", "/lista"]);
           }}
         >
-          <ListPlus />
+          <span className="pc-ic" key={added}>{added ? <Check /> : inList ? <ClipboardCheck /> : <ListPlus />}</span>
         </button>
       </div>
     </article>
