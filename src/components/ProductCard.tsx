@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Heart, ListPlus } from "lucide-react";
-import { AVAILABILITY, TAGS, money, msgProduct, priceShown, shortDesc, waLink } from "@/lib/format";
+import { AVAILABILITY, TAGS, money, msgProduct, priceShown, waLink } from "@/lib/format";
 import type { Category, Product, Settings } from "@/lib/types";
 import { ProductImage } from "./ProductImage";
 import { useStore } from "./store/StoreProvider";
@@ -14,14 +14,15 @@ export function ProductCard({ p, ctx, priority = false }: { p: Product; ctx: Car
   const fav = favs.includes(p.sku);
   const cat = ctx.categories.find((c) => c.id === p.category_id);
   const href = `/producto/${p.slug}`;
+  const consult = waLink(ctx.settings.whatsapp, msgProduct(ctx.base, p));
   return (
-    <article className="card">
-      <Link className="card-media" href={href} aria-label={`Ver ${p.name}`}>
-        <ProductImage p={p} priority={priority} />
-        {p.tag && <span className={`tag tag-${p.tag}`}>{TAGS[p.tag]}</span>}
+    <article className="pc">
+      <Link className="pc-media" href={href} aria-label={`Ver ${p.name}`} tabIndex={-1}>
+        <ProductImage p={p} priority={priority} label={false} />
       </Link>
+      {p.tag && <span className={`pc-tag pc-tag-${p.tag}`}>{TAGS[p.tag]}</span>}
       <button
-        className={`fav-btn ${fav ? "on" : ""}`}
+        className={`pc-fav ${fav ? "on" : ""}`}
         aria-pressed={fav}
         aria-label={`${fav ? "Quitar de" : "Agregar a"} favoritos`}
         onClick={() => {
@@ -31,41 +32,28 @@ export function ProductCard({ p, ctx, priority = false }: { p: Product; ctx: Car
       >
         <Heart />
       </button>
-      <div className="card-body">
-        <span className="card-cat">
-          <span className="mono card-sku">{p.sku}</span>
-          {cat ? ` · ${cat.name}` : ""}
-        </span>
-        <h3>
+      <div className="pc-body">
+        <div className="pc-meta">
+          <span className="pc-sku">{p.sku}</span>
+          {cat && <span className="pc-cat">{cat.name}</span>}
+        </div>
+        <h3 className="pc-name">
           <Link href={href}>{p.name}</Link>
         </h3>
-        <p className="card-desc">{shortDesc(p)}</p>
         {priceShown(p, ctx.settings) && (
-          <div className="price">
+          <div className="pc-price">
             {money(p.price!)}
             {p.tag === "oferta" && p.old_price ? <s>{money(p.old_price)}</s> : null}
           </div>
         )}
-        {p.availability !== "disponible" && (
-          <span className={`avail ${p.availability === "sin_stock" ? "sin-stock" : p.availability}`}>
-            <i className="dot" />
-            {AVAILABILITY[p.availability]}
-          </span>
-        )}
+        {p.availability === "sin_stock" && <span className="pc-stock">{AVAILABILITY[p.availability]}</span>}
       </div>
-      <div className="card-actions">
-        <Link className="btn btn-ghost view" href={href}>
-          Ver producto
-        </Link>
-        <WaLink
-          href={waLink(ctx.settings.whatsapp, msgProduct(ctx.base, p))}
-          channel="product"
-          productId={p.id}
-          className="btn wa-soft sq"
-          label={`Pedir cotización de ${p.name} por WhatsApp`}
-        />
+      <div className="pc-actions">
+        <WaLink href={consult} channel="product" productId={p.id} className="pc-btn pc-btn-wa" label={`Pedir cotización de ${p.name} por WhatsApp`}>
+          <span>Consultar</span>
+        </WaLink>
         <button
-          className="btn btn-soft sq"
+          className="pc-btn pc-btn-icon"
           aria-label={`Agregar ${p.name} a la lista de consulta`}
           title="Agregar a la lista de consulta"
           onClick={() => {
