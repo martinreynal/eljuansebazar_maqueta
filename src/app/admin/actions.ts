@@ -256,7 +256,7 @@ const WorkList = z.array(z.object({
   title: z.string().trim().min(2, "Cada trabajo necesita un nombre (la marca o el cliente).").max(80),
   technique: z.string().trim().max(60),
   quantity: z.string().trim().max(30),
-  image_path: z.string().regex(/^works\/[\w.-]+$/).nullable(),
+  image_path: z.string().regex(/^(works\/[\w.-]+|\/catalogo\/[\w.\/-]+)$/).nullable(),
 })).max(12);
 
 export async function saveCustomWorks(input: z.input<typeof WorkList>): Promise<Result> {
@@ -267,7 +267,7 @@ export async function saveCustomWorks(input: z.input<typeof WorkList>): Promise<
     const { data: prev } = await sb.from("custom_works").select("id, image_path");
     const keep = new Set(parsed.data.filter((w) => w.id).map((w) => w.id));
     const usedImgs = new Set(parsed.data.map((w) => w.image_path).filter(Boolean));
-    const orphan = (prev ?? []).map((w) => w.image_path as string | null).filter((p): p is string => !!p && !usedImgs.has(p));
+    const orphan = (prev ?? []).map((w) => w.image_path as string | null).filter((p): p is string => !!p && !p.startsWith("/") && !usedImgs.has(p));
     const gone = (prev ?? []).filter((w) => !keep.has(w.id as string)).map((w) => w.id as string);
     if (gone.length) {
       const { error } = await sb.from("custom_works").delete().in("id", gone);

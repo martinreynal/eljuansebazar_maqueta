@@ -122,7 +122,7 @@ export default async function Home() {
                 <div className="mock" key={w.id}>
                   <figure>
                     <div className="ph">
-                      {img ? <span className="media-fill"><Image src={img} alt={w.title} fill sizes="(max-width: 860px) 50vw, 25vw" /></span> : w.placeholder ? <CustomArt ph={w.placeholder} /> : null}
+                      {img ? <span className="media-fill"><Image src={img} alt={w.title} fill sizes="(max-width: 860px) 50vw, 25vw" unoptimized={img.startsWith("/")} /></span> : w.placeholder ? <CustomArt ph={w.placeholder} /> : null}
                     </div>
                     <figcaption><span><b>{w.title}</b>{w.technique && ` · ${w.technique}`}</span><span className="mono">{w.quantity}</span></figcaption>
                   </figure>
