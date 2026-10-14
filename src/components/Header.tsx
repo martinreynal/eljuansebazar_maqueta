@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
-  ChevronRight, CircleHelp, ClipboardList, FileDown, Heart, House, LayoutGrid, Menu, Search, Stamp, Tag, X,
+  ChevronDown, ChevronRight, CircleHelp, ClipboardList, FileDown, Heart, House, LayoutGrid, Menu, Search, Stamp, Tag, X,
 } from "lucide-react";
 import { msgGeneral, waLink } from "@/lib/format";
 import type { Category } from "@/lib/types";
@@ -23,10 +23,33 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
   const [q, setQ] = useState(params.get("q") ?? "");
   const [menu, setMenu] = useState(false);
   const [mSearch, setMSearch] = useState(false);
+  const [cats, setCats] = useState(false);
   const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const catsRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => setQ(params.get("q") ?? ""), [params]);
-  useEffect(() => setMenu(false), [pathname]);
+  useEffect(() => { setMenu(false); setCats(false); setMSearch(false); }, [pathname]);
+  // Cerrar el menú de categorías al hacer clic afuera o con Escape
+  useEffect(() => {
+    if (!cats) return;
+    const onDown = (e: MouseEvent) => { if (!catsRef.current?.contains(e.target as Node)) setCats(false); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setCats(false); };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => { document.removeEventListener("mousedown", onDown); document.removeEventListener("keydown", onKey); };
+  }, [cats]);
+  // Atajo: "/" enfoca el buscador
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement;
+      if (e.key !== "/" || e.metaKey || e.ctrlKey || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable) return;
+      e.preventDefault();
+      searchRef.current?.focus();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
 
   if (pathname.startsWith("/admin")) return <AdminBar name={name} />;
 
@@ -41,14 +64,20 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
       else if (v.trim()) router.push(url);
     }, 180);
   };
-  const searchBox = (id: string) => (
-    <form className="search" role="search" onSubmit={(e) => { e.preventDefault(); onSearch(q); }}>
+  const searchBox = (id: string, ref?: React.Ref<HTMLInputElement>, autoFocus = false) => (
+    <form className="search" role="search" onSubmit={(e) => { e.preventDefault(); onSearch(q); (e.currentTarget.querySelector("input") as HTMLInputElement)?.blur(); }}>
       <Search aria-hidden />
-      <input id={id} type="search" value={q} onChange={(e) => onSearch(e.target.value)} placeholder="Buscar por SKU o palabra clave (ej: V001, frascos)" aria-label="Buscar por SKU o palabra clave" autoComplete="off" />
+      <input ref={ref} id={id} type="search" value={q} onChange={(e) => onSearch(e.target.value)} placeholder="Buscar producto o código" aria-label="Buscar por nombre o código de producto" autoComplete="off" enterKeyHint="search" autoFocus={autoFocus} />
+      {q ? (
+        <button type="button" className="search-x" onClick={() => onSearch("")} aria-label="Borrar búsqueda"><X /></button>
+      ) : (
+        <kbd className="search-kbd" aria-hidden>/</kbd>
+      )}
     </form>
   );
   const hasOffers = categories.some((c) => c.is_offers);
-  const nav: [string, string][] = [["/", "Inicio"], ["/catalogo", "Catálogo"], ...(hasOffers ? [["/ofertas", "Ofertas"] as [string, string]] : []), ["/#personalizados", "Personalizados"], ["/#preguntas", "Preguntas"]];
+  const inCatalog = pathname.startsWith("/catalogo") || /^\/(categoria|producto|ofertas)/.test(pathname);
+  const waHref = waLink(whatsapp, msgGeneral(name));
 
   return (
     <header className="hdr">
@@ -58,27 +87,46 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
           <Logo name={name} priority />
           <span className="logo-tag">{tagline}</span>
         </Link>
+
         <nav className="nav only-d" aria-label="Secciones">
-          {nav.map(([h, t]) => (
-            <Link key={h} href={h} aria-current={pathname === h ? "page" : undefined}>{t}</Link>
-          ))}
+          <div className="nav-dd" ref={catsRef} onMouseLeave={() => setCats(false)}>
+            <Link href="/catalogo" aria-current={inCatalog ? "page" : undefined} onMouseEnter={() => setCats(true)} onFocus={() => setCats(true)}>
+              Catálogo
+            </Link>
+            <button type="button" className="nav-dd-btn" aria-label="Ver categorías" aria-expanded={cats} aria-haspopup="true" onClick={() => setCats((v) => !v)}><ChevronDown /></button>
+            <div className={`dd ${cats ? "open" : ""}`} role="menu">
+              <div className="dd-grid">
+                {categories.map((c) => (
+                  <Link key={c.id} role="menuitem" href={catHref(c)} className={c.is_offers ? "promo" : undefined} aria-current={pathname === catHref(c) ? "page" : undefined}>{c.name}</Link>
+                ))}
+              </div>
+              <div className="dd-foot">
+                <Link href="/catalogo" role="menuitem">Ver todo el catálogo<ChevronRight /></Link>
+                <a href="/catalogo.pdf" target="_blank" rel="noopener" role="menuitem"><FileDown />Descargar PDF</a>
+              </div>
+            </div>
+          </div>
+          {hasOffers && <Link href="/ofertas" className="promo" aria-current={pathname === "/ofertas" ? "page" : undefined}>Ofertas</Link>}
+          <Link href="/#personalizados">Personalizados</Link>
+          <Link href="/#preguntas" className="nav-faq">Preguntas</Link>
         </nav>
-        {searchBox("hdr-q")}
+
+        <div className="hdr-search only-d">{searchBox("hdr-q", searchRef)}</div>
+
         <div className="hdr-actions">
-          <button className="icon-btn only-m" onClick={() => setMSearch((s) => !s)} aria-label="Buscar" aria-expanded={mSearch}><Search /></button>
-          <Link className="icon-btn only-d" href="/favoritos" aria-label="Favoritos"><Heart /><span className="badge" data-n={favs.length}>{favs.length}</span></Link>
-          <Link className="icon-btn" href="/lista" aria-label="Lista de consulta"><ClipboardList /><span className="badge" data-n={list.length}>{list.length}</span></Link>
-          <WaLink href={waLink(whatsapp, msgGeneral(name))} channel="general" className="btn btn-wa btn-sm only-d">WhatsApp</WaLink>
+          <button className="icon-btn only-m" onClick={() => setMSearch((s) => !s)} aria-label={mSearch ? "Cerrar búsqueda" : "Buscar"} aria-expanded={mSearch}>{mSearch ? <X /> : <Search />}</button>
+          <Link className="icon-btn only-d" href="/favoritos" aria-label={`Favoritos (${favs.length})`} title="Favoritos" aria-current={pathname === "/favoritos" ? "page" : undefined}>
+            <Heart /><span className="badge" data-n={favs.length}>{favs.length}</span>
+          </Link>
+          <Link className={`list-btn ${list.length ? "has" : ""}`} href="/lista" aria-label={`Lista de consulta (${list.length} productos)`} title="Lista de consulta" aria-current={pathname === "/lista" ? "page" : undefined}>
+            <ClipboardList />
+            <span className="list-btn-t">Mi lista</span>
+            <span className="list-btn-n" data-n={list.length}>{list.length}</span>
+          </Link>
+          <WaLink href={waHref} channel="general" className="btn btn-wa btn-sm hdr-wa only-d" label="Escribinos por WhatsApp"><span>WhatsApp</span></WaLink>
         </div>
       </div>
-      {mSearch && <div className="wrap m-search">{searchBox("m-q")}</div>}
-      <div className="cats-bar only-d">
-        <div className="wrap">
-          {categories.map((c) => (
-            <Link key={c.id} href={catHref(c)} className={c.is_offers ? "promo" : undefined}>{c.name}</Link>
-          ))}
-        </div>
-      </div>
+      {mSearch && <div className="wrap m-search only-m">{searchBox("m-q", undefined, true)}</div>}
 
       <div className={`drawer-bg ${menu ? "open" : ""}`} onClick={() => setMenu(false)} />
       <aside className={`drawer left ${menu ? "open" : ""}`} aria-hidden={!menu} aria-label="Menú">
@@ -96,7 +144,7 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
               <Link key={c.id} href={catHref(c)} onClick={() => setMenu(false)}>{c.name}<ChevronRight /></Link>
             ))}
           </nav>
-          <WaLink href={waLink(whatsapp, msgGeneral(name))} channel="general" className="btn btn-wa">Escribinos por WhatsApp</WaLink>
+          <WaLink href={waHref} channel="general" className="btn btn-wa">Escribinos por WhatsApp</WaLink>
         </div>
       </aside>
     </header>
