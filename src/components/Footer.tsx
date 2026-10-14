@@ -12,7 +12,7 @@ export function Footer({ settings, categories }: { settings: Settings; categorie
             <div className="logo" style={{ marginBottom: 12 }}><Logo name={settings.business_name} /></div>
             <p style={{ maxWidth: "34ch" }}>{settings.tagline}. Catálogo digital: las consultas y cotizaciones se coordinan por WhatsApp.</p>
           </div>
-          <div>
+          <div className="only-d-block">
             <h4>Categorías</h4>
             <ul>{categories.filter((c) => !c.is_offers).slice(0, 8).map((c) => <li key={c.id}><Link href={`/categoria/${c.slug}`}>{c.name}</Link></li>)}</ul>
           </div>

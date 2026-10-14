@@ -74,9 +74,9 @@ export function ProductCard({ p, ctx, priority = false }: { p: Product; ctx: Car
   );
 }
 
-export function ProductGrid({ products, ctx, priorityFirst = 0 }: { products: Product[]; ctx: CardCtx; priorityFirst?: number }) {
+export function ProductGrid({ products, ctx, priorityFirst = 0, rail = false }: { products: Product[]; ctx: CardCtx; priorityFirst?: number; rail?: boolean }) {
   return (
-    <div className="grid">
+    <div className={rail ? "grid rail" : "grid"}>
       {products.map((p, i) => (
         <ProductCard key={p.id} p={p} ctx={ctx} priority={i < priorityFirst} />
       ))}

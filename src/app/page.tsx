@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HomeSearch } from "@/components/HomeSearch";
 import { ArrowRight, ArrowUpRight, ChevronRight, Clock, Droplet, FileDown, ListPlus, MessageCircle, Search, Stamp, Tag, Truck, Zap } from "lucide-react";
 import { CustomArt } from "@/components/Art";
 import { ProductGrid } from "@/components/ProductCard";
@@ -32,6 +33,12 @@ export default async function Home() {
 
   return (
     <div className="wrap">
+      <div className="m-quick only-m">
+        <HomeSearch />
+        <nav className="quick-cats" aria-label="Categorías">
+          {realCats.map((c) => <Link key={c.id} href={`/categoria/${c.slug}`}>{c.name}</Link>)}
+        </nav>
+      </div>
       <section className="hero">
         <div className="hero-copy">
           <span className="eyebrow">{d.heroEyebrow}</span>
@@ -65,7 +72,7 @@ export default async function Home() {
             <Link href="/catalogo">Todo el catálogo <ArrowRight /></Link>
           </div>
         </div>
-        <div className="cat-grid">
+        <div className="cat-grid cat-rail">
           {realCats.map((c) => {
             const n = products.filter((p) => inCategory(p, c)).length;
             const cover = products.find((p) => p.category_id === c.id);
@@ -86,7 +93,7 @@ export default async function Home() {
       {featured.length > 0 && (
         <section className="sec" aria-labelledby="h-feat">
           <div className="sec-head"><div><h2 id="h-feat">Destacados del mes</h2><p>Los artículos que más recomendamos.</p></div><Link href="/catalogo">Ver más <ArrowRight /></Link></div>
-          <ProductGrid products={featured} ctx={ctx} />
+          <ProductGrid products={featured} ctx={ctx} rail />
         </section>
       )}
 
@@ -94,7 +101,7 @@ export default async function Home() {
         <section className="sec" aria-labelledby="h-off">
           <div className="band">
             <div className="sec-head"><div><span className="eyebrow">Promoción</span><h2 id="h-off" style={{ marginTop: 6 }}>{d.promoTitle}</h2><p>{d.promoText}</p></div><Link href="/ofertas">Todas las ofertas <ArrowRight /></Link></div>
-            <ProductGrid products={offers} ctx={ctx} />
+            <ProductGrid products={offers} ctx={ctx} rail />
           </div>
         </section>
       )}
@@ -136,7 +143,7 @@ export default async function Home() {
 
       <section className="sec" aria-labelledby="h-new">
         <div className="sec-head"><div><h2 id="h-new">Recién llegados</h2><p>Lo último que entró al bazar.</p></div><Link href="/catalogo">Ver novedades <ArrowRight /></Link></div>
-        <ProductGrid products={fresh} ctx={ctx} />
+        <ProductGrid products={fresh} ctx={ctx} rail />
       </section>
 
       <section className="sec" aria-labelledby="h-top">

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronLeft } from "lucide-react";
 import { ProductGrid } from "@/components/ProductCard";
 import { ProductDetail } from "@/components/ProductDetail";
 import { getStore } from "@/lib/data";
@@ -64,7 +64,8 @@ export default async function ProductPage({ params }: Params) {
   ];
   return (
     <div className="wrap">
-      <nav className="crumbs" aria-label="Ruta de navegación">
+      <Link className="back-m only-m" href={category ? `/categoria/${category.slug}` : "/catalogo"}><ChevronLeft />{category ? category.name : "Catálogo"}</Link>
+      <nav className="crumbs only-d" aria-label="Ruta de navegación">
         <Link href="/">Inicio</Link><span aria-hidden>›</span>
         <Link href="/catalogo">Catálogo</Link><span aria-hidden>›</span>
         {category && <><Link href={`/categoria/${category.slug}`}>{category.name}</Link><span aria-hidden>›</span></>}

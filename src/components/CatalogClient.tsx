@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FileDown, Search, SearchX, SlidersHorizontal, X } from "lucide-react";
 import { AVAILABILITY, inCategory, money, priceShown, searchable, waLink } from "@/lib/format";
 import { track } from "@/lib/track";
@@ -26,6 +26,7 @@ export function CatalogClient({ products, categories, settings, base, preset, ti
   const [shown, setShown] = useState(PAGE);
   const [sheet, setSheet] = useState(false);
   const ctx = { settings, base, categories };
+  const sentinel = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (preset) {
@@ -83,16 +84,27 @@ export function CatalogClient({ products, categories, settings, base, preset, ti
   const clearAll = () => { setCats([]); setAvail([]); setMin(""); setMax(""); if (q) setQ(""); };
   const toggle = <T,>(arr: T[], v: T) => (arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
 
+  const active = cats.filter((c) => c !== preset).length + avail.length + (min ? 1 : 0) + (max ? 1 : 0);
+  const more = results.length > shown;
+  // Carga automática al llegar al final (el botón queda como respaldo)
+  useEffect(() => {
+    const el = sentinel.current;
+    if (!el || !more || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) setShown((s) => s + PAGE); }, { rootMargin: "600px 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [more, shown]);
+
   const crumbs = preset ? [["Inicio", "/"], ["Catálogo", "/catalogo"], [title, ""]] : [["Inicio", "/"], ["Catálogo", ""]];
 
   return (
     <div className="wrap">
-      <nav className="crumbs" aria-label="Ruta de navegación">
+      <nav className="crumbs only-d" aria-label="Ruta de navegación">
         {crumbs.map(([t, h], i) => (h ? <span key={i} style={{ display: "contents" }}><Link href={h}>{t}</Link><span aria-hidden>›</span></span> : <span key={i} aria-current="page">{t}</span>))}
       </nav>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+      <div className="cat-title">
         <h1 className="page-title">{title}</h1>
-        <a className="btn btn-ghost btn-sm" href="/catalogo.pdf" target="_blank" rel="noopener"><FileDown />Descargar catálogo en PDF</a>
+        <a className="btn btn-ghost btn-sm only-d" href="/catalogo.pdf" target="_blank" rel="noopener"><FileDown />Descargar catálogo en PDF</a>
       </div>
       <div className="cat-layout">
         <div className={`sheet-bg ${sheet ? "open" : ""}`} onClick={() => setSheet(false)} />
@@ -131,11 +143,11 @@ export function CatalogClient({ products, categories, settings, base, preset, ti
 
         <div style={{ minWidth: 0 }}>
           <div className="cat-top">
-            <form className="search" role="search" onSubmit={(e) => e.preventDefault()}>
+            <form className="search" role="search" onSubmit={(e) => { e.preventDefault(); (e.currentTarget.querySelector("input") as HTMLInputElement)?.blur(); }}>
               <Search aria-hidden />
-              <input id="cat-q" type="search" placeholder="Buscar por SKU o palabra clave" aria-label="Buscar por SKU o palabra clave" value={q} onChange={(e) => setQ(e.target.value)} autoComplete="off" />
+              <input id="cat-q" type="search" placeholder="Buscar producto o código" aria-label="Buscar por nombre o código de producto" enterKeyHint="search" value={q} onChange={(e) => setQ(e.target.value)} autoComplete="off" />
             </form>
-            <button className="btn btn-ghost only-m" onClick={() => setSheet(true)}><SlidersHorizontal />Filtros</button>
+            <button className="btn btn-ghost only-m f-btn" onClick={() => setSheet(true)}><SlidersHorizontal />Filtros{active > 0 && <span className="f-count">{active}</span>}</button>
             <select className="input" aria-label="Ordenar por" value={sort} onChange={(e) => setSort(e.target.value)}>
               <option value="novedades">Novedades</option>
               <option value="nombre">Nombre A–Z</option>
@@ -165,7 +177,8 @@ export function CatalogClient({ products, categories, settings, base, preset, ti
               </div>
             </div>
           )}
-          {results.length > shown && (
+          {more && <div ref={sentinel} aria-hidden />}
+          {more && (
             <div className="load-more">
               <span>Mostrando {shown} de {results.length}</span>
               <div className="progress"><i style={{ width: `${(shown / results.length) * 100}%` }} /></div>

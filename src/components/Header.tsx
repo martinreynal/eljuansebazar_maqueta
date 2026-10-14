@@ -51,6 +51,18 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
     return () => document.removeEventListener("keydown", onKey);
   }, []);
 
+  // La pestaña "Buscar" de la barra inferior abre el buscador (en el catálogo enfoca su propio campo)
+  useEffect(() => {
+    const open = () => {
+      const cat = document.getElementById("cat-q") as HTMLInputElement | null;
+      if (cat) { cat.focus(); cat.scrollIntoView({ block: "nearest" }); return; }
+      setMSearch(true);
+      setTimeout(() => (document.getElementById("m-q") as HTMLInputElement | null)?.focus(), 30);
+    };
+    window.addEventListener("ejb:search", open);
+    return () => window.removeEventListener("ejb:search", open);
+  }, []);
+
   if (pathname.startsWith("/admin")) return <AdminBar name={name} />;
 
   const onSearch = (v: string) => {
@@ -114,11 +126,10 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
         <div className="hdr-search only-d">{searchBox("hdr-q", searchRef)}</div>
 
         <div className="hdr-actions">
-          <button className="icon-btn only-m" onClick={() => setMSearch((s) => !s)} aria-label={mSearch ? "Cerrar búsqueda" : "Buscar"} aria-expanded={mSearch}>{mSearch ? <X /> : <Search />}</button>
-          <Link className="icon-btn only-d" href="/favoritos" aria-label={`Favoritos (${favs.length})`} title="Favoritos" aria-current={pathname === "/favoritos" ? "page" : undefined}>
+          <Link className="icon-btn" href="/favoritos" aria-label={`Favoritos (${favs.length})`} title="Favoritos" aria-current={pathname === "/favoritos" ? "page" : undefined}>
             <Heart /><span className="badge" data-n={favs.length} key={favs.length}>{favs.length}</span>
           </Link>
-          <Link className={`list-btn ${list.length ? "has" : ""}`} href="/lista" aria-label={`Lista de consulta (${list.length} productos)`} title="Lista de consulta" aria-current={pathname === "/lista" ? "page" : undefined}>
+          <Link className={`list-btn only-d ${list.length ? "has" : ""}`} href="/lista" aria-label={`Lista de consulta (${list.length} productos)`} title="Lista de consulta" aria-current={pathname === "/lista" ? "page" : undefined}>
             <ClipboardList />
             <span className="list-btn-t">Mi lista</span>
             <span className="list-btn-n" data-n={list.length} key={list.length}>{list.length}</span>
@@ -126,7 +137,12 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
           <WaLink href={waHref} channel="general" className="btn btn-wa btn-sm hdr-wa only-d" label="Escribinos por WhatsApp"><span>WhatsApp</span></WaLink>
         </div>
       </div>
-      {mSearch && <div className="wrap m-search only-m">{searchBox("m-q", undefined, true)}</div>}
+      {mSearch && (
+        <div className="wrap m-search only-m">
+          {searchBox("m-q", undefined, true)}
+          <button type="button" className="link-btn m-search-x" onClick={() => setMSearch(false)}>Cancelar</button>
+        </div>
+      )}
 
       <div className={`drawer-bg ${menu ? "open" : ""}`} onClick={() => setMenu(false)} />
       <aside className={`drawer left ${menu ? "open" : ""}`} aria-hidden={!menu} aria-label="Menú">
