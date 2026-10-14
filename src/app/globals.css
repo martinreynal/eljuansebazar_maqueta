@@ -491,9 +491,9 @@ section[id]{scroll-margin-top:140px}
 .seg .seg-link[aria-pressed="true"]{background:var(--surface);color:var(--ink)}
 .hero-art .cap svg{width:14px;height:14px;transform:none!important}
 
-/* categorías de la portada: 8 por fila en escritorio */
-.cat-grid{grid-template-columns:repeat(8,minmax(0,1fr))}
-@media (max-width:1000px){.cat-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+/* categorías de la portada: todas en una fila en escritorio */
+.cat-grid{grid-template-columns:repeat(auto-fit,minmax(110px,1fr))}
+@media (max-width:1000px){.cat-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:560px){.cat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* fotos del catálogo sobre fondo blanco */
 .card-media,.main-img,.thumbs button,.cat-tile .ph,.rank .t,.li .t{background:#fff}
