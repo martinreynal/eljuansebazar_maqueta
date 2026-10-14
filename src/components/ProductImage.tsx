@@ -10,6 +10,14 @@ export function ProductImage({
   const raw = p.images.length ? p.images[Math.min(view, p.images.length - 1)] : null;
   const local = raw ? isLocalImage(raw) : false;
   const src = raw ? (local && !full ? miniImage(raw) : mediaUrl(raw)) : null;
+  // Ficha de producto con foto del catálogo: se muestra a su tamaño real como máximo (sin estirarla), para que no se vea borrosa
+  if (src && local && full)
+    return (
+      <span className="native-wrap">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={src} alt={p.name} fetchPriority={priority ? "high" : undefined} decoding="async" />
+      </span>
+    );
   if (src)
     return (
       <span className="media-fill">

@@ -505,3 +505,7 @@ section[id]{scroll-margin-top:140px}
   .buy-row{grid-template-columns:1fr}
   .cta-row .btn:first-child{white-space:normal;line-height:1.2;text-align:center}
 }
+
+/* fotos del catálogo en la ficha: nunca más grandes que su tamaño real */
+.native-wrap{display:flex !important;align-items:center;justify-content:center;width:100%;height:100%;background:#fff}
+.native-wrap img{display:block;width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain}
