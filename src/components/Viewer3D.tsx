@@ -60,7 +60,7 @@ export function Viewer3D({ url, name }: { url: string; name: string }) {
         dpr={[1, 2]}
         camera={{ fov: 30, near: 0.01, far: 50, position: [0, 0.3, 3.1] }}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-        onCreated={({ gl }) => { gl.toneMapping = THREE.ACESFilmicToneMapping; gl.toneMappingExposure = 1.05; }}
+        onCreated={({ gl }) => { gl.toneMapping = THREE.ACESFilmicToneMapping; gl.toneMappingExposure = 0.95; }}
         onPointerDown={() => setInteracted(true)}
         onWheel={() => setInteracted(true)}
       >
@@ -94,6 +94,7 @@ export function Viewer3D({ url, name }: { url: string; name: string }) {
         <button type="button" onClick={toggleFs} aria-label={fs ? "Salir de pantalla completa" : "Pantalla completa"} title={fs ? "Salir de pantalla completa" : "Pantalla completa"}>{fs ? <Minimize2 /> : <Maximize2 />}</button>
       </div>
       <p className="v3d-hint">Arrastrá para girar · rueda o pellizco para acercar</p>
+      <p className="v3d-note">Modelo 3D aproximado, reconstruido a partir de la foto</p>
     </div>
   );
 }
@@ -103,10 +104,10 @@ function Studio() {
   return (
     <>
       <ambientLight intensity={0.35} />
-      <directionalLight position={[2.5, 3, 2]} intensity={1.4} />
+      <directionalLight position={[2.5, 3, 2]} intensity={1.1} />
       <directionalLight position={[-3, 1.5, -2]} intensity={0.6} />
       {/* Entorno tipo estudio (softboxes alrededor) para que el acero refleje luz desde cualquier ángulo */}
-      <Environment resolution={256} environmentIntensity={1.6}>
+      <Environment resolution={256} environmentIntensity={0.9}>
         <Lightformer form="rect" intensity={4} position={[0, 4, 0]} rotation={[Math.PI / 2, 0, 0]} scale={[8, 8, 1]} />
         <Lightformer form="rect" intensity={3} position={[0, 1, 5]} scale={[6, 4, 1]} />
         <Lightformer form="rect" intensity={2.2} position={[-5, 1, 1]} rotation={[0, Math.PI / 2, 0]} scale={[4, 4, 1]} />
@@ -131,10 +132,11 @@ function Model({ url, spin, onReady }: { url: string; spin: boolean; onReady: ()
     const b = new THREE.Box3().setFromObject(s);
     const size = new THREE.Vector3(), center = new THREE.Vector3();
     b.getSize(size); b.getCenter(center);
-    const k = 1.45 / Math.max(size.x, size.y, size.z, 1e-6);
+    const k = 1.2 / Math.max(size.x, size.y, size.z, 1e-6);
     s.scale.setScalar(k);
     s.position.copy(center).multiplyScalar(-k);
-    return { s, aspect: size.x / Math.max(size.y, 1e-6) };
+    const maxXZ = Math.max(size.x, size.z, 1e-6);
+    return { s, aspect: size.x / Math.max(size.y, 1e-6), flat: size.y / maxXZ < 0.3 };
   }, [scene]);
   const { invalidate } = useThree();
   useEffect(() => { onReady(); invalidate(); }, [onReady, invalidate]);
@@ -142,8 +144,8 @@ function Model({ url, spin, onReady }: { url: string; spin: boolean; onReady: ()
   useFrame((_, dt) => {
     if (spin && group.current) group.current.rotation.y += dt * 0.35;
   });
-  // Piezas alargadas (un cuchillo) se presentan algo inclinadas; el resto, de frente
-  const tilt = prepared.aspect > 2.5 ? [0.55, -0.35, 0.15] : [0.15, -0.4, 0];
+  // Piezas alargadas (un cuchillo) se presentan inclinadas; las planas (platos), vistas desde arriba; el resto, de frente
+  const tilt = prepared.aspect > 2.5 && !prepared.flat ? [0.55, -0.35, 0.15] : prepared.flat ? [0.95, -0.25, 0] : [0.3, -0.45, 0];
   return (
     <group rotation={tilt as [number, number, number]}>
       <group ref={group}>

@@ -927,3 +927,4 @@ section[id]{scroll-margin-top:84px}
 .v3d-spin{width:26px;height:26px;border-radius:50%;border:2px solid rgba(232,227,218,.2);border-top-color:#e8e3da;animation:spin .8s linear infinite}
 @media (max-width:560px){.v3d-hint{display:none}.v3d-tools{right:10px;bottom:10px}.v3d-tools button{width:40px;height:40px}}
 @media (hover:none){.v3d-hint{display:none}}
+.v3d-note{position:absolute;left:12px;top:12px;margin:0;font-size:11px;color:rgba(232,227,218,.5);pointer-events:none;z-index:2}

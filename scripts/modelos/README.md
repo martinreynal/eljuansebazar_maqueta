@@ -11,3 +11,15 @@ node scripts/modelos/cuchillo-cub27.mjs public/modelos/CUB-27.glb
 ```
 
 Para asociar un modelo a un producto: en el panel, campo **Modelo 3D** con la ruta (`/modelos/CUB-27.glb`). Si el producto no tiene modelo, la ficha muestra solo la foto.
+
+## Piezas torneadas (platos, bowls, tazas, vasos, copas, botellas) y sus sets
+
+- `generar-catalogo.py`: a partir de `rows.json` (catálogo) y las fotos en miniatura arma `catalogo-modelos.json` con forma, medidas (del texto o estimadas) y colores (dominantes de la foto) de cada producto.
+- `torneados.mjs`: lee ese JSON y genera un `.glb` por producto torneado (geometría de revolución real) y por set compuesto solo de piezas torneadas. Las piezas cuadradas, de madera, hierro o con tapa quedan fuera.
+
+```bash
+python3 scripts/modelos/generar-catalogo.py rows.json public/catalogo/mini scripts/modelos/catalogo-modelos.json
+node scripts/modelos/torneados.mjs scripts/modelos/catalogo-modelos.json public/modelos
+```
+
+Los productos con modelo se asocian en la base con `model_url = '/modelos/SKU.glb'` (ver `supabase/migrations/0006_modelos_torneados.sql`).

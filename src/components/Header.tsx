@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
-  Box, ChevronDown, ChevronRight, CircleHelp, ClipboardList, FileDown, Heart, House, LayoutGrid, Menu, Search, Stamp, Tag, X,
+  ChevronDown, ChevronRight, CircleHelp, ClipboardList, FileDown, Heart, House, LayoutGrid, Menu, Search, Stamp, Tag, X,
 } from "lucide-react";
 import { msgGeneral, waLink } from "@/lib/format";
 import type { Category } from "@/lib/types";
@@ -120,7 +120,6 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
           </div>
           {hasOffers && <Link href="/ofertas" className="promo" aria-current={pathname === "/ofertas" ? "page" : undefined}>Ofertas</Link>}
           <Link href="/#personalizados">Personalizados</Link>
-          <a href="/simulador" className="nav-sim">Simulador 3D</a>
           <Link href="/#preguntas" className="nav-faq">Preguntas</Link>
         </nav>
 
@@ -154,7 +153,6 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
               <Link key={h} href={h} onClick={() => setMenu(false)}><I />{t}<ChevronRight /></Link>
             ))}
             <a href="/catalogo.pdf" target="_blank" rel="noopener"><FileDown />Catálogo en PDF<ChevronRight /></a>
-            <a href="/simulador"><Box />Simulador de mesa 3D<ChevronRight /></a>
           </nav>
           <span className="eyebrow">Categorías</span>
           <nav className="m-nav">

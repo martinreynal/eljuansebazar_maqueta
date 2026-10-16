@@ -28,7 +28,6 @@ export function Footer({ settings, categories }: { settings: Settings; categorie
             <h4>Más</h4>
             <ul>
               <li><a href="/catalogo.pdf" target="_blank" rel="noopener">Catálogo en PDF</a></li>
-              <li><a href="/simulador">Simulador de mesa 3D</a></li>
               {settings.instagram && <li>Instagram {settings.instagram}</li>}
               {settings.facebook && <li>Facebook {settings.facebook}</li>}
               <li><Link href="/#preguntas">Preguntas frecuentes</Link></li>
