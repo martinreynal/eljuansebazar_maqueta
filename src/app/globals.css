@@ -903,3 +903,4 @@ section[id]{scroll-margin-top:84px}
   .hero h1{font-size:27px}
 }
 @media (max-width:860px){.crumbs{display:none!important}.page-title{margin-top:16px}}
+@media (max-width:1180px){.nav-sim{display:none}}
