@@ -1,7 +1,12 @@
 "use client";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
-import { Check, Copy, Heart, Info, ListPlus } from "lucide-react";
+import { Box, Check, Copy, Heart, Image as ImageIcon, Info, ListPlus } from "lucide-react";
+import { mediaUrl } from "@/lib/env";
+
+// El visor 3D (Three.js) se descarga solo cuando el usuario elige «Ver en 3D»
+const Viewer3D = dynamic(() => import("./Viewer3D").then((m) => m.Viewer3D), { ssr: false, loading: () => <div className="v3d v3d-loading-box"><span className="v3d-spin" />Cargando visor 3D…</div> });
 import { AVAILABILITY, TAGS, money, msgProduct, priceShown, waLink } from "@/lib/format";
 import { track } from "@/lib/track";
 import type { Category, Product, Settings } from "@/lib/types";
@@ -14,6 +19,8 @@ import { WaLink } from "./WaLink";
 export function ProductDetail({ p, category, settings, base }: { p: Product; category?: Category; settings: Settings; base: string }) {
   const { favs, list, toggleFav, addToList, toast } = useStore();
   const [img, setImg] = useState(0);
+  const [media, setMedia] = useState<"foto" | "3d">("foto");
+  const model = mediaUrl(p.model_url);
   const [variant, setVariant] = useState(p.variants[0] ?? "");
   const [qty, setQty] = useState(1);
   const fav = favs.includes(p.sku);
@@ -63,14 +70,24 @@ export function ProductDetail({ p, category, settings, base }: { p: Product; cat
   return (
     <div className="pdp">
       <div className={`gallery ${views.length > 1 ? "multi" : ""}`}>
-        <div className="main-img">
-          <ProductImage key={img} p={p} view={img} sizes="(max-width: 860px) 100vw, 55vw" priority full />
-          {p.tag && <span className={`pc-tag pc-tag-${p.tag}`}>{TAGS[p.tag]}</span>}
+        <div className={`main-img ${media === "3d" ? "is-3d" : ""}`}>
+          {media === "3d" && model ? (
+            <Viewer3D url={model} name={p.name} />
+          ) : (
+            <ProductImage key={img} p={p} view={img} sizes="(max-width: 860px) 100vw, 55vw" priority full />
+          )}
+          {p.tag && media === "foto" && <span className={`pc-tag pc-tag-${p.tag}`}>{TAGS[p.tag]}</span>}
         </div>
+        {model && (
+          <div className="media-switch" role="tablist" aria-label="Tipo de vista">
+            <button type="button" role="tab" aria-selected={media === "foto"} onClick={() => setMedia("foto")}><ImageIcon />Foto</button>
+            <button type="button" role="tab" aria-selected={media === "3d"} onClick={() => setMedia("3d")}><Box />Ver en 3D</button>
+          </div>
+        )}
         {views.length > 1 && (
           <div className="thumbs" role="tablist" aria-label="Fotos del producto">
             {views.map((i) => (
-              <button key={i} role="tab" aria-selected={img === i} aria-current={img === i} aria-label={`Foto ${i + 1}`} onClick={() => setImg(i)}>
+              <button key={i} role="tab" aria-selected={img === i} aria-current={img === i} aria-label={`Foto ${i + 1}`} onClick={() => { setImg(i); setMedia("foto"); }}>
                 <ProductImage p={p} view={i} label={false} sizes="80px" />
               </button>
             ))}

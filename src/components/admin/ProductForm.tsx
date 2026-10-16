@@ -19,6 +19,7 @@ export function ProductForm({ product, categories }: { product: Product | null; 
     price: p?.price != null ? String(p.price) : "", old_price: p?.old_price != null ? String(p.old_price) : "",
     price_visible: p?.price_visible ?? true, availability: p?.availability ?? "disponible", stock: p?.stock != null ? String(p.stock) : "",
     tag: p?.tag ?? "", featured: p?.featured ?? false, visible: p?.visible ?? true, images: p?.images ?? [],
+    model_url: p?.model_url ?? "",
   });
   const [err, setErr] = useState<{ text: string; field?: string } | null>(null);
   const [ok, setOk] = useState("");
@@ -36,6 +37,7 @@ export function ProductForm({ product, categories }: { product: Product | null; 
       id: p?.id, name: f.name, sku: f.sku, slug: f.slug || undefined, category_id: f.category_id, description: f.description, materials: f.materials,
       dimensions: f.dimensions, variants: f.variants.split(",").map((s) => s.trim()).filter(Boolean), price, old_price: Number.isNaN(old) ? null : old,
       price_visible: f.price_visible, availability: f.availability, stock, tag: f.tag, featured: f.featured, visible: f.visible, images: f.images,
+      model_url: f.model_url.trim() || null,
     };
     start(async () => {
       const r = await saveProduct(input);
@@ -77,6 +79,12 @@ export function ProductForm({ product, categories }: { product: Product | null; 
       <div className="panel">
         <ImageUploader value={f.images} onChange={(v) => set("images", v)} folder="products" />
         {!f.images.length && <p className="hint" style={{ marginTop: 8 }}>Mientras no tenga fotos, la tienda muestra un dibujo ilustrativo.</p>}
+        <div className="field" style={{ marginTop: 16 }}>
+          <label htmlFor="pf-3d">Modelo 3D (opcional)</label>
+          <input className={`${inputCls("model_url")} mono`} id="pf-3d" value={f.model_url} onChange={(e) => set("model_url", e.target.value)} placeholder="/modelos/CUB-27.glb" />
+          {fieldErr("model_url")}
+          <span className="hint">Archivo .glb o .gltf. Si está cargado, la ficha muestra el selector «Foto / Ver en 3D»; si no, solo la foto.</span>
+        </div>
       </div>
 
       <div className="panel">

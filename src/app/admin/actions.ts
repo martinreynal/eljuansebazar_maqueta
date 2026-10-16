@@ -57,6 +57,10 @@ const ProductInput = z.object({
   featured: z.boolean(),
   visible: z.boolean(),
   images: z.array(z.string().regex(/^(products\/[\w.-]+|\/catalogo\/[\w.-]+)$/)).max(10),
+  model_url: z.preprocess(
+    (v) => (typeof v === "string" && v.trim() === "" ? null : v),
+    z.string().trim().regex(/^(\/modelos\/[\w.-]+\.(glb|gltf)|models\/[\w.-]+\.(glb|gltf))$/, "El modelo 3D tiene que ser un archivo .glb o .gltf en /modelos/ o en la carpeta models del almacenamiento.").nullable(),
+  ).default(null),
 });
 export type ProductInputT = z.input<typeof ProductInput>;
 

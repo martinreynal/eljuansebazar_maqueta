@@ -904,3 +904,26 @@ section[id]{scroll-margin-top:84px}
 }
 @media (max-width:860px){.crumbs{display:none!important}.page-title{margin-top:16px}}
 @media (max-width:1180px){.nav-sim{display:none}}
+
+/* ===== Visor 3D en la ficha ===== */
+.media-switch{display:inline-flex;align-self:flex-start;gap:2px;padding:3px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+.media-switch button{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;border:0;border-radius:999px;background:none;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;transition:background .18s,color .18s}
+.media-switch button .lucide{width:15px;height:15px}
+.media-switch button:hover{color:var(--ink)}
+.media-switch button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.main-img.is-3d{background:#161513;border-color:#2a2825}
+.v3d{position:relative;width:100%;height:100%;background:radial-gradient(ellipse at 50% 35%,#24221f 0%,#161513 65%);color:#e8e3da;overflow:hidden;border-radius:inherit;touch-action:none}
+.v3d canvas{display:block;width:100%!important;height:100%!important}
+.v3d-fs{position:fixed;inset:0;z-index:200;border-radius:0}
+.v3d:fullscreen{border-radius:0}
+.v3d-tools{position:absolute;right:12px;bottom:12px;display:flex;gap:6px;z-index:2}
+.v3d-tools button{width:38px;height:38px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(28,26,24,.78);color:#e8e3da;display:grid;place-items:center;cursor:pointer;backdrop-filter:blur(6px);transition:background .15s,transform .15s var(--ease)}
+.v3d-tools button:hover{background:rgba(60,56,52,.9)}
+.v3d-tools button:active{transform:scale(.94)}
+.v3d-tools .lucide{width:17px;height:17px}
+.v3d-hint{position:absolute;left:12px;bottom:18px;margin:0;font-size:11.5px;color:rgba(232,227,218,.55);pointer-events:none;z-index:2}
+.v3d-loading,.v3d-loading-box{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;font-size:13px;color:rgba(232,227,218,.8);background:rgba(22,21,19,.6);z-index:1;pointer-events:none}
+.v3d-loading-box{position:relative;height:100%;background:#161513}
+.v3d-spin{width:26px;height:26px;border-radius:50%;border:2px solid rgba(232,227,218,.2);border-top-color:#e8e3da;animation:spin .8s linear infinite}
+@media (max-width:560px){.v3d-hint{display:none}.v3d-tools{right:10px;bottom:10px}.v3d-tools button{width:40px;height:40px}}
+@media (hover:none){.v3d-hint{display:none}}

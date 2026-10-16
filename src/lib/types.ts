@@ -24,6 +24,8 @@ export type Product = {
   visible: boolean;
   archived: boolean;
   images: string[];
+  /** Modelo 3D opcional (.glb/.gltf): ruta en /public/modelos o en el bucket media. */
+  model_url: string | null;
   placeholder: Placeholder | null;
   created_at: string;
 };

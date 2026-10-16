@@ -35,6 +35,7 @@ export function demoStore(): StoreData {
     visible: true,
     archived: false,
     images: [],
+    model_url: null,
     placeholder: { kind: p.kind, color: p.color, bg: p.bg },
     created_at: `${p.added}T12:00:00-03:00`,
   }));
