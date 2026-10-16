@@ -16,10 +16,13 @@ import { useStore } from "./store/StoreProvider";
 import { useFlash } from "./useFlash";
 import { WaLink } from "./WaLink";
 
+/** Ícono de mesa (lucide no tiene uno de mesa simple). */
+const TableIcon = () => <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M3 9h18M5 9v10M19 9v10M8 9V6h8v3" /></svg>;
+
 export function ProductDetail({ p, category, settings, base }: { p: Product; category?: Category; settings: Settings; base: string }) {
   const { favs, list, toggleFav, addToList, toast } = useStore();
   const [img, setImg] = useState(0);
-  const [media, setMedia] = useState<"foto" | "3d">("foto");
+  const [media, setMedia] = useState<"foto" | "3d" | "mesa">("foto");
   const model = mediaUrl(p.model_url);
   const [variant, setVariant] = useState(p.variants[0] ?? "");
   const [qty, setQty] = useState(1);
@@ -70,9 +73,9 @@ export function ProductDetail({ p, category, settings, base }: { p: Product; cat
   return (
     <div className="pdp">
       <div className={`gallery ${views.length > 1 ? "multi" : ""}`}>
-        <div className={`main-img ${media === "3d" ? "is-3d" : ""}`}>
-          {media === "3d" && model ? (
-            <Viewer3D url={model} name={p.name} />
+        <div className={`main-img ${media !== "foto" ? "is-3d" : ""}`}>
+          {media !== "foto" && model ? (
+            <Viewer3D url={model} name={p.name} mode={media === "mesa" ? "table" : "studio"} />
           ) : (
             <ProductImage key={img} p={p} view={img} sizes="(max-width: 860px) 100vw, 55vw" priority full />
           )}
@@ -82,6 +85,7 @@ export function ProductDetail({ p, category, settings, base }: { p: Product; cat
           <div className="media-switch" role="tablist" aria-label="Tipo de vista">
             <button type="button" role="tab" aria-selected={media === "foto"} onClick={() => setMedia("foto")}><ImageIcon />Foto</button>
             <button type="button" role="tab" aria-selected={media === "3d"} onClick={() => setMedia("3d")}><Box />Ver en 3D</button>
+            <button type="button" role="tab" aria-selected={media === "mesa"} onClick={() => setMedia("mesa")}><TableIcon />Ver en mesa</button>
           </div>
         )}
         {views.length > 1 && (

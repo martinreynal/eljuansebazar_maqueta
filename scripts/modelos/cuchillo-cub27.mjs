@@ -88,8 +88,13 @@ for (const rx of [-HL * 0.18, -HL * 0.42]) {
   rivets.add(m);
 }
 
+// El cuchillo se exporta acostado (como apoyado sobre una mesa): el espesor queda en Y
+const knife = new THREE.Group();
+knife.name = "cuchillo";
+knife.add(bladeMesh, handleMesh, rivets);
+knife.rotation.x = -Math.PI / 2;
 const scene = new THREE.Scene();
-scene.add(bladeMesh, handleMesh, rivets);
+scene.add(knife);
 
 // Exportar glTF (JSON) en Node, convertirlo a GLB e incrustar la textura de madera con gltf-transform
 const exporter = new GLTFExporter();

@@ -247,16 +247,26 @@ for r in rows:
 
     if cls["shape"] == "set":
         pcs = [piece_def(k) for k in cls["pieces"]]
-        # Ordenar de mayor a menor para una composición prolija
+        # Ordenar de mayor a menor y disponer en filas de hasta 100 cm (entra en una mesa de 120 × 80)
         pcs.sort(key=lambda p: -p["w"])
-        x = 0
+        rows_l, cur, cur_w = [], [], 0
         for p in pcs:
-            p["x"] = x + p["w"] / 2
-            x += p["w"] + GAP
-        total_w = x - GAP
-        for p in pcs:
-            p["x"] = round(p["x"] - total_w / 2, 1)
-        dims = {"w": round(total_w, 1), "h": max(p["h"] for p in pcs), "d": max(p["d"] for p in pcs)}
+            if cur and cur_w + GAP + p["w"] > 100:
+                rows_l.append(cur); cur, cur_w = [], 0
+            cur.append(p); cur_w += (GAP if cur_w else 0) + p["w"]
+        if cur: rows_l.append(cur)
+        row_ws = [sum(p["w"] for p in rp) + GAP * (len(rp) - 1) for rp in rows_l]
+        row_ds = [max(p["d"] for p in rp) for rp in rows_l]
+        total_d = sum(row_ds) + GAP * (len(rows_l) - 1)
+        z = -total_d / 2
+        for row_pcs, rw, rd in zip(rows_l, row_ws, row_ds):
+            x = -rw / 2
+            for p in row_pcs:
+                p["x"] = round(x + p["w"] / 2, 1); p["z"] = round(z + rd / 2, 1)
+                x += p["w"] + GAP
+            z += rd + GAP
+        total_w = max(row_ws)
+        dims = {"w": round(total_w, 1), "h": max(p["h"] for p in pcs), "d": round(total_d, 1)}
         source["shape"] = "set"; source["pieces"] = pcs
         note_parts.append(f"Set de {len(pcs)} piezas dispuestas en fila; medidas típicas de cada pieza (estimadas).")
     elif cls["shape"] == "group":
