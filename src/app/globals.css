@@ -1189,3 +1189,7 @@ a:hover{color:var(--accent)}
 .wa-float{box-shadow:0 6px 20px rgba(20,70,45,.28)}
 .tabbar .tab-wa,.tabbar .tab-wa .lucide{color:var(--wa-green)}
 @media (max-width:860px){.cat-title{margin-bottom:12px}}
+
+/* Botón "Consultar" de las tarjetas en el verde de WhatsApp */
+.pc-btn-wa{border:1px solid var(--wa-green);color:var(--wa-green);background:#fff}
+.pc-btn-wa:hover{background:var(--wa-green);border-color:var(--wa-green);color:#fff}
