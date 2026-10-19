@@ -14,7 +14,7 @@ export function HomeSearch() {
       onSubmit={(e) => { e.preventDefault(); router.push(q.trim() ? `/catalogo?q=${encodeURIComponent(q.trim())}` : "/catalogo"); }}
     >
       <Search aria-hidden />
-      <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="¿Qué estás buscando? Nombre o código" aria-label="Buscar productos por nombre o código" enterKeyHint="search" autoComplete="off" />
+      <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar producto" aria-label="Buscar productos por nombre o código" enterKeyHint="search" autoComplete="off" />
       <button type="submit" className="home-search-go">Buscar</button>
     </form>
   );

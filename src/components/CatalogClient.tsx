@@ -145,7 +145,7 @@ export function CatalogClient({ products, categories, settings, base, preset, ti
           <div className="cat-top">
             <form className="search" role="search" onSubmit={(e) => { e.preventDefault(); (e.currentTarget.querySelector("input") as HTMLInputElement)?.blur(); }}>
               <Search aria-hidden />
-              <input id="cat-q" type="search" placeholder="Buscar producto o código" aria-label="Buscar por nombre o código de producto" enterKeyHint="search" value={q} onChange={(e) => setQ(e.target.value)} autoComplete="off" />
+              <input id="cat-q" type="search" placeholder="Buscar producto" aria-label="Buscar por nombre o código de producto" enterKeyHint="search" value={q} onChange={(e) => setQ(e.target.value)} autoComplete="off" />
             </form>
             <button className="btn btn-ghost only-m f-btn" onClick={() => setSheet(true)}><SlidersHorizontal />Filtros{active > 0 && <span className="f-count">{active}</span>}</button>
             <select className="input" aria-label="Ordenar por" value={sort} onChange={(e) => setSort(e.target.value)}>

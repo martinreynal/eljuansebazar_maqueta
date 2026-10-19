@@ -79,7 +79,7 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
   const searchBox = (id: string, ref?: React.Ref<HTMLInputElement>, autoFocus = false) => (
     <form className="search" role="search" onSubmit={(e) => { e.preventDefault(); onSearch(q); (e.currentTarget.querySelector("input") as HTMLInputElement)?.blur(); }}>
       <Search aria-hidden />
-      <input ref={ref} id={id} type="search" value={q} onChange={(e) => onSearch(e.target.value)} placeholder="Buscar producto o código" aria-label="Buscar por nombre o código de producto" autoComplete="off" enterKeyHint="search" autoFocus={autoFocus} />
+      <input ref={ref} id={id} type="search" value={q} onChange={(e) => onSearch(e.target.value)} placeholder="Buscar producto" aria-label="Buscar por nombre o código de producto" autoComplete="off" enterKeyHint="search" autoFocus={autoFocus} />
       {q ? (
         <button type="button" className="search-x" onClick={() => onSearch("")} aria-label="Borrar búsqueda"><X /></button>
       ) : (
