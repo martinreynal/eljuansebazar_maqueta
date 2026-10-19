@@ -326,3 +326,82 @@ export async function signOut() {
   await sb.auth.signOut();
   redirect("/admin/login");
 }
+
+// ---------------------------------------------------------------- imágenes (Google Lens)
+
+export type LensMatch = { title: string; source: string; link: string; image: string; thumbnail: string; width: number | null; height: number | null };
+export type LensResult = { matches: LensMatch[]; lensUrl: string; imageUrl: string };
+
+/** URL pública de la imagen principal de un producto (la que Google Lens tiene que poder abrir). */
+async function publicImageUrl(path: string): Promise<string> {
+  const { mediaUrl, siteUrl } = await import("@/lib/env");
+  const url = mediaUrl(path)!;
+  if (!url.startsWith("/")) return url;
+  let origin = siteUrl();
+  if (origin.includes("localhost")) {
+    const { headers } = await import("next/headers");
+    const h = await headers();
+    const host = h.get("x-forwarded-host") ?? h.get("host");
+    if (host) origin = `${h.get("x-forwarded-proto") ?? "https"}://${host}`;
+  }
+  return origin + url;
+}
+
+/**
+ * Busca la imagen principal del producto en Google Lens (vía SerpApi) y devuelve
+ * las coincidencias visuales ordenadas: primero las de mayor resolución.
+ * Sin SERPAPI_KEY devuelve el enlace para abrir Lens a mano (error "no-key").
+ */
+export async function lensSearch(productId: string): Promise<Result<LensResult> & { code?: string; lensUrl?: string }> {
+  if (!z.string().uuid().safeParse(productId).success) return { ok: false, error: "Datos inválidos." };
+  try {
+    const sb = await requireAdmin();
+    const { data, error } = await sb.from("products").select("images").eq("id", productId).single();
+    if (error) return fail(error);
+    const path = (data?.images as string[] | null)?.[0];
+    if (!path) return { ok: false, error: "Este producto no tiene imagen." };
+    const imageUrl = await publicImageUrl(path);
+    const lensUrl = `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(imageUrl)}`;
+    const key = process.env.SERPAPI_KEY;
+    if (!key) return { ok: false, code: "no-key", lensUrl, error: "Falta configurar la clave de búsqueda (SERPAPI_KEY)." };
+    const q = new URLSearchParams({ engine: "google_lens", type: "visual_matches", url: imageUrl, hl: "es", country: "ar", api_key: key });
+    const r = await fetch(`https://serpapi.com/search.json?${q}`, { cache: "no-store", signal: AbortSignal.timeout(45000) });
+    const j = (await r.json().catch(() => ({}))) as { error?: string; visual_matches?: Record<string, unknown>[] };
+    if (!r.ok || j.error) return { ok: false, lensUrl, error: j.error ? `Google Lens: ${j.error}` : `La búsqueda falló (${r.status}).` };
+    const num = (v: unknown) => (typeof v === "number" && v > 0 ? v : null);
+    const matches: LensMatch[] = (j.visual_matches ?? [])
+      .slice(0, 20)
+      .filter((m) => typeof m.image === "string" && /^https:\/\//.test(m.image as string))
+      .map((m) => ({
+        title: String(m.title ?? ""), source: String(m.source ?? ""), link: String(m.link ?? ""),
+        image: m.image as string, thumbnail: String(m.thumbnail ?? m.image),
+        width: num(m.image_width), height: num(m.image_height),
+      }));
+    // Mejor resultado: el de mayor resolución entre los primeros (los más parecidos)
+    const px = (m: LensMatch) => (m.width && m.height ? m.width * m.height : 0);
+    const ranked = [...matches.slice(0, 10)].sort((a, b) => px(b) - px(a)).concat(matches.slice(10));
+    return { ok: true, data: { matches: ranked.slice(0, 12), lensUrl, imageUrl } };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+/** Reemplaza la imagen principal del producto (devuelve la anterior para poder deshacer). */
+export async function setMainImage(productId: string, path: string): Promise<Result<{ previous: string | null }>> {
+  const okPath = /^(\/catalogo\/[\w.-]+\.jpg|products\/[\w-]+\.jpg)$/.test(path);
+  if (!z.string().uuid().safeParse(productId).success || !okPath) return { ok: false, error: "Datos inválidos." };
+  try {
+    const sb = await requireAdmin();
+    const { data, error } = await sb.from("products").select("images").eq("id", productId).single();
+    if (error) return fail(error);
+    const images = [...((data?.images as string[]) ?? [])];
+    const previous = images[0] ?? null;
+    if (images.length) images[0] = path; else images.push(path);
+    const up = await sb.from("products").update({ images }).eq("id", productId);
+    if (up.error) return fail(up.error);
+    refresh();
+    return { ok: true, data: { previous } };
+  } catch (e) {
+    return fail(e);
+  }
+}

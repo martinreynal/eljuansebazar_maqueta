@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Boxes, ChartColumn, FolderTree, LogOut, Package, Palette, Settings, Store } from "lucide-react";
+import { Boxes, ChartColumn, FolderTree, ImageIcon, LogOut, Package, Palette, Settings, Store } from "lucide-react";
 
 const TABS = [
   ["/admin/productos", Package, "Productos"],
+  ["/admin/imagenes", ImageIcon, "Imágenes"],
   ["/admin/disponibilidad", Boxes, "Disponibilidad"],
   ["/admin/categorias", FolderTree, "Categorías"],
   ["/admin/diseno", Palette, "Diseño y textos"],
