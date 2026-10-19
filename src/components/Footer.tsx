@@ -9,8 +9,8 @@ export function Footer({ settings, categories }: { settings: Settings; categorie
       <div className="wrap">
         <div className="ftr-grid">
           <div>
-            <div className="logo" style={{ marginBottom: 12 }}><Logo name={settings.business_name} /></div>
-            <p style={{ maxWidth: "34ch" }}>{settings.tagline}. Catálogo digital: las consultas y cotizaciones se coordinan por WhatsApp.</p>
+            <div className="logo" style={{ marginBottom: 12 }}><Logo name={settings.business_name} tagline={settings.tagline} /></div>
+            <p style={{ maxWidth: "34ch" }}>Catálogo digital de equipamiento gastronómico: las consultas y cotizaciones se coordinan por WhatsApp.</p>
           </div>
           <div className="only-d-block">
             <h4>Categorías</h4>

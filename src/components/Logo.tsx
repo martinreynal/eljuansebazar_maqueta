@@ -1,17 +1,18 @@
-import Image from "next/image";
-import { BRAND_LOGO } from "@/lib/brand";
+/* eslint-disable @next/next/no-img-element */
 
 /**
- * Logo SAGGIO. Si existe el archivo del logo (BRAND_LOGO), se muestra la imagen;
- * mientras tanto, el nombre como marca tipográfica en Montserrat.
+ * Logo SAGGIO: isotipo (S de tres trazos en azul petróleo, verde profundo y
+ * naranja) + nombre en Montserrat Bold y bajada "Equipamiento gastronómico".
+ * El isotipo es vectorial (/isotipo-saggio.svg), así se ve nítido a cualquier tamaño.
  */
-export function Logo({ name, priority = false }: { name: string; priority?: boolean }) {
-  if (BRAND_LOGO) {
-    return <Image className="logo-img" src={BRAND_LOGO.src} alt={name} width={BRAND_LOGO.width} height={BRAND_LOGO.height} priority={priority} />;
-  }
+export function Logo({ name, tagline = "Equipamiento gastronómico", priority = false, compact = false }: { name: string; tagline?: string; priority?: boolean; compact?: boolean }) {
   return (
-    <span className="wordmark" aria-label={name}>
-      SAGGIO
+    <span className={`lockup ${compact ? "lockup-compact" : ""}`} aria-label={name}>
+      <img className="lockup-iso" src="/isotipo-saggio.svg" alt="" width={44} height={44} fetchPriority={priority ? "high" : undefined} />
+      <span className="lockup-text">
+        <span className="lockup-name">SAGGIO</span>
+        {!compact && tagline && <span className="lockup-tag">{tagline}</span>}
+      </span>
     </span>
   );
 }

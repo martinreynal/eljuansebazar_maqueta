@@ -45,7 +45,7 @@ export function CatalogPdf({ data, images, base }: { data: StoreData; images: Pd
           <View>
             {images.logo ? <Image src={images.logo} style={{ width: 300, marginBottom: 18, marginLeft: -6 }} /> : <Text style={{ fontSize: 40, fontFamily: "Helvetica-Bold", color: "#1F4E79", letterSpacing: 2 }}>SAGGIO</Text>}
             <Text style={{ fontSize: 14, color: C.accent, fontFamily: "Helvetica-Bold", marginBottom: 8 }}>{settings.tagline}</Text>
-            <Text style={{ fontSize: 12, color: C.ink2, maxWidth: 360 }}>Vajilla, cocina, organización, deco y artículos para el hogar. Para tu casa o tu empresa, con opción de personalización con logo.</Text>
+            <Text style={{ fontSize: 12, color: C.ink2, maxWidth: 360 }}>Equipamiento gastronómico: vajilla, cristalería, cubiertos y utensilios para restaurantes, cafeterías y hoteles, con opción de personalización con logo.</Text>
           </View>
           <View style={{ flexDirection: "row", borderTopWidth: 1.5, borderTopColor: C.ink, paddingTop: 10 }}>
             <View style={{ flex: 1 }}><Text style={{ fontFamily: "Helvetica-Bold" }}>Cotizaciones por WhatsApp</Text><Link src={waLink(settings.whatsapp, "Hola, vi el catálogo y quería pedir una cotización.")} style={{ color: C.wa, textDecoration: "none" }}>{phone}</Link></View>

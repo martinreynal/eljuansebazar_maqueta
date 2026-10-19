@@ -142,7 +142,7 @@ export default async function Home() {
       </section>
 
       <section className="sec" aria-labelledby="h-new">
-        <div className="sec-head"><div><h2 id="h-new">Recién llegados</h2><p>Lo último que entró al bazar.</p></div><Link href="/catalogo">Ver novedades <ArrowRight /></Link></div>
+        <div className="sec-head"><div><h2 id="h-new">Recién llegados</h2><p>Lo último que entró al catálogo.</p></div><Link href="/catalogo">Ver novedades <ArrowRight /></Link></div>
         <ProductGrid products={fresh} ctx={ctx} rail />
       </section>
 

@@ -96,8 +96,7 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
       <div className="wrap hdr-in">
         <button className="icon-btn only-m" onClick={() => setMenu(true)} aria-label="Abrir menú"><Menu /></button>
         <Link href="/" className="logo" aria-label={`${name}, inicio`}>
-          <Logo name={name} priority />
-          <span className="logo-tag">{tagline}</span>
+          <Logo name={name} tagline={tagline} priority />
         </Link>
 
         <nav className="nav only-d" aria-label="Secciones">
@@ -171,7 +170,7 @@ function AdminBar({ name }: { name: string }) {
   return (
     <header className="hdr">
       <div className="wrap hdr-in">
-        <Link href="/admin" className="logo" aria-label={`Panel de ${name}`}><Logo name={name} /><span className="logo-tag">Panel administrador</span></Link>
+        <Link href="/admin" className="logo" aria-label={`Panel de ${name}`}><Logo name={name} compact /><span className="logo-tag">Panel administrador</span></Link>
         <span style={{ flex: 1 }} />
         <Link className="btn btn-ghost btn-sm" href="/" target="_blank">Ver tienda</Link>
       </div>

@@ -1,10 +1,12 @@
 /**
  * Identidad SAGGIO.
- * Cuando esté el archivo del logo, dejarlo en /public (por ejemplo /logo-saggio.png o .svg)
- * y completar acá su ruta y proporción real (ancho × alto en píxeles del archivo).
+ * Isotipo redibujado en vector a partir del manual de marca; el nombre y la bajada se
+ * componen en Montserrat para que queden nítidos en cualquier tamaño.
  */
 export const BRAND_NAME = "SAGGIO";
-export const BRAND_LOGO: { src: string; width: number; height: number } | null = null;
+/** Isotipo vectorial y lockup para PDF/redes. */
+export const BRAND_ISOTYPE = "/isotipo-saggio.svg";
+export const BRAND_LOCKUP_PNG = "/logo-saggio.png";
 export const BRAND_COLORS = {
   blue: "#1F4E79",   // azul petróleo: principal
   green: "#2E6B4E",  // verde profundo: secundario

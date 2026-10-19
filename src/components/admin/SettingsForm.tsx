@@ -28,7 +28,7 @@ export function SettingsForm({ settings }: { settings: Settings }) {
   return (
     <>
       <div className="adm-h"><div><h2>Configuración</h2><p>Datos del negocio que aparecen en la tienda y en los mensajes de WhatsApp.</p></div></div>
-      <div className="panel"><h3>Negocio</h3><div className="form-grid">{F("business_name", "Nombre del negocio")}{F("tagline", "Frase debajo del logo")}{F("hours", "Horarios de atención")}{F("site_url", "Dirección del sitio", "Ej: https://eljuansebazar.com.ar. Se usa en los links de los productos que van en los mensajes.")}</div></div>
+      <div className="panel"><h3>Negocio</h3><div className="form-grid">{F("business_name", "Nombre del negocio")}{F("tagline", "Frase debajo del logo")}{F("hours", "Horarios de atención")}{F("site_url", "Dirección del sitio", "Ej: https://saggio.com.ar. Se usa en los links de los productos que van en los mensajes.")}</div></div>
       <div className="panel">
         <h3>WhatsApp comercial</h3>
         <div className="form-grid">{F("whatsapp", "Número con código de país", "Sin espacios ni signos: 549 + código de área + número.")}</div>

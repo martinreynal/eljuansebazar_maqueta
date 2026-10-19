@@ -1,18 +1,18 @@
 {
  "settings": {
-  "name": "El Juanse Bazar",
+  "name": "Saggio",
   "tagline": "Bazar a medida",
   "whatsapp": "5491126763257",
   "hours": "Lun a vie 9 a 19 h · Sáb 9 a 14 h",
-  "instagram": "@eljuansebazar",
+  "instagram": "@saggio",
   "facebook": "El Juanse Bazar",
-  "domain": "https://eljuansebazar.com.ar",
+  "domain": "https://saggio.com.ar",
   "showPrices": false
  },
  "design": {
   "heroEyebrow": "Bazar a medida",
   "heroTitle": "Todo para tu cocina y tu casa, en un solo lugar",
-  "heroText": "Vajilla, organización, deco y artículos de bazar para tu casa o tu empresa, con la opción de personalizarlos con tu logo. Mirá el catálogo y pedinos una cotización por WhatsApp.",
+  "heroText": "Vajilla, cristalería, cubiertos y utensilios para restaurantes, cafeterías y hoteles, con la opción de personalizarlos con tu logo. Mirá el catálogo y pedinos una cotización por WhatsApp.",
   "heroCta": "Ver catálogo",
   "heroProducts": [
    "V003",

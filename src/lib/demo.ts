@@ -52,7 +52,7 @@ export function demoStore(): StoreData {
   return {
     settings: {
       business_name: raw.settings.name,
-      tagline: "Bazar a medida",
+      tagline: "Equipamiento gastronómico",
       whatsapp: "5491126763257",
       hours: raw.settings.hours,
       instagram: raw.settings.instagram,
