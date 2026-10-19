@@ -1274,7 +1274,7 @@ a:hover{color:var(--accent)}
 .h2-copy p{color:var(--ink-2);font-size:16.5px;line-height:1.6;max-width:48ch}
 .h2-copy .hero-ctas{gap:12px;margin-top:4px}
 .h2-copy .hero-ctas .btn{height:54px;padding:0 26px;font-size:15.5px}
-.h2-facts{display:flex;gap:14px clamp(16px,2.4vw,40px);flex-wrap:wrap;margin-top:10px;padding-top:22px;border-top:1px solid color-mix(in srgb,var(--ink) 14%,transparent)}
+.h2-facts{display:grid;grid-template-columns:repeat(3,minmax(0,max-content));gap:14px clamp(14px,2vw,36px);margin-top:10px;padding-top:22px;border-top:1px solid color-mix(in srgb,var(--ink) 14%,transparent)}
 .h2-facts div{display:flex;gap:12px;align-items:center;font-size:13px;line-height:1.3;color:var(--ink-2)}
 .h2-facts .lucide{width:24px;height:24px;color:var(--brand);stroke-width:1.5;flex:none}
 .h2-main,.h2-tile,.h2-banner{position:relative;display:block;overflow:hidden;border-radius:var(--r-lg);background:#2a2420;isolation:isolate}
@@ -1297,7 +1297,7 @@ a:hover{color:var(--accent)}
 .h2-banners{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
 .h2-banner{height:220px}
 .h2-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,rgba(15,12,10,.72) 0%,rgba(15,12,10,.35) 55%,rgba(15,12,10,.1));z-index:1}
-.h2-banner span{position:absolute;left:clamp(20px,2.4vw,34px);top:clamp(20px,2.4vw,30px);z-index:2;color:#fff;font-size:clamp(19px,1.7vw,23px);font-weight:600;line-height:1.25;max-width:12ch;display:block}
+.h2-banner span{position:absolute;left:clamp(20px,2.4vw,34px);top:clamp(20px,2.4vw,30px);z-index:2;color:#fff;font-size:clamp(19px,1.7vw,23px);font-weight:600;line-height:1.25;max-width:15ch;display:block}
 .h2-banner span .lucide{width:20px;height:20px;margin-left:10px;vertical-align:-3px;transition:transform .2s}
 .h2-banner:hover span .lucide{transform:translateX(4px)}
 @media (max-width:1180px){
@@ -1327,4 +1327,4 @@ a:hover{color:var(--accent)}
   .h2-banners::-webkit-scrollbar{display:none}
   .h2-banner{flex:0 0 82%;height:170px;scroll-snap-align:start}
 }
-.h2-facts span{white-space:nowrap}
+.h2-facts span{min-width:0}
