@@ -18,7 +18,12 @@ export function CatalogClient({ products, categories, settings, base, preset, ti
   const router = useRouter();
   const pathname = usePathname();
   const q = params.get("q") ?? "";
-  const [cats, setCats] = useState<string[]>(preset ? [preset] : []);
+  // ?cat=slug1,slug2 preselecciona categorías (accesos de la portada)
+  const [cats, setCats] = useState<string[]>(() => {
+    if (preset) return [preset];
+    const slugs = (params.get("cat") ?? "").split(",").filter(Boolean);
+    return categories.filter((c) => slugs.includes(c.slug)).map((c) => c.id);
+  });
   const [avail, setAvail] = useState<Availability[]>([]);
   const [min, setMin] = useState("");
   const [max, setMax] = useState("");

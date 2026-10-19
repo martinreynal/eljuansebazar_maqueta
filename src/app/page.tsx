@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { HomeSearch } from "@/components/HomeSearch";
-import { ArrowRight, ArrowUpRight, ChevronRight, Clock, Droplet, FileDown, ListPlus, MessageCircle, Search, Stamp, Tag, Truck, Zap } from "lucide-react";
+import { Armchair, ArrowRight, ChevronRight, Clock, Coffee, ConciergeBell, CookingPot, Droplet, FileDown, Headset, ListPlus, Martini, MessageCircle, Search, Stamp, Tag, Truck, Utensils, Wine, Zap, type LucideProps } from "lucide-react";
 import { CustomArt } from "@/components/Art";
 import { ProductGrid } from "@/components/ProductCard";
 import { ProductImage } from "@/components/ProductImage";
@@ -13,6 +13,39 @@ import Image from "next/image";
 
 export const revalidate = 300;
 
+const VAJILLA = "vajilla-estandar,gres,vajilla-blanca,vajilla-decorada,vajilla-marmolada";
+const MOBILIARIO = "sillas,mesas,banquetas,boxes-y-bancos,sofas-y-sillones,mesas-auxiliares,exterior";
+
+/** Plato visto desde arriba (no hay ícono de plato en la librería). */
+function Plate(props: LucideProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" width={24} height={24} {...props}>
+      <circle cx="12" cy="12" r="9.5" /><circle cx="12" cy="12" r="6" />
+    </svg>
+  );
+}
+
+const SIDE = [
+  { title: "Colección institucional", href: "/categoria/vajilla-blanca", img: "/portada/coleccion-institucional.jpg", pos: "50% 30%" },
+  { title: "Línea artesanal", href: "/categoria/gres", img: "/portada/linea-artesanal.jpg", pos: "50% 45%" },
+  { title: "Soluciones para tu cocina", href: "/categoria/vajilla-oriental", img: "/portada/cocina.jpg", pos: "55% 50%" },
+];
+const ICONS: [string, string, (p: LucideProps) => React.ReactNode][] = [
+  ["Vajilla", `/catalogo?cat=${VAJILLA}`, Plate],
+  ["Cristalería", "/categoria/cristaleria", Wine],
+  ["Cubiertos", "/categoria/cubiertos", Utensils],
+  ["Utensilios de cocina", "/catalogo?cat=cubiertos,vajilla-oriental", CookingPot],
+  ["Mobiliario gastronómico", `/catalogo?cat=${MOBILIARIO}`, Armchair],
+  ["Cafetería", "/categoria/cafe", Coffee],
+  ["Bar y coctelería", "/catalogo?cat=cristaleria,cafe", Martini],
+  ["Servicio de mesa", "/catalogo?cat=vajilla-blanca,vajilla-decorada,cubiertos,cristaleria", ConciergeBell],
+];
+const BANNERS = [
+  { title: "Mobiliario gastronómico", href: `/catalogo?cat=${MOBILIARIO}`, img: "/portada/mobiliario.jpg", pos: "50% 60%" },
+  { title: "Vajilla profesional", href: `/catalogo?cat=${VAJILLA}`, img: "/portada/mesa-servida.jpg", pos: "40% 70%" },
+  { title: "Cristalería para cada ocasión", href: "/categoria/cristaleria", img: "/portada/cristaleria.jpg", pos: "50% 45%" },
+];
+
 /** Categorías con foto de portada preparada (public/categorias, ver scripts/portada-categorias.py). */
 const CATEGORY_COVERS = new Set(["vajilla-estandar", "gres", "vajilla-blanca", "vajilla-decorada", "vajilla-marmolada", "cubiertos", "cristaleria", "cafe", "vajilla-oriental", "sillas", "mesas", "banquetas", "boxes-y-bancos", "sofas-y-sillones", "mesas-auxiliares", "exterior"]);
 
@@ -22,9 +55,6 @@ export default async function Home() {
   const d = settings.design;
   const base = siteUrl(settings.site_url);
   const ctx = { settings, base, categories };
-  const bySku = new Map(products.map((p) => [p.sku, p]));
-  const heroP = d.heroProducts.map((s) => bySku.get(s)).filter((p): p is NonNullable<typeof p> => Boolean(p));
-  while (heroP.length < 3 && products[heroP.length]) heroP.push(products.find((p) => !heroP.includes(p))!);
   const featured = products.filter((p) => p.featured).slice(0, 4);
   const offers = products.filter((p) => p.tag === "oferta").slice(0, 4);
   const fresh = products.slice(0, 4);
@@ -43,29 +73,49 @@ export default async function Home() {
           {realCats.map((c) => <Link key={c.id} href={`/categoria/${c.slug}`}>{c.name}</Link>)}
         </nav>
       </div>
-      <section className="hero">
-        <div className="hero-copy">
-          <span className="eyebrow">{d.heroEyebrow}</span>
+      <section className="hero2" aria-label="Presentación">
+        <div className="h2-copy">
+          <span className="h2-eyebrow">{d.heroEyebrow}</span>
           <h1>{d.heroTitle}</h1>
           <p>{d.heroText}</p>
           <div className="hero-ctas">
-            <Link className="btn btn-dark btn-lg" href="/catalogo">{d.heroCta}<ArrowRight /></Link>
+            <Link className="btn btn-cta btn-lg" href="/catalogo">{d.heroCta}<ArrowRight /></Link>
             <WaLink href={waLink(settings.whatsapp, msgQuote(settings.business_name))} channel="quote" className="btn btn-ghost btn-lg">Pedir cotización</WaLink>
           </div>
-          <div className="hero-facts">
-            <div><MessageCircle />Atención por WhatsApp</div>
-            <div><Truck />Envíos a todo el país</div>
-            {settings.hours && <div><Clock />{settings.hours.split("·")[0].trim()}</div>}
+          <div className="h2-facts">
+            <div><Headset /><span>Atención por<br />WhatsApp</span></div>
+            <div><Truck /><span>Envíos a<br />todo el país</span></div>
+            <div><Tag /><span>Productos<br />personalizables</span></div>
           </div>
         </div>
-        <div className="hero-art">
-          {heroP.slice(0, 3).map((p, i) => (
-            <Link key={p.id} href={`/producto/${p.slug}`} aria-label={p.name}>
-              <ProductImage p={p} view={i === 0 ? 2 : 0} label={false} hiRes sizes={i === 0 ? "(max-width: 860px) 60vw, 30vw" : "(max-width: 860px) 40vw, 20vw"} priority />
-              {i === 0 && <span className="cap">{p.name} <ArrowUpRight /></span>}
+        <Link className="h2-main" href="/catalogo">
+          <Image src="/portada/mesa-servida.jpg" alt="Mesa servida con vajilla de gres, copas y cubiertos" fill priority sizes="(max-width: 860px) 100vw, 36vw" />
+          <span className="h2-cap"><i />Vajilla que realza<br />tu propuesta.</span>
+        </Link>
+        <div className="h2-side">
+          {SIDE.map((t) => (
+            <Link key={t.href} className="h2-tile" href={t.href}>
+              <Image src={t.img} alt="" fill sizes="(max-width: 860px) 33vw, 19vw" style={{ objectPosition: t.pos }} />
+              <span>{t.title}</span>
+              <b aria-hidden><ArrowRight /></b>
             </Link>
           ))}
         </div>
+      </section>
+
+      <nav className="h2-icons" aria-label="Rubros">
+        {ICONS.map(([label, href, I]) => (
+          <Link key={label} href={href}><I aria-hidden /><span>{label}</span></Link>
+        ))}
+      </nav>
+
+      <section className="h2-banners" aria-label="Destacados">
+        {BANNERS.map((b) => (
+          <Link key={b.title} className="h2-banner" href={b.href}>
+            <Image src={b.img} alt="" fill sizes="(max-width: 860px) 85vw, 33vw" style={{ objectPosition: b.pos }} />
+            <span>{b.title}<ArrowRight aria-hidden /></span>
+          </Link>
+        ))}
       </section>
 
       <section className="sec" aria-labelledby="h-cats">
