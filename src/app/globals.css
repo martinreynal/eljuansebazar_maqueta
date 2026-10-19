@@ -1328,3 +1328,5 @@ a:hover{color:var(--accent)}
   .h2-banner{flex:0 0 82%;height:170px;scroll-snap-align:start}
 }
 .h2-facts span{min-width:0}
+.h2-main .h2-h{display:none}
+@media (max-width:1180px){.h2-main .h2-v{display:none}.h2-main .h2-h{display:block}}
