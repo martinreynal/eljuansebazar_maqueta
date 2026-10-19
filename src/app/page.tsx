@@ -115,7 +115,7 @@ export default async function Home() {
         {BANNERS.map((b) => (
           <Link key={b.title} className="h2-banner" href={b.href}>
             <Image src={b.img} alt="" fill sizes="(max-width: 860px) 85vw, 33vw" style={{ objectPosition: b.pos }} />
-            <span>{b.title}<ArrowRight aria-hidden /></span>
+            <span>{b.title}</span>
           </Link>
         ))}
       </section>
