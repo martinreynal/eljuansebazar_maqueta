@@ -89,7 +89,7 @@ export default async function Home() {
           </div>
         </div>
         <Link className="h2-main" href="/catalogo">
-          <Image src="/portada/mesa-servida.jpg" alt="Mesa servida con vajilla de gres, copas y cubiertos" fill priority sizes="(max-width: 860px) 100vw, 36vw" />
+          <Image src="/portada/mesa-servida.jpg" alt="Mesa servida con vajilla de gres, copas y cubiertos" fill priority sizes="(max-width: 860px) 100vw, 36vw" style={{ objectPosition: "45% 70%" }} />
           <span className="h2-cap"><i />Vajilla que realza<br />tu propuesta.</span>
         </Link>
         <div className="h2-side">
