@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { ArrowRight, Check, ExternalLink, Loader2, ScanSearch, Search, Undo2, X } from "lucide-react";
+import { ArrowRight, Check, ExternalLink, ImageUp, Loader2, ScanSearch, Search, Undo2, X } from "lucide-react";
 import { lensSearch, setMainImage, type LensMatch } from "@/app/admin/actions";
 import { searchable } from "@/lib/format";
 import { mediaUrl } from "@/lib/env";
@@ -110,6 +110,29 @@ export function ImagesTable({ products }: { products: Product[] }) {
     }
   };
 
+  const [uploading, setUploading] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const target = useRef<Product | null>(null);
+  const pickFile = (p: Product) => { target.current = p; fileRef.current?.click(); };
+  const onFile = async (f: File | undefined) => {
+    const p = target.current;
+    if (fileRef.current) fileRef.current.value = "";
+    if (!f || !p) return;
+    setUploading(p.id);
+    try {
+      const path = await uploadImage(f, "products");
+      const res = await setMainImage(p.id, path);
+      if (!res.ok) throw new Error(res.error);
+      setOverride((o) => ({ ...o, [p.id]: path }));
+      setMsg({ ok: true, text: `Se cambió la imagen de “${p.name}”.`, undo: res.data?.previous ? { id: p.id, path: res.data.previous } : undefined });
+      router.refresh();
+    } catch (e) {
+      setMsg({ ok: false, text: (e as Error).message });
+    } finally {
+      setUploading(null);
+    }
+  };
+
   const undo = (u: { id: string; path: string }) =>
     start(async () => {
       const r = await setMainImage(u.id, u.path);
@@ -140,9 +163,10 @@ export function ImagesTable({ products }: { products: Product[] }) {
           <button aria-pressed={sort === "recientes"} onClick={() => setSort("recientes")}>Recientes</button>
         </div>
       </div>
+      <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => onFile(e.target.files?.[0])} />
       <div className="tbl-wrap">
         <table className="tbl">
-          <thead><tr><th>Producto</th><th>SKU</th><th>Definición</th><th>Búsqueda en Lens</th></tr></thead>
+          <thead><tr><th>Producto</th><th>SKU</th><th>Definición</th><th>Búsqueda en Lens</th><th>Cambiar imagen</th></tr></thead>
           <tbody>
             {rows.map((p) => (
               <tr key={p.id} className={p.visible ? "" : "muted"}>
@@ -154,9 +178,14 @@ export function ImagesTable({ products }: { products: Product[] }) {
                     {cmp?.p.id === p.id && cmp.status === "buscando" ? <Loader2 className="spin" /> : <ScanSearch />}Búsqueda en Lens
                   </button>
                 </td>
+                <td>
+                  <button type="button" className="btn btn-ghost btn-sm lens-btn" disabled={uploading !== null} onClick={() => pickFile(p)}>
+                    {uploading === p.id ? <Loader2 className="spin" /> : <ImageUp />}{uploading === p.id ? "Subiendo…" : "Cambiar imagen"}
+                  </button>
+                </td>
               </tr>
             ))}
-            {!rows.length && <tr><td colSpan={4} style={{ textAlign: "center", padding: 32, color: "var(--muted)" }}>No hay productos que coincidan con la búsqueda.</td></tr>}
+            {!rows.length && <tr><td colSpan={5} style={{ textAlign: "center", padding: 32, color: "var(--muted)" }}>No hay productos que coincidan con la búsqueda.</td></tr>}
           </tbody>
         </table>
       </div>
