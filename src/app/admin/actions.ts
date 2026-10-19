@@ -98,6 +98,7 @@ const Flags = z.object({
   archived: z.boolean().optional(),
   availability: z.enum(["disponible", "consultar", "sin_stock", "discontinuado"]).optional(),
   stock: z.number().int().nonnegative().nullable().optional(),
+  category_id: z.string().uuid().nullable().optional(),
 });
 
 export async function updateProductFlags(id: string, patch: z.input<typeof Flags>): Promise<Result> {
@@ -115,6 +116,7 @@ export async function updateProductFlags(id: string, patch: z.input<typeof Flags
 }
 
 export async function deleteProduct(id: string): Promise<Result> {
+  if (!z.string().uuid().safeParse(id).success) return { ok: false, error: "Datos inválidos." };
   try {
     const sb = await requireAdmin();
     const { data } = await sb.from("products").select("images").eq("id", id).single();

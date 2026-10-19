@@ -1197,3 +1197,27 @@ a:hover{color:var(--accent)}
 /* Explorá por categoría: foto cuadrada que llena la tarjeta */
 .cat-tile .ph{background:#fff}
 .cat-tile .ph > .cat-cover{display:block;width:100%;height:100%;object-fit:cover}
+
+/* Admin · tabla de productos: etiqueta de categoría editable y eliminar en la fila */
+.catpick{position:relative;display:inline-block}
+.catpick-chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 8px 0 11px;border-radius:999px;border:1px solid color-mix(in srgb,var(--brand) 35%,transparent);background:color-mix(in srgb,var(--brand) 9%,#fff);color:var(--brand);font:600 12.5px/1 var(--f-ui);cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s}
+.catpick-chip .lucide{width:14px;height:14px;opacity:.75;transition:transform .15s}
+.catpick-chip[aria-expanded="true"] .lucide{transform:rotate(180deg)}
+.catpick-chip:hover,.catpick-chip[aria-expanded="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+.catpick-chip.none{border-style:dashed;color:var(--muted);background:#fff;border-color:var(--line)}
+.catpick-chip:disabled{opacity:.6;cursor:wait}
+.catpick-menu{position:absolute;z-index:40;top:calc(100% + 6px);left:0;min-width:220px;max-height:320px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:var(--r);box-shadow:0 12px 32px -12px rgba(20,40,60,.35);padding:6px}
+.catpick-h{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:6px 10px 4px}
+.catpick-menu button{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:8px 10px;border:0;background:none;border-radius:6px;text-align:left;font:500 13.5px/1.2 var(--f-ui);color:var(--ink);cursor:pointer}
+.catpick-menu button:hover{background:var(--sand)}
+.catpick-menu button[aria-selected="true"]{color:var(--brand);font-weight:700}
+.catpick-menu button .lucide{width:15px;height:15px;color:var(--brand)}
+.row-actions{display:inline-flex;align-items:center;gap:6px}
+.tbl td.mono{white-space:nowrap}
+.del-btn{color:var(--muted)}
+.del-btn:hover{color:var(--bad);background:color-mix(in srgb,var(--bad) 10%,transparent)}
+.del-confirm{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--bad)}
+.del-yes{background:var(--bad);color:#fff;border-color:var(--bad)}
+.del-yes:hover{filter:brightness(1.08)}
+.tbl-wrap{overflow:visible}
+@media (max-width:900px){.tbl-wrap{overflow-x:auto}}
