@@ -1012,8 +1012,6 @@ a:hover{color:var(--accent)}
 .list-btn[aria-current="page"]{border-color:var(--brand);background:var(--brand-soft)}
 .list-btn-n{background:var(--sand);color:var(--muted)}
 .list-btn.has .list-btn-n{background:var(--accent);color:#fff}
-.hdr-wa{background:var(--accent);border-color:var(--accent)}
-.hdr-wa:hover{background:var(--accent-2);border-color:var(--accent-2)}
 .m-search .search{background:var(--sand)}
 .m-search-x{color:var(--brand)}
 .drawer{background:#fff}
@@ -1178,3 +1176,16 @@ a:hover{color:var(--accent)}
 .login .lockup-name{height:26px}
 @media (max-width:860px){.lockup-iso{width:32px;height:32px}.lockup-name{height:15px}.lockup-tag{display:none}.lockup{gap:8px}}
 @media (max-width:1180px){.hdr .lockup-tag{display:none}}
+
+/* Título del catálogo: botón PDF a la derecha, separado de los filtros */
+.cat-title{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+.cat-title .page-title{margin:0}
+.cat-title .btn{flex:none}
+
+/* WhatsApp en el verde del logo */
+:root{--wa-green:#2B7A50;--wa-green-2:#236842}
+.btn-wa,.wa-float{background:var(--wa-green);border-color:var(--wa-green);color:#fff}
+.btn-wa:hover,.wa-float:hover{background:var(--wa-green-2);border-color:var(--wa-green-2);color:#fff}
+.wa-float{box-shadow:0 6px 20px rgba(20,70,45,.28)}
+.tabbar .tab-wa,.tabbar .tab-wa .lucide{color:var(--wa-green)}
+@media (max-width:860px){.cat-title{margin-bottom:12px}}
