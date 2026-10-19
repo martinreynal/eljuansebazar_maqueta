@@ -1,25 +1,18 @@
 @import "tailwindcss";
 
-/* Estilos de El Juanse Bazar. Tailwind queda disponible para utilidades; la identidad visual vive en estas clases. */
+/* Estilos del catálogo SAGGIO. Tailwind queda disponible para utilidades; la identidad visual vive en estas clases. */
 
-/* Layout: vitrina de bazar — góndola de 1240px, tarjetas sin sombra sobre piedra cálida, acento azul enlozado solo para promociones */
+/* Identidad SAGGIO: blanco y marfil, azul petróleo para títulos y textos destacados, verde profundo para detalles, naranja solo para acciones. Montserrat en toda la interfaz. */
 :root{
-  --bg:#F7F4EE; --surface:#FFFDF9; --sand:#EEE7DB; --stone:#D8D0C3; --muted:#8C8478; --ink:#2A2724; --ink-2:#5D5750; --line:#E5DED2;
-  --promo:#2F4E8C; --promo-soft:#E5EAF3; --wa:#1E8A52; --wa-ink:#FFFFFF; --wa-soft:#E2F0E7;
-  --ok:#3B7A4E; --warn:#A2650F; --bad:#A23A2F; --overlay:rgba(30,27,24,.42);
-  --f-ui:var(--font-manrope),"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --brand:#1F4E79; --brand-2:#2E6B4E; --accent:#F06E1E; --accent-2:#D9611A; --ivory:#EDE9E2; --white:#FFFFFF;
+  --bg:#FFFFFF; --surface:#FFFFFF; --sand:#EDE9E2; --stone:#D7D2C8; --muted:#7D8792; --ink:#1E2A36; --ink-2:#4F5B68; --line:#E6E2DA;
+  --brand-soft:#E8EEF4; --green-soft:#E6EFE9; --accent-soft:#FDEBDF;
+  --promo:#2E6B4E; --promo-soft:#E6EFE9; --wa:#F06E1E; --wa-ink:#FFFFFF; --wa-soft:#FDEBDF;
+  --ok:#2E6B4E; --warn:#B4731B; --bad:#B23A2F; --overlay:rgba(30,42,54,.45);
+  --f-ui:var(--font-montserrat),"Montserrat",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --f-mono:var(--font-dm-mono),"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-  --r-sm:7px; --r:11px; --r-lg:18px; --logo-l:block; --logo-d:none;
-}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#1A1917; --surface:#22201E; --sand:#2B2825; --stone:#3A3631; --muted:#958C80; --ink:#F1ECE4; --ink-2:#BDB4A8; --line:#34302B;
-  --promo:#93ABDB; --promo-soft:#232B3A; --wa:#2BA866; --wa-ink:#0E1A13; --wa-soft:#1B3024;
-  --ok:#6FB685; --warn:#D9A04A; --bad:#E07F72; --overlay:rgba(0,0,0,.6); --logo-l:none; --logo-d:block; color-scheme:dark;
-}}
-:root[data-theme="dark"]{
-  --bg:#1A1917; --surface:#22201E; --sand:#2B2825; --stone:#3A3631; --muted:#958C80; --ink:#F1ECE4; --ink-2:#BDB4A8; --line:#34302B;
-  --promo:#93ABDB; --promo-soft:#232B3A; --wa:#2BA866; --wa-ink:#0E1A13; --wa-soft:#1B3024;
-  --ok:#6FB685; --warn:#D9A04A; --bad:#E07F72; --overlay:rgba(0,0,0,.6); --logo-l:none; --logo-d:block; color-scheme:dark;
+  --r-sm:6px; --r:10px; --r-lg:14px; --logo-l:block; --logo-d:none;
+  color-scheme:light;
 }
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
@@ -938,3 +931,234 @@ section[id]{scroll-margin-top:84px}
 .v3d-dim span{padding:3px 6px;border-radius:5px;background:rgba(22,21,19,.85);color:#e8e3da;font-size:11px;font-weight:600;border:1px solid rgba(255,255,255,.12)}
 .v3d-lbl span{text-shadow:0 1px 2px rgba(0,0,0,.6)}
 @media (max-width:560px){.v3d-table .v3d-note{top:50px;bottom:auto;right:12px;font-size:10px}.v3d-table .v3d-hint{display:none}.v3d-opts button{height:30px;font-size:12px}}
+
+/* =====================================================================
+   Identidad SAGGIO — capa final que unifica tipografía, color y componentes
+   ===================================================================== */
+body{font-weight:400;font-size:15px;color:var(--ink)}
+h1,h2,h3{font-weight:700;color:var(--brand);letter-spacing:-.02em}
+h4{font-weight:600}
+.sec-head h2,.page-title,.hero h1,.pinfo h1,.custom h2,.wa-banner h2{font-weight:700}
+.sec-head p,.hero p,.pi-desc,.custom .lead{font-weight:400}
+.eyebrow{color:var(--brand-2);font-weight:600;letter-spacing:.14em}
+a:hover{color:var(--accent)}
+.pc-name a:hover,.rank a:hover,.cat-tile:hover b{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+::selection{background:var(--accent-soft);color:var(--ink)}
+
+/* Marca tipográfica provisoria (hasta cargar el archivo del logo) */
+.wordmark{font-family:var(--f-ui);font-weight:800;font-size:24px;letter-spacing:.18em;color:var(--brand);line-height:1;display:inline-block}
+.ftr .wordmark{font-size:22px}
+.login .wordmark{font-size:28px}
+@media (max-width:860px){.wordmark{font-size:20px}}
+.logo-img{height:40px;width:auto}
+.ftr .logo-img{height:44px}
+@media (max-width:860px){.logo-img{height:32px}}
+.logo{gap:12px}
+.logo-tag{color:var(--muted);border-left-color:var(--line);font-weight:500;letter-spacing:.02em}
+
+/* Botones: primario naranja, secundario azul petróleo, alternativo contorno azul */
+.btn{border-radius:10px;font-weight:600;letter-spacing:.005em;transition:background .18s,border-color .18s,color .18s,transform .15s var(--ease),box-shadow .18s}
+.btn:hover{transform:none;box-shadow:none}
+.btn:disabled,.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed;transform:none}
+.btn-wa{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-wa:hover{background:var(--accent-2);border-color:var(--accent-2);filter:none;transform:none;box-shadow:none}
+.btn-dark{background:var(--brand);color:#fff;border-color:var(--brand)}
+.btn-dark:hover{background:#17395A;border-color:#17395A;transform:none;box-shadow:none}
+.btn-ghost{background:transparent;border-color:var(--brand);color:var(--brand)}
+.btn-ghost:hover{background:var(--brand-soft);border-color:var(--brand);color:var(--brand)}
+.btn-ghost:hover .lucide{transform:none}
+.btn-soft{background:var(--sand);color:var(--brand)}
+.btn-soft:hover{background:#E3DED4}
+.btn:active,.pc-btn:active,.icon-btn:active,.list-btn:active,.chip:active{transform:scale(.985)}
+.pc-btn{border-radius:9px;font-weight:600}
+.pc-btn-wa{border:1px solid var(--accent);color:var(--accent);background:#fff}
+.pc-btn-wa:hover{background:var(--accent);color:#fff}
+.pc-btn-icon{border:1px solid var(--line);color:var(--brand);background:#fff}
+.pc-btn-icon:hover{background:var(--brand-soft);border-color:var(--brand)}
+.pc-btn-icon.in{background:var(--brand);border-color:var(--brand);color:#fff}
+.pc-btn-icon.in:hover{background:#17395A;border-color:#17395A}
+.pc-btn-icon.added,.pc-btn-icon.added:hover,.add-btn.added,.add-btn.added:hover{background:var(--brand-2);border-color:var(--brand-2);color:#fff}
+.link-btn{color:var(--brand)}
+.link-btn:hover{color:var(--accent)}
+
+/* Cabecera: fondo blanco, textos e iconos en azul petróleo, hover naranja */
+.hdr{background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom:1px solid var(--line)}
+.hdr-in{height:68px}
+.nav a{color:var(--brand);font-weight:500;border-radius:8px}
+.nav a:hover{background:transparent;color:var(--accent)}
+.nav a[aria-current="page"]{background:var(--brand-soft);color:var(--brand);font-weight:600}
+.nav-dd:hover,.nav-dd:has(> a[aria-current="page"]){background:var(--brand-soft)}
+.nav-dd{border-radius:8px}
+.nav-dd-btn{color:var(--brand)}
+.nav-dd-btn:hover{color:var(--accent);background:transparent}
+.dd{border-radius:12px;box-shadow:0 12px 32px rgba(30,42,54,.1);border-color:var(--line)}
+.nav .dd a{color:var(--ink-2);border-radius:8px;font-weight:500}
+.nav .dd a:hover{background:var(--sand);color:var(--accent)}
+.nav .dd a[aria-current="page"]{background:var(--brand-soft);color:var(--brand)}
+.nav .dd-foot a{color:var(--brand)}
+.nav .dd-foot a:hover{color:var(--accent)}
+.search{background:var(--sand);border-color:transparent;border-radius:10px}
+.search:focus-within{background:#fff;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.search .lucide{color:var(--brand)}
+.search input{font-weight:500}
+.search-kbd{background:#fff;border-color:var(--line);color:var(--muted)}
+.icon-btn{color:var(--brand);border-radius:10px}
+.icon-btn:hover{background:var(--sand);color:var(--accent)}
+.hdr-actions .icon-btn[aria-current="page"]{background:var(--brand-soft);color:var(--brand)}
+.badge{background:var(--accent);color:#fff}
+.list-btn{border-radius:10px;border-color:var(--line);color:var(--brand);font-weight:600;background:#fff}
+.list-btn:hover{border-color:var(--brand);color:var(--brand)}
+.list-btn[aria-current="page"]{border-color:var(--brand);background:var(--brand-soft)}
+.list-btn-n{background:var(--sand);color:var(--muted)}
+.list-btn.has .list-btn-n{background:var(--accent);color:#fff}
+.hdr-wa{background:var(--accent);border-color:var(--accent)}
+.hdr-wa:hover{background:var(--accent-2);border-color:var(--accent-2)}
+.m-search .search{background:var(--sand)}
+.m-search-x{color:var(--brand)}
+.drawer{background:#fff}
+.drawer-head h3{color:var(--brand)}
+.m-nav a{color:var(--ink);font-weight:500}
+.m-nav a:hover{color:var(--accent);padding-left:4px}
+.m-nav a .lucide{color:var(--brand)}
+.tabbar{background:#fff;border-top-color:var(--line)}
+.tabbar a,.tabbar button{color:var(--muted);font-weight:500}
+.tabbar a[aria-current="page"]{color:var(--brand);font-weight:600}
+.tabbar .tab-wa,.tabbar .tab-wa .lucide{color:var(--accent)}
+.demo-strip{background:var(--brand);color:#fff}
+
+/* Portada: imágenes protagonistas, títulos grandes, botón naranja */
+.hero{gap:24px}
+.hero-copy{background:var(--sand);border:0;border-radius:var(--r-lg);padding:clamp(28px,4.5vw,60px)}
+.hero h1{font-size:clamp(34px,4.8vw,58px);font-weight:700;letter-spacing:-.03em;line-height:1.04;color:var(--brand)}
+.hero p{font-size:16px;color:var(--ink-2)}
+.hero-facts{border-top-color:#DCD6CB}
+.hero-facts .lucide{color:var(--brand-2)}
+.hero-art a{border-radius:var(--r-lg)}
+.hero-art .cap{background:#fff;color:var(--brand);font-weight:600;border-radius:8px}
+.cat-tile .ph{border-radius:var(--r);background:var(--sand);border:1px solid var(--line);transition:border-color .2s}
+.cat-tile:hover .ph{transform:none;border-color:var(--brand)}
+.cat-tile b{color:var(--ink);transition:color .15s}
+.sec-head a{color:var(--brand)}
+.sec-head a:hover{color:var(--accent)}
+.band{background:var(--green-soft);border-radius:var(--r-lg)}
+.band .sec-head h2{color:var(--brand-2)}
+.custom{background:var(--sand);border:0;border-radius:var(--r-lg)}
+.custom h2{color:var(--brand)}
+.tech span{background:#fff;color:var(--brand);font-weight:500}
+.tech .lucide{color:var(--brand-2)}
+.flow .n,.flow li > span:first-child{border-color:var(--brand);color:var(--brand)}
+.mock{background:#fff;border-color:var(--line)}
+.wa-banner{background:var(--brand);color:#fff;border-radius:var(--r-lg)}
+.wa-banner h2{color:#fff}
+.wa-banner p,.wa-banner .steps{color:rgba(255,255,255,.82);opacity:1}
+.rank .n{color:var(--brand-2)}
+.rank .lucide{color:var(--brand)}
+.faq details summary{color:var(--brand);font-weight:600}
+.faq .plus{color:var(--accent)}
+.info > div,.hero-facts div{color:var(--ink-2)}
+
+/* Tarjetas de producto: blancas, imagen protagonista, borde fino */
+.pc{border-radius:12px;border:1px solid var(--line);background:#fff;box-shadow:none}
+.pc:hover{transform:none;box-shadow:none;border-color:var(--brand)}
+.pc-media{border-bottom:1px solid var(--line);background:#fff}
+.pc:hover .pc-media img{transform:scale(1.03)}
+.pc-sku{color:var(--brand);border-color:var(--line);background:var(--sand);border-radius:4px;font-weight:500}
+.pc-cat{color:var(--muted);font-weight:500}
+.pc-name{font-weight:600;color:var(--ink);font-size:14.5px}
+.pc:hover .pc-name a{color:var(--brand)}
+.pc-tag{background:var(--brand);border-radius:4px;font-weight:600}
+.pc-tag-oferta{background:var(--accent)}
+.pc-fav{border-color:var(--line);color:var(--brand);background:#fff}
+.pc-fav.on svg{fill:var(--accent);stroke:var(--accent)}
+.pc-stock{color:var(--bad)}
+.grid{gap:22px 18px}
+
+/* Catálogo: filtros y chips */
+.filters h4,.f-group h4{color:var(--brand);font-weight:600;font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+.check{color:var(--ink-2);font-weight:500}
+.check:hover{color:var(--brand)}
+.check input{accent-color:var(--brand)}
+.chip{background:var(--brand-soft);color:var(--brand);border-radius:8px}
+.chip:hover{background:#D9E4EE}
+.result-meta b{color:var(--brand)}
+.cat-top select{border-radius:10px;border-color:var(--line)}
+.input,select.input,textarea.input{border-color:var(--line);border-radius:8px;background:#fff}
+.input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.f-count{background:var(--accent)}
+.progress i{background:var(--brand)}
+.load-more .btn{min-width:220px}
+.quick-cats a{color:var(--brand);font-weight:500;border-radius:8px;background:#fff;border-color:var(--line)}
+.home-search{background:#fff!important;border-color:var(--line)!important;box-shadow:none!important}
+.home-search-go{background:var(--accent);border-radius:8px;font-weight:600}
+.crumbs span:last-child{color:var(--brand)}
+.crumbs a:hover{color:var(--accent);text-decoration:none}
+.back-m{color:var(--brand)}
+
+/* Ficha de producto */
+.pi-cat{color:var(--brand-2)}
+.pi-cat:hover{color:var(--accent)}
+.pi-sku{border-radius:6px;border-color:var(--line);background:var(--sand);color:var(--muted)}
+.pi-sku b{color:var(--brand)}
+.pi-sku:hover{border-color:var(--brand);color:var(--brand)}
+.pi-sku.ok{border-color:var(--brand-2);color:var(--brand-2)}
+.pi-ask{color:var(--ink-2);font-weight:500}
+.buybox{background:var(--sand);border:0;border-radius:var(--r-lg)}
+.buybox .opt-label{color:var(--brand);font-weight:600}
+.qty{background:#fff;border-color:var(--line);border-radius:10px}
+.qty input{color:var(--ink)}
+.qty button{color:var(--brand);border-radius:8px}
+.qty input:focus{outline-color:var(--brand)}
+.bb-row .btn-ghost{background:#fff}
+.bb-hint a{color:var(--brand)}
+.pi-specs dt{color:var(--muted);font-weight:500}
+.pi-specs dd a{color:var(--brand);text-decoration:none}
+.pi-specs dd a:hover{color:var(--accent)}
+.media-switch{background:var(--sand);border:0;border-radius:10px}
+.media-switch button{border-radius:8px;font-weight:600;color:var(--ink-2)}
+.media-switch button:hover{color:var(--brand)}
+.media-switch button[aria-selected="true"]{background:var(--brand);color:#fff}
+.main-img{border:1px solid var(--line);border-radius:var(--r-lg)}
+.gallery .thumbs button{border-radius:8px}
+.gallery .thumbs button[aria-current="true"]{border-color:var(--brand)}
+.pd-sticky{background:#fff}
+.pd-sticky-t b{color:var(--brand)}
+.avail i.dot{background:var(--brand-2)}
+
+/* Lista de consulta y favoritos */
+.lc-bar{border-radius:12px;background:var(--sand);border:0}
+.lc-count b{color:var(--brand)}
+.lc-clear:hover,.lr-del:hover{color:var(--bad)}
+.lr-img{border-radius:10px}
+.lr-name{color:var(--ink);font-weight:600}
+.lr-name a:hover{color:var(--brand)}
+.lr-add-note{color:var(--brand-2)}
+.lr-add-note:hover{color:var(--accent)}
+.lc-more{color:var(--brand)}
+.summary{background:var(--sand);border:0;border-radius:var(--r-lg)}
+.summary h3{color:var(--brand)}
+.sum-stats div{background:#fff;border:0;border-radius:10px}
+.sum-stats b{color:var(--brand)}
+.sum-msg-toggle{color:var(--brand)}
+.msg{background:#fff;border-color:var(--line);border-radius:10px}
+.lc-sticky{background:#fff}
+.lc-sticky b{color:var(--brand)}
+.toast{background:var(--brand);color:#fff;border-radius:10px}
+.toast a,.toast button{background:#fff;color:var(--brand);border-radius:8px}
+.empty .ic{background:var(--sand);color:var(--brand)}
+.empty h3{color:var(--brand)}
+
+/* Pie de página */
+.ftr{background:var(--sand);border-top:0;margin-top:48px;padding-block:44px 40px;color:var(--ink-2)}
+.ftr h4{color:var(--brand);font-weight:600;letter-spacing:.12em}
+.ftr a:hover{color:var(--accent);text-decoration:none}
+.ftr .legal{border-top-color:#DCD6CB;color:var(--muted)}
+
+/* Panel administrador */
+.adm-nav button[aria-current="page"],.adm-nav a[aria-current="page"]{background:var(--brand-soft);color:var(--brand)}
+.switch input:checked + span{background:var(--brand)}
+.panel{border-radius:var(--r-lg);border-color:var(--line)}
+
+/* Visor 3D: conserva su fondo oscuro de estudio, con acentos de marca */
+.v3d-opts button[aria-pressed="true"]{background:#fff;color:var(--brand);border-color:#fff}
+.main-img.is-3d{background:#161513;border-color:#161513}

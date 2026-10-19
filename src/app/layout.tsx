@@ -9,14 +9,15 @@ import { getStore } from "@/lib/data";
 import { siteUrl } from "@/lib/env";
 import "./globals.css";
 
-const manrope = localFont({
-  variable: "--font-manrope",
+const montserrat = localFont({
+  variable: "--font-montserrat",
   display: "swap",
   src: [
-    { path: "../fonts/manrope-latin-400-normal.woff2", weight: "400" },
-    { path: "../fonts/manrope-latin-500-normal.woff2", weight: "500" },
-    { path: "../fonts/manrope-latin-700-normal.woff2", weight: "700" },
-    { path: "../fonts/manrope-latin-800-normal.woff2", weight: "800" },
+    { path: "../fonts/montserrat-latin-400-normal.woff2", weight: "400" },
+    { path: "../fonts/montserrat-latin-500-normal.woff2", weight: "500" },
+    { path: "../fonts/montserrat-latin-600-normal.woff2", weight: "600" },
+    { path: "../fonts/montserrat-latin-700-normal.woff2", weight: "700" },
+    { path: "../fonts/montserrat-latin-800-normal.woff2", weight: "800" },
   ],
 });
 const dmMono = localFont({
@@ -45,10 +46,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F7F4EE" },
-    { media: "(prefers-color-scheme: dark)", color: "#1A1917" },
-  ],
+  themeColor: "#FFFFFF",
   viewportFit: "cover",
 };
 
@@ -56,7 +54,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const { settings, categories, products } = await getStore();
   const hasOffers = products.some((p) => p.tag === "oferta");
   return (
-    <html lang="es-AR" className={`${manrope.variable} ${dmMono.variable}`}>
+    <html lang="es-AR" className={`${montserrat.variable} ${dmMono.variable}`}>
       <body>
         <StoreProvider>
           {settings.design.notice && <div className="demo-strip">{settings.design.notice}</div>}

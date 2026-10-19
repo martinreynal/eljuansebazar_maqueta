@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   },
   serverExternalPackages: ["@resvg/resvg-js", "@react-pdf/renderer"],
   poweredByHeader: false,
-  outputFileTracingIncludes: { "/catalogo.pdf": ["./public/logo-light.png", "./public/catalogo/mini/**"] },
+  outputFileTracingIncludes: { "/catalogo.pdf": ["./public/logo-saggio.png", "./public/catalogo/mini/**"] },
   // El simulador de mesa 3D está desactivado por ahora: su dirección lleva al catálogo
   async redirects() {
     return [{ source: "/simulador", destination: "/catalogo", permanent: false }, { source: "/simulador/:path*", destination: "/catalogo", permanent: false }];

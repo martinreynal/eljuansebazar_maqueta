@@ -48,7 +48,7 @@ export async function GET() {
     }),
   );
   let logo: Buffer | undefined;
-  try { logo = await readFile(path.join(process.cwd(), "public", "logo-light.png")); } catch { logo = undefined; }
+  try { logo = await readFile(path.join(process.cwd(), "public", "logo-saggio.png")); } catch { logo = undefined; }
   const images: PdfImages = { logo, byProduct };
   const doc = createElement(CatalogPdf, { data, images, base }) as unknown as ReactElement<DocumentProps>;
   const pdf = await renderToBuffer(doc);
