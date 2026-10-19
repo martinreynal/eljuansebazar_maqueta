@@ -1165,16 +1165,16 @@ a:hover{color:var(--accent)}
 
 /* Lockup del logo SAGGIO */
 .lockup{display:inline-flex;align-items:center;gap:10px;line-height:1}
-.lockup-iso{width:40px;height:40px;flex:none;display:block}
-.lockup-text{display:flex;flex-direction:column;gap:3px}
-.lockup-name{font-family:var(--f-ui);font-weight:800;font-size:23px;letter-spacing:.06em;color:var(--brand);line-height:1}
-.lockup-tag{font-family:var(--f-ui);font-weight:500;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);line-height:1;white-space:nowrap}
+.lockup-iso{width:40px;height:40px;flex:none;display:block;object-fit:contain}
+.lockup-text{display:flex;flex-direction:column;gap:5px;align-items:flex-start}
+.lockup-name{display:block;height:19px;width:auto;object-fit:contain}
+.lockup-tag{font-family:var(--f-ui);font-weight:500;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:#013657;line-height:1;white-space:nowrap;padding-left:1px}
 .lockup-compact .lockup-iso{width:32px;height:32px}
-.lockup-compact .lockup-name{font-size:19px}
+.lockup-compact .lockup-name{height:15px}
 .ftr .lockup-iso{width:48px;height:48px}
-.ftr .lockup-name{font-size:26px}
+.ftr .lockup-name{height:22px}
 .ftr .lockup-tag{font-size:9.5px}
 .login .lockup-iso{width:56px;height:56px}
-.login .lockup-name{font-size:30px}
-@media (max-width:860px){.lockup-iso{width:32px;height:32px}.lockup-name{font-size:18px}.lockup-tag{display:none}.lockup{gap:8px}}
+.login .lockup-name{height:26px}
+@media (max-width:860px){.lockup-iso{width:32px;height:32px}.lockup-name{height:15px}.lockup-tag{display:none}.lockup{gap:8px}}
 @media (max-width:1180px){.hdr .lockup-tag{display:none}}
