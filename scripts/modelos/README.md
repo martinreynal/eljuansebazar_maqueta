@@ -23,3 +23,13 @@ node scripts/modelos/torneados.mjs scripts/modelos/catalogo-modelos.json public/
 ```
 
 Los productos con modelo se asocian en la base con `model_url = '/modelos/SKU.glb'` (ver `supabase/migrations/0006_modelos_torneados.sql`).
+
+## Resto del catálogo (cubiertos, utensilios, palitos, bandejas, platos con forma, teteras, madera)
+
+- `resto.mjs`: modela por receta los productos que no son de revolución simple: juegos de cubiertos pieza por pieza (tenedor, cuchillo, cuchara, cucharita según la descripción), cuchillos, trinches y pinzas de asado con mango de madera, palitos y apoya-palitos, cucharas de cerámica, bandejas y platos cuadrados/triangulares (perfil torneado deformado en planta), bases de madera con patas, teteras, sartén de hierro, cubilete, y los sets que combinan estas piezas.
+
+```bash
+node scripts/modelos/resto.mjs datos/rows.json scripts/modelos/catalogo-modelos.json scripts/modelos/madera.png public/modelos [SKU ...]
+```
+
+Con esto, los 333 productos del catálogo tienen modelo 3D (`supabase/migrations/0007_modelos_resto.sql`).
