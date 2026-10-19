@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { HomeSearch } from "@/components/HomeSearch";
-import { Armchair, ArrowRight, ChevronRight, Clock, Coffee, ConciergeBell, CookingPot, Droplet, FileDown, Headset, ListPlus, Martini, MessageCircle, Search, Stamp, Tag, Truck, Utensils, Wine, Zap, type LucideProps } from "lucide-react";
-import { CustomArt } from "@/components/Art";
+import { Armchair, ArrowRight, ChevronRight, Clock, CloudUpload, Coffee, ConciergeBell, CookingPot, Droplet, FileDown, FilePen, Headset, Layers, ListPlus, Martini, MessageCircle, Package, Search, Tag, Truck, Utensils, Wine, Zap, type LucideProps } from "lucide-react";
 import { ProductGrid } from "@/components/ProductCard";
 import { ProductImage } from "@/components/ProductImage";
 import { WaLink } from "@/components/WaLink";
@@ -40,6 +39,12 @@ const ICONS: [string, string, (p: LucideProps) => React.ReactNode][] = [
   ["Bar y coctelería", "/catalogo?cat=cristaleria,cafe", Martini],
   ["Servicio de mesa", "/catalogo?cat=vajilla-blanca,vajilla-decorada,cubiertos,cristaleria", ConciergeBell],
 ];
+const BRAND_WORKS = [
+  { title: "Tazas de cerámica", sku: "CER-07", tech: "Sublimación o serigrafía", img: "/portada/marca-taza.jpg" },
+  { title: "Bandejas de bambú", sku: "BAM-01", tech: "Grabado láser", img: "/portada/marca-bandeja.jpg" },
+  { title: "Vasos de vidrio", sku: "CRI-14", tech: "Serigrafía", img: "/portada/marca-vaso.jpg" },
+  { title: "Cuchillos de asado", sku: "CUB-40", tech: "Grabado láser en la hoja", img: "/portada/marca-cuchillo.jpg" },
+];
 const BANNERS = [
   { title: "Mobiliario gastronómico", href: `/catalogo?cat=${MOBILIARIO}`, img: "/portada/mobiliario.jpg", pos: "50% 60%" },
   { title: "Vajilla profesional", href: `/catalogo?cat=${VAJILLA}`, img: "/portada/mesa-servida.jpg", pos: "40% 70%" },
@@ -51,7 +56,7 @@ const CATEGORY_COVERS = new Set(["vajilla-estandar", "gres", "vajilla-blanca", "
 
 export default async function Home() {
   const store = await getStore();
-  const { settings, categories, products, faqs, customWorks } = store;
+  const { settings, categories, products, faqs } = store;
   const d = settings.design;
   const base = siteUrl(settings.site_url);
   const ctx = { settings, base, categories };
@@ -163,38 +168,35 @@ export default async function Home() {
       )}
 
       <section className="sec" id="personalizados" aria-labelledby="h-custom">
-        <div className="custom">
-          <div>
-            <span className="eyebrow">{d.customEyebrow}</span>
-            <h2 id="h-custom">{d.customTitle}</h2>
-            <p className="lead">{d.customText}</p>
-            <div className="tech"><span><Zap />Grabado láser</span><span><Droplet />Sublimación</span><span><Stamp />Serigrafía</span><span><Tag />Etiquetas</span></div>
-            <ol className="flow">
-              <li><span><b>Nos mandás tu logo</b>En PDF, AI o PNG en buena calidad, con la cantidad y los productos que te interesan.</span></li>
-              <li><span><b>Te enviamos boceto y presupuesto</b>Ves cómo queda antes de confirmar.</span></li>
-              <li><span><b>Producimos y enviamos</b>A tu oficina o a cualquier punto del país.</span></li>
-            </ol>
-            <div className="hero-ctas" style={{ marginTop: 22 }}>
-              <WaLink href={waLink(settings.whatsapp, msgCustom())} channel="custom" className="btn btn-wa btn-lg">Pedir presupuesto con mi logo</WaLink>
+        <div className="brand-sec">
+          <div className="bs-copy">
+            <span className="h2-eyebrow">Regalos empresariales</span>
+            <h2 id="h-custom">Tu marca,<br />en cada detalle.</h2>
+            <p>Personalizamos tazas, vasos, tablas, utensilios y más con el logo de tu empresa. Ideal para regalos de fin de año, eventos, kits de bienvenida y merchandising.</p>
+            <div className="bs-tech">
+              <span><Zap />Grabado láser</span><span><Droplet />Sublimación</span><span><Layers />Serigrafía</span><span><Tag />Etiquetas</span>
             </div>
+            <WaLink href={waLink(settings.whatsapp, msgCustom())} channel="custom" className="btn btn-cta btn-lg bs-cta">Pedir presupuesto con mi logo<ArrowRight /></WaLink>
           </div>
-          <div className="mocks">
-            {customWorks.slice(0, 4).map((w) => {
-              const img = mediaUrl(w.image_path);
-              return (
-                <div className="mock" key={w.id}>
-                  <figure>
-                    <div className="ph">
-                      {img ? <span className="media-fill"><Image src={img} alt={w.title} fill sizes="(max-width: 860px) 50vw, 25vw" unoptimized={img.startsWith("/")} /></span> : w.placeholder ? <CustomArt ph={w.placeholder} /> : null}
-                    </div>
-                    <figcaption><span><b>{w.title}</b>{w.technique && ` · ${w.technique}`}</span><span className="mono">{w.quantity}</span></figcaption>
-                  </figure>
-                </div>
+          <div className="bs-grid">
+            {BRAND_WORKS.map((w) => {
+              const p = products.find((x) => x.sku === w.sku);
+              const body = (
+                <>
+                  <span className="bs-img"><Image src={w.img} alt={`${w.title} personalizados con logo`} fill sizes="(max-width: 860px) 50vw, 24vw" /></span>
+                  <span className="bs-meta"><b>{w.title}</b><small className="mono">{w.sku}</small></span>
+                  <span className="bs-pill">{w.tech}</span>
+                </>
               );
+              return p ? <Link key={w.sku} className="bs-card" href={`/producto/${p.slug}`}>{body}</Link> : <div key={w.sku} className="bs-card">{body}</div>;
             })}
           </div>
         </div>
-        {customWorks.some((w) => !w.image_path) && <p className="hint" style={{ marginTop: 10 }}>Algunas imágenes son mockups ilustrativos con marcas de ejemplo.</p>}
+        <ol className="bs-steps">
+          <li><span className="n">1</span><CloudUpload aria-hidden /><span><b>Nos mandás tu logo</b>En PDF, AI o PNG en buena calidad, con la cantidad y los productos que te interesan.</span></li>
+          <li><span className="n">2</span><FilePen aria-hidden /><span><b>Te enviamos boceto y presupuesto</b>Ves cómo queda antes de confirmar.</span></li>
+          <li><span className="n">3</span><Package aria-hidden /><span><b>Producimos y enviamos</b>A tu oficina o a cualquier punto del país.</span></li>
+        </ol>
       </section>
 
       <section className="sec" aria-labelledby="h-new">
