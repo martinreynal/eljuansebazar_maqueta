@@ -1193,3 +1193,7 @@ a:hover{color:var(--accent)}
 /* Botón "Consultar" de las tarjetas en el verde de WhatsApp */
 .pc-btn-wa{border:1px solid var(--wa-green);color:var(--wa-green);background:#fff}
 .pc-btn-wa:hover{background:var(--wa-green);border-color:var(--wa-green);color:#fff}
+
+/* Explorá por categoría: foto cuadrada que llena la tarjeta */
+.cat-tile .ph{background:#fff}
+.cat-tile .ph > .cat-cover{display:block;width:100%;height:100%;object-fit:cover}

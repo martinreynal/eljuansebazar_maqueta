@@ -9,8 +9,12 @@ import { getStore, getTopProductIds } from "@/lib/data";
 import { mediaUrl, siteUrl } from "@/lib/env";
 import { inCategory, msgCustom, msgGeneral, msgQuote, waLink } from "@/lib/format";
 import Image from "next/image";
+/* eslint-disable @next/next/no-img-element */
 
 export const revalidate = 300;
+
+/** Categorías con foto de portada preparada (public/categorias, ver scripts/portada-categorias.py). */
+const CATEGORY_COVERS = new Set(["vajilla-estandar", "gres", "vajilla-blanca", "vajilla-decorada", "vajilla-marmolada", "cubiertos", "cristaleria", "cafe", "vajilla-oriental", "sillas", "mesas", "banquetas", "boxes-y-bancos", "sofas-y-sillones", "mesas-auxiliares", "exterior"]);
 
 export default async function Home() {
   const store = await getStore();
@@ -76,11 +80,11 @@ export default async function Home() {
           {realCats.map((c) => {
             const n = products.filter((p) => inCategory(p, c)).length;
             const cover = products.find((p) => p.category_id === c.id);
-            const img = mediaUrl(c.image_path);
+            const img = CATEGORY_COVERS.has(c.slug) ? `/categorias/${c.slug}.jpg` : mediaUrl(c.image_path);
             return (
               <Link key={c.id} className="cat-tile" href={`/categoria/${c.slug}`}>
                 <div className="ph">
-                  {img ? <span className="media-fill"><Image src={img} alt="" fill sizes="(max-width: 560px) 33vw, 14vw" /></span> : cover ? <ProductImage p={cover} view={1} label={false} sizes="(max-width: 560px) 33vw, 14vw" /> : null}
+                  {img ? <img className="cat-cover" src={img} alt="" width={600} height={600} loading="lazy" decoding="async" /> : cover ? <ProductImage p={cover} view={1} label={false} sizes="(max-width: 560px) 33vw, 14vw" /> : null}
                 </div>
                 <b>{c.name}</b>
                 <span>{n} producto{n === 1 ? "" : "s"}</span>
