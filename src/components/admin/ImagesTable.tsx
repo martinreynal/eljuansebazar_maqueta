@@ -44,6 +44,13 @@ function ScoreBadge({ path }: { path: string | undefined }) {
   );
 }
 
+/** Enlace de Google Lens para la foto, con la dirección pública tomada del propio sitio. */
+function lensLink(path: string | undefined): string | undefined {
+  if (!path || typeof window === "undefined") return undefined;
+  const url = new URL(mediaUrl(path)!, window.location.origin).href;
+  return `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(url)}&hl=es-419`;
+}
+
 type Compare = { p: Product; status: "buscando" | "listo" | "error" | "sin-clave"; matches: LensMatch[]; pick: number; error?: string; lensUrl?: string; manual?: string };
 
 export function ImagesTable({ products }: { products: Product[] }) {
@@ -68,11 +75,12 @@ export function ImagesTable({ products }: { products: Product[] }) {
   }, [products, q, sort, override]);
 
   const search = (p: Product) => {
-    setCmp({ p, status: "buscando", matches: [], pick: 0 });
+    const lensUrl = lensLink(p.images[0]);
+    setCmp({ p, status: "buscando", matches: [], pick: 0, lensUrl });
     start(async () => {
       const r = await lensSearch(p.id);
-      if (r.ok) setCmp({ p, status: r.data!.matches.length ? "listo" : "error", matches: r.data!.matches, pick: 0, lensUrl: r.data!.lensUrl, error: r.data!.matches.length ? undefined : "Google Lens no encontró imágenes parecidas." });
-      else setCmp({ p, status: r.code === "no-key" ? "sin-clave" : "error", matches: [], pick: 0, error: r.error, lensUrl: r.lensUrl });
+      if (r.ok) setCmp({ p, status: r.data!.matches.length ? "listo" : "error", matches: r.data!.matches, pick: 0, lensUrl, error: r.data!.matches.length ? undefined : "Google Lens no encontró imágenes parecidas." });
+      else setCmp({ p, status: r.code === "no-key" ? "sin-clave" : "error", matches: [], pick: 0, error: r.code === "no-key" ? undefined : r.error, lensUrl });
     });
   };
 

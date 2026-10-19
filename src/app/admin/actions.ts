@@ -337,13 +337,11 @@ async function publicImageUrl(path: string): Promise<string> {
   const { mediaUrl, siteUrl } = await import("@/lib/env");
   const url = mediaUrl(path)!;
   if (!url.startsWith("/")) return url;
-  let origin = siteUrl();
-  if (origin.includes("localhost")) {
-    const { headers } = await import("next/headers");
-    const h = await headers();
-    const host = h.get("x-forwarded-host") ?? h.get("host");
-    if (host) origin = `${h.get("x-forwarded-proto") ?? "https"}://${host}`;
-  }
+  // La dirección desde la que se está usando el panel (es pública); si no se conoce, la del sitio
+  const { headers } = await import("next/headers");
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host");
+  const origin = host && !host.startsWith("localhost") ? `https://${host}` : siteUrl();
   return origin + url;
 }
 
