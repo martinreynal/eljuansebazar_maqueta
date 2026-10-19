@@ -57,7 +57,7 @@ export default async function Home() {
         <div className="hero-art">
           {heroP.slice(0, 3).map((p, i) => (
             <Link key={p.id} href={`/producto/${p.slug}`} aria-label={p.name}>
-              <ProductImage p={p} view={i === 0 ? 2 : 0} label={false} hiRes={i === 0} sizes={i === 0 ? "(max-width: 860px) 60vw, 30vw" : "(max-width: 860px) 40vw, 20vw"} priority />
+              <ProductImage p={p} view={i === 0 ? 2 : 0} label={false} hiRes sizes={i === 0 ? "(max-width: 860px) 60vw, 30vw" : "(max-width: 860px) 40vw, 20vw"} priority />
               {i === 0 && <span className="cap">{p.name} <ArrowUpRight /></span>}
             </Link>
           ))}
