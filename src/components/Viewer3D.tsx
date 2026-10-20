@@ -91,6 +91,8 @@ export function Viewer3D({ url, name, mode = "studio" }: { url: string; name: st
         onPointerDown={() => setInteracted(true)}
         onWheel={() => setInteracted(true)}
       >
+        {/* Fondo oscuro dentro de la escena: hace falta para que el vidrio (transmisión) muestre lo que hay detrás */}
+        <color attach="background" args={["#171615"]} />
         <Suspense fallback={null}>
           <Studio soft={table} />
           {table ? (

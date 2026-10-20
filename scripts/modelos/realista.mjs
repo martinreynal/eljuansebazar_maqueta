@@ -232,13 +232,13 @@ async function exportGLB(scene, file) {
     const c = col ? col.split(",").map((v) => Math.pow(+v / 255, 2.2)) : [1, 1, 1];
     m.setDoubleSided(true);
     if (kind === "glass") {
-      const mode = process.env.GLASS || "blend";
+      const mode = process.env.GLASS || "both";
       const tint = [0.9 + c[0] * 0.1, 0.9 + c[1] * 0.1, 0.9 + c[2] * 0.1];
       m.setRoughnessFactor(0.05).setMetallicFactor(0);
       if (mode === "blend" || mode === "both") { m.setAlphaMode("BLEND").setBaseColorFactor([tint[0], tint[1], tint[2], mode === "both" ? 0.5 : 0.32]); }
       else m.setBaseColorFactor([tint[0], tint[1], tint[2], 1]);
       if (mode === "trans" || mode === "both") {
-        m.setExtension("KHR_materials_transmission", transmission.createTransmission().setTransmissionFactor(mode === "both" ? 0.85 : 1));
+        m.setExtension("KHR_materials_transmission", transmission.createTransmission().setTransmissionFactor(mode === "both" ? 0.6 : 1));
         m.setExtension("KHR_materials_ior", ior.createIOR().setIOR(1.5));
         m.setExtension("KHR_materials_volume", volume.createVolume().setThicknessFactor(0.003).setAttenuationDistance(0.6).setAttenuationColor([0.92, 0.96, 0.98]));
       }
