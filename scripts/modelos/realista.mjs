@@ -86,8 +86,9 @@ const P = {
   plateTop: (H) => [[1, H], [0.985, H], [0.84, 0.8 * H], [0.6, 0.2 * H], [0.5, 0.17 * H], [0, 0.17 * H]],
   bowlOuter: (H) => [[0, 0], [0.42, 0], [0.47, 0.04 * H], [0.74, 0.4 * H], [0.95, 0.86 * H], [1, H]],
   bowlInner: (H) => [[1, H], [0.95, H], [0.73, 0.44 * H], [0.42, 0.14 * H], [0, 0.12 * H]],
-  mugOuter: (H, b = 0.86) => [[0, 0], [b, 0], [b + 0.04 * (1 - b) / 0.14, 0.015 * H], [b + (1 - b) * 0.55, 0.3 * H], [1, 0.72 * H], [0.99, H]],
-  mugInner: (H, b = 0.86) => [[0.99, H], [0.93, H], [b + (1 - b) * 0.45, 0.3 * H], [b * 0.96, 0.12 * H], [0, 0.11 * H]],
+  // taza: pared curva (panza redondeada) cuya base mide b veces el radio del borde
+  mugOuter: (H, b = 0.86) => [[0, 0], [b * 0.97, 0], ...[0.03, 0.12, 0.25, 0.4, 0.58, 0.78, 0.92, 1].map((t) => [b + (1 - b) * (1 - Math.pow(1 - t, 1.9)), t * H])],
+  mugInner: (H, b = 0.86) => [[1, H], [0.94, H], ...[0.78, 0.55, 0.35, 0.2, 0.12].map((t) => [(b + (1 - b) * (1 - Math.pow(1 - t, 1.9))) * 0.94, t * H]), [b * 0.6, 0.11 * H], [0, 0.11 * H]],
   cylOuter: (H, b = 0.9) => [[0, 0], [b, 0], [b + 0.03, 0.03 * H], [1, H]],
   cylInner: (H, b = 0.9) => [[1, H], [0.95, H], [b * 0.97, 0.1 * H], [0, 0.08 * H]],
   bowlOuterT: (H, b = 0.42) => [[0, 0], [b, 0], [b + 0.05, 0.04 * H], [b + (1 - b) * 0.55, 0.4 * H], [0.95, 0.86 * H], [1, H]],
@@ -146,7 +147,7 @@ function piece(shape, w, h, d, tex) {
       handle.position.set(rb * 0.92 + 0.002, H * 0.52, 0);
       body.add(handle);
       body.position.x = -span / 2;
-      body.rotation.y = -Math.PI / 4; // el asa queda a 45°, visible desde el frente y desde el costado
+      body.rotation.y = -Math.PI / 2 + 0.45; // el asa queda hacia la cámara inicial del visor (que gira -0.45 rad)
       g.add(body);
       break;
     }
