@@ -9,12 +9,16 @@
  * Forma, piezas y medidas salen de la descripción del catálogo; los colores,
  * de la foto (catalogo-modelos.json). Todo es una reconstrucción aproximada.
  *
- * Uso: node scripts/modelos/resto.mjs rows.json catalogo-modelos.json madera.png carpeta_salida SKU...
+ * Uso: node scripts/modelos/resto.mjs rows.json catalogo-modelos.json madera.png fotos.json carpeta_texturas carpeta_salida SKU...
  *      (sin SKUs: genera todos los productos que este script sabe modelar)
+ * Materiales PBR (esmalte con clearcoat, acero metálico, vidrio translúcido) y, en platos y
+ * bandejas de cerámica, la superficie extraída de la foto (fotos.json / texturas).
  */
 import * as THREE from "three";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter.js";
 import { NodeIO } from "@gltf-transform/core";
+import { KHRMaterialsClearcoat } from "@gltf-transform/extensions";
+import { existsSync } from "node:fs";
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 
@@ -23,10 +27,12 @@ globalThis.FileReader ??= class {
   readAsDataURL(blob) { blob.arrayBuffer().then((b) => { this.result = `data:${blob.type};base64,${Buffer.from(b).toString("base64")}`; this.onloadend?.(); this.onload?.(); }); }
 };
 
-const [rowsPath, catalogPath, woodPath, outDir, ...only] = process.argv.slice(2);
+const [rowsPath, catalogPath, woodPath, fotosPath, texDir, outDir, ...only] = process.argv.slice(2);
 const rows = JSON.parse(readFileSync(rowsPath, "utf8")).rows;
 const catalog = new Map(JSON.parse(readFileSync(catalogPath, "utf8")).map((p) => [p.id, p]));
 const woodPng = readFileSync(woodPath);
+const fotos = JSON.parse(readFileSync(fotosPath, "utf8"));
+let CUR = null; // SKU en construcción (para buscar su textura de foto)
 mkdirSync(outDir, { recursive: true });
 
 const CM = 0.01;
@@ -81,9 +87,16 @@ const PROFILE = {
 /** Plato/bandeja/bowl con planta cuadrada, rectangular, ovalada o triangular (medidas en cm). */
 function shaped(kind, w, h, d, mat, form = "square", n = 5) {
   const g = lathe(PROFILE[kind](h * CM), 48);
-  // superelipse normalizada: en form "square" el lado mide w, no la diagonal
-  const fix = form === "square" ? 1 : 1;
-  warp(g, { sx: (w * CM) / 2 * fix, sz: (d * CM) / 2 * fix, form, n });
+  warp(g, { sx: (w * CM) / 2, sz: (d * CM) / 2, form, n });
+  // cerámica: superficie de la foto proyectada desde arriba (si la hay)
+  const ph = fotos[CUR]?.pieces?.[0];
+  if (mat.name === "ceramica" && ph && existsSync(join(texDir, ph.top))) {
+    const p = g.attributes.position, uv = g.attributes.uv, W = w * CM, D = d * CM;
+    for (let i = 0; i < p.count; i++) uv.setXY(i, p.getX(i) / W + 0.5, 0.5 - p.getZ(i) / D);
+    const c = mat.color;
+    mat = mat.clone(); mat.name = `tex|${ph.top}|${Math.round(c.r * 255)},${Math.round(c.g * 255)},${Math.round(c.b * 255)}|${mat.roughness > 0.6 ? "matte" : "gloss"}`;
+    mat.color.set(0xffffff);
+  }
   return mesh(g, mat);
 }
 const roundedRect = (w, d, r) => {
@@ -500,9 +513,10 @@ const row_ = row;
 
 /* ------------------------------------------------------------ exportar */
 const targets = only.length ? rows.filter((r) => only.includes(r.sku)) : rows;
-const io = new NodeIO();
+const io = new NodeIO().registerExtensions([KHRMaterialsClearcoat]);
 const made = [];
 for (const r of targets) {
+  CUR = r.sku;
   const obj = build(r);
   if (!obj) continue;
   // Apoyar en y=0 y centrar en planta
@@ -522,14 +536,31 @@ for (const r of targets) {
   const exporter = new GLTFExporter();
   const glb = await new Promise((res, rej) => exporter.parse(scene, res, rej, { binary: true }));
   const doc = await io.readBinary(new Uint8Array(glb));
-  let tex = null;
+  const clearcoat = doc.createExtension(KHRMaterialsClearcoat);
+  const glossy = (mat, cc = 0.6) => mat.setRoughnessFactor(0.32).setExtension("KHR_materials_clearcoat", clearcoat.createClearcoat().setClearcoatFactor(cc).setClearcoatRoughnessFactor(0.12));
+  let tex = null; const photoTex = new Map();
   for (const mat of doc.getRoot().listMaterials()) {
     const n = mat.getName() || "";
     if (n.startsWith("madera")) {
       tex ??= doc.createTexture("madera").setImage(woodPng).setMimeType("image/png");
       const tint = new THREE.Color(n.split(":")[1] || "#d6b38a");
-      mat.setBaseColorTexture(tex).setBaseColorFactor([tint.r * 1.15, tint.g * 1.15, tint.b * 1.15, 1].map((v, i) => (i < 3 ? Math.min(1, v) : v)));
-    }
+      mat.setBaseColorTexture(tex).setBaseColorFactor([tint.r * 1.15, tint.g * 1.15, tint.b * 1.15, 1].map((v, i) => (i < 3 ? Math.min(1, v) : v))).setRoughnessFactor(0.55);
+    } else if (n.startsWith("tex|")) {
+      const [, file, , fin] = n.split("|");
+      if (!photoTex.has(file)) photoTex.set(file, doc.createTexture(file).setImage(readFileSync(join(texDir, file))).setMimeType("image/jpeg"));
+      mat.setBaseColorTexture(photoTex.get(file)).setBaseColorFactor([1, 1, 1, 1]).setMetallicFactor(0);
+      if (fin === "matte") mat.setRoughnessFactor(0.78); else glossy(mat);
+    } else if (n === "ceramica") {
+      if (mat.getRoughnessFactor() > 0.6) mat.setRoughnessFactor(0.78); else glossy(mat);
+    } else if (n === "vidrio") {
+      const c = mat.getBaseColorFactor();
+      mat.setAlphaMode("BLEND").setBaseColorFactor([c[0], c[1], c[2], 0.32]).setRoughnessFactor(0.05).setMetallicFactor(0);
+      glossy(mat, 0.8).setRoughnessFactor(0.05);
+    } else if (n === "acero") mat.setMetallicFactor(1).setRoughnessFactor(0.22);
+    else if (n === "acero-satinado") mat.setMetallicFactor(1).setRoughnessFactor(0.45);
+    else if (n === "dorado") mat.setMetallicFactor(1).setRoughnessFactor(0.3);
+    else if (n === "negro-mate") mat.setMetallicFactor(0.55).setRoughnessFactor(0.5);
+    else if (n === "hierro") mat.setMetallicFactor(0.6).setRoughnessFactor(0.75);
   }
   writeFileSync(join(outDir, `${r.sku}.glb`), await io.writeBinary(doc));
   made.push(r.sku);

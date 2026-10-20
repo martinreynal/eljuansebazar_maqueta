@@ -33,3 +33,19 @@ node scripts/modelos/resto.mjs datos/rows.json scripts/modelos/catalogo-modelos.
 ```
 
 Con esto, los 333 productos del catálogo tienen modelo 3D (`supabase/migrations/0007_modelos_resto.sql`).
+
+## Versión realista (texturas y materiales a partir de la foto)
+
+Reemplaza a `torneados.mjs` y mejora `resto.mjs`. Cada foto se analiza para deducir proporciones y superficie, y los materiales usan PBR.
+
+1. `analizar-fotos.py`: separa el producto del fondo (modelo de fondo por grupos de color del borde), detecta cada pieza (componentes conexas), mide proporciones (alto/ancho, conicidad de la base), colores (interior, borde, parte baja) y acabado (brillos especulares). Extrae texturas por pieza en `texturas/`: `-top.jpg` (vista cenital sintética: color interior → color del borde, con una muestra real de la superficie sin el sombreado de la foto), `-side.jpg` (lateral sintética), `-disc.jpg` (la pieza desproyectada a círculo, solo si la silueta es una elipse limpia) y `-strip.jpg` (franja lateral real, solo para piezas sueltas). Las piezas descritas como blancas se neutralizan (la foto las tiñe).
+2. `realista.mjs`: platos, bowls, tazas, vasos, copas, botellas y sus sets. Perfiles de revolución con la conicidad medida; plato = tapa (textura cenital, proyección plana) + exterior; bowl/taza/vaso = exterior (textura lateral, proyección cilíndrica) + interior; asa de taza como tubo elíptico. Esmalte: roughness 0.32 + clearcoat (mate: 0.78). Vidrio: translúcido (alpha 0.26, roughness 0.05, clearcoat) y acanalado real cuando la descripción lo indica.
+3. `resto.mjs`: mismas recetas de antes, con materiales PBR (acero metálico, dorado, esmalte con clearcoat, vidrio translúcido, madera texturada) y la superficie de la foto en platos y bandejas de cerámica cuando el color medido coincide con el del material.
+
+```bash
+python3 scripts/modelos/analizar-fotos.py public/catalogo scripts/modelos/catalogo-modelos.json datos/fotos.json datos/texturas datos/rows.json
+node scripts/modelos/realista.mjs scripts/modelos/catalogo-modelos.json datos/rows.json datos/fotos.json datos/texturas public/modelos
+node scripts/modelos/resto.mjs datos/rows.json scripts/modelos/catalogo-modelos.json scripts/modelos/madera.png datos/fotos.json datos/texturas public/modelos <SKUs que realista no generó>
+```
+
+`CUB-27` conserva su modelo dedicado (`cuchillo-cub27.mjs`). Los `.glb` pesan entre 20 KB y 700 KB (texturas JPEG de 512 px incrustadas).

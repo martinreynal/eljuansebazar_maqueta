@@ -166,18 +166,20 @@ const fmt = (m: number) => { const cm = m * 100; return (cm < 10 ? Math.round(cm
 
 /** Iluminación de estudio sin descargas externas: luces + entorno con paneles de luz. */
 function Studio({ soft = false }: { soft?: boolean }) {
+  // Iluminación de estudio fotográfico: softbox grande arriba, luz principal cálida de frente-izquierda,
+  // contraluz fría y una banda angosta que dibuja un reflejo alargado en esmaltes, vidrio y acero.
   return (
     <>
-      <ambientLight intensity={soft ? 0.45 : 0.35} />
-      <directionalLight position={[2.5, 3, 2]} intensity={soft ? 0.9 : 1.1} />
-      <directionalLight position={[-3, 1.5, -2]} intensity={0.6} />
-      <Environment resolution={256} environmentIntensity={soft ? 0.7 : 0.9}>
-        <Lightformer form="rect" intensity={4} position={[0, 4, 0]} rotation={[Math.PI / 2, 0, 0]} scale={[8, 8, 1]} />
-        <Lightformer form="rect" intensity={3} position={[0, 1, 5]} scale={[6, 4, 1]} />
-        <Lightformer form="rect" intensity={2.2} position={[-5, 1, 1]} rotation={[0, Math.PI / 2, 0]} scale={[4, 4, 1]} />
-        <Lightformer form="rect" intensity={2.2} position={[5, 1, -1]} rotation={[0, -Math.PI / 2, 0]} scale={[4, 4, 1]} />
-        <Lightformer form="rect" intensity={1.4} position={[0, 1, -5]} rotation={[0, Math.PI, 0]} scale={[6, 4, 1]} />
-        <Lightformer form="rect" intensity={0.6} position={[0, -4, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={[8, 8, 1]} color="#bfb6a8" />
+      <ambientLight intensity={soft ? 0.35 : 0.25} />
+      <directionalLight position={[2.5, 3.5, 2]} intensity={soft ? 0.8 : 1.0} color="#fff4e6" />
+      <directionalLight position={[-3, 1.5, -2]} intensity={0.45} color="#e8f0ff" />
+      <Environment resolution={512} environmentIntensity={soft ? 0.75 : 1.0}>
+        <Lightformer form="rect" intensity={3.5} position={[0, 4, 0]} rotation={[Math.PI / 2, 0, 0]} scale={[7, 7, 1]} color="#fff8f0" />
+        <Lightformer form="rect" intensity={3.2} position={[-3, 2, 4]} rotation={[0, 0.6, 0]} scale={[5, 3.5, 1]} color="#fff4e6" />
+        <Lightformer form="rect" intensity={1.6} position={[5, 1, 1]} rotation={[0, -Math.PI / 2, 0]} scale={[4, 4, 1]} color="#e9f0fb" />
+        <Lightformer form="rect" intensity={1.2} position={[0, 1, -5]} rotation={[0, Math.PI, 0]} scale={[6, 4, 1]} />
+        <Lightformer form="rect" intensity={6} position={[1.5, 3, 3]} rotation={[-0.6, 0.3, 0]} scale={[0.35, 4, 1]} />
+        <Lightformer form="rect" intensity={0.5} position={[0, -4, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={[8, 8, 1]} color="#bfb6a8" />
       </Environment>
     </>
   );
