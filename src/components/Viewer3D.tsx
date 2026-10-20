@@ -2,7 +2,7 @@
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { ContactShadows, Environment, Html, Lightformer, Line, OrbitControls, TrackballControls, useGLTF } from "@react-three/drei";
+import { AccumulativeShadows, ContactShadows, Environment, Html, Lightformer, Line, MeshReflectorMaterial, OrbitControls, RandomizedLight, RoundedBox, TrackballControls, useGLTF, useTexture } from "@react-three/drei";
 import { Maximize2, Minimize2, Minus, Plus, RotateCcw } from "lucide-react";
 
 export type ViewerMode = "studio" | "table";
@@ -77,7 +77,7 @@ export function Viewer3D({ url, name, mode = "studio" }: { url: string; name: st
   // Cámara inicial: en estudio, de frente; en mesa, en diagonal para que entre toda la mesa
   const far = aspect && aspect < 1 ? Math.pow(1 / aspect, 0.7) : 1;
   const camera = table
-    ? { fov: 30, near: 0.01, far: 50, position: [1.15 * far, 0.85 * far, 1.55 * far] as [number, number, number] }
+    ? { fov: 28, near: 0.01, far: 50, position: [1.1 * far, 0.72 * far, 1.55 * far] as [number, number, number] }
     : { fov: 30, near: 0.01, far: 50, position: [0, 0.3, 3.1 * far] as [number, number, number] };
 
   return (
@@ -86,20 +86,27 @@ export function Viewer3D({ url, name, mode = "studio" }: { url: string; name: st
         key={mode}
         dpr={[1, 2]}
         camera={camera}
+        shadows={table ? "soft" : false}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-        onCreated={({ gl }) => { gl.toneMapping = THREE.ACESFilmicToneMapping; gl.toneMappingExposure = 0.95; }}
+        onCreated={({ gl }) => { gl.toneMapping = THREE.ACESFilmicToneMapping; gl.toneMappingExposure = table ? 0.92 : 0.95; }}
         onPointerDown={() => setInteracted(true)}
         onWheel={() => setInteracted(true)}
       >
         {/* Fondo oscuro dentro de la escena: hace falta para que el vidrio (transmisión) muestre lo que hay detrás */}
-        <color attach="background" args={["#171615"]} />
+        <color attach="background" args={[table ? "#121110" : "#171615"]} />
+        {table && <fog attach="fog" args={["#121110", 3.6, 8]} />}
         <Suspense fallback={null}>
-          <Studio soft={table} />
+          {table ? <Restaurant /> : <Studio />}
           {table ? (
             <>
               <Table />
+              <TableCamera size={size} far={far} ctl={controls} />
               <Model url={url} spin={false} fit={false} onReady={onReady} />
-              <ContactShadows position={[0, 0.0008, 0]} opacity={0.45} scale={1.6} blur={2.2} far={0.5} resolution={512} color="#000" />
+              <ContactShadows position={[0, 0.0025, 0]} opacity={0.6} scale={Math.max(0.6, (size ? Math.max(size.w, size.d) : 0.4) * 2.2)} blur={2.2} far={0.35} resolution={512} color="#1a1008" />
+              {/* Sombra suave del producto sobre la mesa (se acumula en los primeros cuadros) */}
+              <AccumulativeShadows temporal frames={64} alphaTest={0.75} opacity={0.9} scale={1.7} position={[0, 0.0015, 0]} color="#2a1c0e" resolution={1024}>
+                <RandomizedLight amount={8} radius={0.45} ambient={0.4} intensity={2.4} position={[1.4, 2.4, 1.0]} bias={0.001} />
+              </AccumulativeShadows>
               {guide && <ScaleGuide />}
               {measures && size && <Measures size={size} />}
               {refs && size && <References size={size} />}
@@ -114,12 +121,12 @@ export function Viewer3D({ url, name, mode = "studio" }: { url: string; name: st
         {table ? (
           <OrbitControls
             ref={(c) => { controls.current = c as unknown as Ctl; }}
-            target={[0, 0.06, 0]}
+            target={[0, 0.05, 0]}
             enableDamping
             dampingFactor={0.1}
             minDistance={0.18}
             maxDistance={4.5}
-            maxPolarAngle={Math.PI / 2 - 0.04}
+            maxPolarAngle={Math.PI / 2 - 0.06}
             rotateSpeed={0.8}
           />
         ) : (
@@ -164,10 +171,32 @@ export function Viewer3D({ url, name, mode = "studio" }: { url: string; name: st
   );
 }
 
+/**
+ * Modo mesa: encuadre inicial según el tamaño del producto (los chicos se ven de cerca,
+ * con parte de la mesa; los grandes, con la mesa entera). Define el punto de "Restablecer".
+ */
+function TableCamera({ size, far, ctl }: { size: Size | null; far: number; ctl: React.MutableRefObject<Ctl | null> }) {
+  const { camera, invalidate } = useThree();
+  useEffect(() => {
+    if (!size) return;
+    const big = Math.max(size.w, size.d, size.h * 1.6);
+    const dist = THREE.MathUtils.clamp(big * 4.2, 0.6, 2.6) * far;
+    const dir = new THREE.Vector3(1.1, 0.78, 1.55).normalize();
+    const target = new THREE.Vector3(0, Math.min(size.h * 0.35, 0.12), 0);
+    camera.position.copy(target).add(dir.multiplyScalar(dist));
+    camera.lookAt(target);
+    const c = ctl.current as (Ctl & { saveState?: () => void }) | null;
+    if (c) { c.target.copy(target); c.update(); c.saveState?.(); }
+    invalidate();
+  }, [size, far, camera, ctl, invalidate]);
+  return null;
+}
+
 const fmt = (m: number) => { const cm = m * 100; return (cm < 10 ? Math.round(cm * 10) / 10 : Math.round(cm)).toLocaleString("es-AR"); };
 
 /** Iluminación de estudio sin descargas externas: luces + entorno con paneles de luz. */
-function Studio({ soft = false }: { soft?: boolean }) {
+function Studio() {
+  const soft = false;
   // Iluminación de estudio fotográfico: softbox grande arriba, luz principal cálida de frente-izquierda,
   // contraluz fría y una banda angosta que dibuja un reflejo alargado en esmaltes, vidrio y acero.
   return (
@@ -228,24 +257,87 @@ function Model({ url, spin, fit, onReady }: { url: string; spin: boolean; fit: b
   );
 }
 
-/** Mesa de referencia: tapa y cuatro patas, madera clara lisa. La tapa queda en y = 0. */
+/**
+ * Luz de restaurante para el modo mesa: luz cálida principal con sombras, colgante
+ * sobre la mesa, relleno frío desde el lado y entorno suave para los reflejos.
+ */
+function Restaurant() {
+  return (
+    <>
+      <ambientLight intensity={0.18} color="#ffe9d2" />
+      <directionalLight
+        position={[1.6, 2.6, 1.2]} intensity={2.2} color="#ffe3c2" castShadow
+        shadow-mapSize={[2048, 2048]} shadow-bias={-0.0002} shadow-normalBias={0.01}
+        shadow-camera-left={-1.2} shadow-camera-right={1.2} shadow-camera-top={1.2} shadow-camera-bottom={-1.2} shadow-camera-near={0.5} shadow-camera-far={7}
+      />
+      <spotLight position={[0, 1.9, 0.15]} angle={0.62} penumbra={0.9} intensity={4} distance={5} decay={2} color="#ffd9ad" />
+      <pointLight position={[0.4, 1.4, -1.3]} intensity={2.2} distance={4} decay={2} color="#ffd9b0" />
+      <directionalLight position={[-2.5, 1.2, -1.5]} intensity={0.5} color="#cfe0ff" />
+      <Environment resolution={256} environmentIntensity={0.55}>
+        <Lightformer form="rect" intensity={2.5} position={[0, 3, 0]} rotation={[Math.PI / 2, 0, 0]} scale={[3, 3, 1]} color="#ffe6c8" />
+        <Lightformer form="rect" intensity={1.6} position={[-4, 1.5, 2]} rotation={[0, 0.9, 0]} scale={[4, 2.5, 1]} color="#ffefdc" />
+        <Lightformer form="rect" intensity={0.9} position={[4, 1.2, -1]} rotation={[0, -Math.PI / 2, 0]} scale={[3, 2.5, 1]} color="#dfe8f5" />
+        <Lightformer form="rect" intensity={0.7} position={[0, 1, -5]} rotation={[0, Math.PI, 0]} scale={[6, 3, 1]} color="#f2e6d6" />
+      </Environment>
+    </>
+  );
+}
+
+/**
+ * Mesa de restaurante: tapa de roble macizo con veta (color, rugosidad y relieve),
+ * cantos redondeados, bastidor y patas de acero negro, sobre un piso oscuro con reflejo suave.
+ * La tapa queda en y = 0.
+ */
 function Table() {
-  const wood = useMemo(() => new THREE.MeshStandardMaterial({ color: "#b39b76", roughness: 0.85 }), []);
-  const legH = TABLE.h - TABLE.top, leg = 0.045, inset = 0.06;
+  const [map, rough, normal, floorMap, floorRough, wallMap] = useTexture([
+    "/modelos/mesa/roble-color.jpg", "/modelos/mesa/roble-rugosidad.jpg", "/modelos/mesa/roble-normal.jpg",
+    "/modelos/mesa/piso-color.jpg", "/modelos/mesa/piso-rugosidad.jpg", "/modelos/mesa/pared-color.jpg",
+  ]);
+  useMemo(() => {
+    map.colorSpace = THREE.SRGBColorSpace;
+    for (const t of [map, rough, normal]) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1, 1); t.anisotropy = 8; }
+    floorMap.colorSpace = THREE.SRGBColorSpace; wallMap.colorSpace = THREE.SRGBColorSpace;
+    for (const t of [floorMap, floorRough]) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(4, 4); }
+    wallMap.wrapS = wallMap.wrapT = THREE.RepeatWrapping; wallMap.repeat.set(3, 2);
+  }, [map, rough, normal, floorMap, floorRough, wallMap]);
+  const oak = useMemo(() => new THREE.MeshStandardMaterial({ map, roughnessMap: rough, normalMap: normal, normalScale: new THREE.Vector2(0.28, 0.28), roughness: 1, metalness: 0, envMapIntensity: 0.9 }), [map, rough, normal]);
+  const edge = useMemo(() => new THREE.MeshStandardMaterial({ color: "#9c7a4e", roughness: 0.6, metalness: 0 }), []);
+  const steel = useMemo(() => new THREE.MeshStandardMaterial({ color: "#1a1a1b", roughness: 0.42, metalness: 0.75 }), []);
+  const top = 0.04, legH = TABLE.h - top, leg = 0.04, inset = 0.07, apron = 0.05;
   return (
     <group>
-      <mesh position={[0, -TABLE.top / 2, 0]} material={wood} receiveShadow>
-        <boxGeometry args={[TABLE.w, TABLE.top, TABLE.d]} />
+      {/* tapa (caras laterales con tono de canto) */}
+      <RoundedBox args={[TABLE.w, top, TABLE.d]} radius={0.006} smoothness={4} position={[0, -top / 2, 0]} material={oak} receiveShadow castShadow />
+      <mesh position={[0, -top / 2, 0]} material={edge}>
+        <boxGeometry args={[TABLE.w - 0.004, top - 0.004, TABLE.d - 0.004]} />
       </mesh>
+      {/* bastidor de acero bajo la tapa */}
+      {[[0, 1], [0, -1]].map(([, sz], i) => (
+        <mesh key={`a${i}`} position={[0, -top - apron / 2, sz * (TABLE.d / 2 - inset - leg / 2)]} material={steel} castShadow>
+          <boxGeometry args={[TABLE.w - 2 * inset, apron, 0.02]} />
+        </mesh>
+      ))}
+      {[[1], [-1]].map(([sx], i) => (
+        <mesh key={`b${i}`} position={[sx * (TABLE.w / 2 - inset - leg / 2), -top - apron / 2, 0]} material={steel} castShadow>
+          <boxGeometry args={[0.02, apron, TABLE.d - 2 * inset]} />
+        </mesh>
+      ))}
+      {/* patas */}
       {[[1, 1], [-1, 1], [1, -1], [-1, -1]].map(([sx, sz], i) => (
-        <mesh key={i} position={[sx * (TABLE.w / 2 - inset), -TABLE.top - legH / 2, sz * (TABLE.d / 2 - inset)]} material={wood}>
+        <mesh key={i} position={[sx * (TABLE.w / 2 - inset - leg / 2), -top - legH / 2, sz * (TABLE.d / 2 - inset - leg / 2)]} material={steel} castShadow>
           <boxGeometry args={[leg, legH, leg]} />
         </mesh>
       ))}
-      {/* Piso apenas insinuado para que la mesa no flote */}
-      <mesh position={[0, -TABLE.h - 0.001, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[2.2, 48]} />
-        <meshStandardMaterial color="#1c1a18" roughness={1} />
+      {/* pared de fondo (revoque cálido) */}
+      <mesh position={[0, 0.4, -2.2]} receiveShadow>
+        <planeGeometry args={[9, 4.5]} />
+        <meshStandardMaterial map={wallMap} color="#e6dccb" roughness={0.95} />
+      </mesh>
+      {/* piso con reflejo suave */}
+      <mesh position={[0, -TABLE.h, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[9, 9]} />
+        <MeshReflectorMaterial map={floorMap} roughnessMap={floorRough} color="#8d8781" roughness={0.75} metalness={0.15}
+          blur={[400, 120]} resolution={512} mixBlur={1} mixStrength={0.55} mixContrast={1} depthScale={0.8} minDepthThreshold={0.6} maxDepthThreshold={1.4} mirror={0} />
       </mesh>
     </group>
   );
@@ -308,12 +400,13 @@ function Measures({ size }: { size: Size }) {
 /** Referencias de tamaño cotidianas, apoyadas junto al producto: tarjeta y lata de 330 ml. */
 function References({ size }: { size: Size }) {
   const x = size.w / 2 + 0.16;
-  const grey = useMemo(() => new THREE.MeshStandardMaterial({ color: "#9a948b", roughness: 0.6 }), []);
+  const alu = useMemo(() => new THREE.MeshStandardMaterial({ color: "#d9dadc", roughness: 0.32, metalness: 0.9 }), []);
+  const grey = useMemo(() => new THREE.MeshStandardMaterial({ color: "#eeeae3", roughness: 0.5 }), []);
   const can = { r: 0.033, h: 0.115 };
   const card = { w: 0.0856, d: 0.054, t: 0.0008 };
   return (
     <group>
-      <mesh position={[x, can.h / 2, -0.12]} material={grey} castShadow>
+      <mesh position={[x, can.h / 2, -0.12]} material={alu} castShadow>
         <cylinderGeometry args={[can.r, can.r, can.h, 40]} />
       </mesh>
       <Html position={[x, can.h + 0.03, -0.12]} center className="v3d-lbl"><span>Lata 330 ml · 11,5 cm</span></Html>
