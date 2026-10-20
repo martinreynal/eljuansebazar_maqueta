@@ -271,7 +271,7 @@ function Restaurant() {
         shadow-camera-left={-1.2} shadow-camera-right={1.2} shadow-camera-top={1.2} shadow-camera-bottom={-1.2} shadow-camera-near={0.5} shadow-camera-far={7}
       />
       <spotLight position={[0, 1.9, 0.15]} angle={0.62} penumbra={0.9} intensity={4} distance={5} decay={2} color="#ffd9ad" />
-      <pointLight position={[0.4, 1.4, -1.3]} intensity={2.2} distance={4} decay={2} color="#ffd9b0" />
+      <pointLight position={[0.4, 1.5, -1.2]} intensity={7} distance={5} decay={2} color="#ffd9b0" />
       <directionalLight position={[-2.5, 1.2, -1.5]} intensity={0.5} color="#cfe0ff" />
       <Environment resolution={256} environmentIntensity={0.55}>
         <Lightformer form="rect" intensity={2.5} position={[0, 3, 0]} rotation={[Math.PI / 2, 0, 0]} scale={[3, 3, 1]} color="#ffe6c8" />
