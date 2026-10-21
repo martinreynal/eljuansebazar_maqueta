@@ -1482,3 +1482,56 @@ h1,h2,.page-title,.sec-head h2,.h2-copy h1,.bs-copy h2,.pinfo h1,.pi-title,.cust
 .ftr .lockup{color:#F5F1E8}
 .ftr .legal{border-top-color:rgba(245,241,232,.18);color:rgba(245,241,232,.6)}
 .wa-banner h2,.wa-banner h3{color:#F5F1E8}
+
+
+/* =====================================================================
+   Paleta SAGGIO (octubre 2026): marfil como principal, plateado oscuro secundario, #E84840 terciario.
+   Sin azul. El plateado lleva logo, títulos, botones y pie; el #E84840 solo acentos.
+   Para textos chicos se usan variantes más profundas de cada color (contraste legible).
+   ===================================================================== */
+:root{
+  --ivory:#F4EFE4; --ivory-2:#EAE3D5; --silver:#6B7177; --silver-dark:#4C5156; --coral:#E84840; --coral-text:#C93A32;
+  --brand:#6B7177; --brand-dark:#4C5156; --brand-2:#C93A32; --sand-brand:#EAE3D5; --bone:#F4EFE4;
+  --accent:#E84840; --accent-2:#C93A32;
+  --bg:#F4EFE4; --surface:#FFFFFF; --sand:#EAE3D5; --stone:#D6CFC1;
+  --ink:#3E4348; --ink-2:#5A6066; --muted:#8C8A84; --line:#E1D9CA;
+  --brand-soft:#ECEDEE; --accent-soft:#FBE4E2; --promo:#E84840; --promo-soft:#FBE4E2;
+}
+body{background:var(--bg);color:var(--ink)}
+.hdr{background:rgba(244,239,228,.94)}
+.demo-strip{background:var(--silver-dark)}
+.list-btn.has .list-btn-n{background:var(--coral);color:#fff}
+
+/* Botones: principal plateado oscuro (pasa a #E84840 al apoyar el cursor), secundario contorno */
+.btn-cta,.btn-dark{background:var(--silver);border-color:var(--silver);color:#fff}
+.btn-cta:hover,.btn-dark:hover{background:var(--coral);border-color:var(--coral);color:#fff}
+.btn-ghost{border-color:var(--silver);color:var(--silver-dark)}
+.btn-ghost:hover{background:var(--silver);border-color:var(--silver);color:#fff}
+.bs-cta{box-shadow:0 10px 24px -14px rgba(76,81,86,.7)}
+
+/* Etiquetas y detalles en el color terciario */
+.eyebrow,.h2-eyebrow{color:var(--coral-text)}
+.h2-icons a:hover,.h2-icons a:hover svg,.cat-tile:hover b,.pc-name a:hover,.rank a:hover{color:var(--coral-text)}
+.cat-tile:hover .ph{border-color:var(--coral)}
+.h2-tile:hover b{background:var(--coral);color:#fff}
+.h2-cap i{background:var(--coral)}
+.tag-oferta,.pc-tag-oferta{background:var(--coral);color:#fff}
+
+/* Tarjetas de rubro: plateado oscuro y marfil profundo, con la línea en #E84840 */
+.h2-banner.petrol .bn-txt{background:var(--silver);color:var(--ivory)}
+.h2-banner.sand .bn-txt{background:var(--ivory-2);color:var(--silver-dark)}
+.h2-banner .bn-txt i{background:var(--coral);opacity:1}
+
+/* Regalos empresariales */
+.brand-sec{background:var(--ivory-2)}
+.bs-copy{background:linear-gradient(180deg,#EAE3D5 0%,#EAE3D5 58%,rgba(234,227,213,0) 76%),linear-gradient(90deg,#EAE3D5 0%,#EAE3D5 21%,rgba(234,227,213,0) 52%),url(/portada/marca-fondo.jpg) right calc(100% + 150px)/80% auto no-repeat #EAE3D5}
+@media (max-width:560px){.bs-copy{background:linear-gradient(180deg,#EAE3D5 0%,#EAE3D5 62%,rgba(234,227,213,0) 80%),url(/portada/marca-fondo.jpg) center calc(100% + 130px)/100% auto no-repeat #EAE3D5}}
+.bs-tech .lucide{color:var(--coral)}
+.bs-steps .n{border-color:var(--coral);color:var(--coral-text)}
+
+/* Pie en plateado oscuro */
+.ftr{background:var(--silver-dark);color:rgba(244,239,228,.8)}
+.ftr h4,.ftr .lockup{color:var(--ivory)}
+.ftr .legal{border-top-color:rgba(244,239,228,.18);color:rgba(244,239,228,.62)}
+.wa-banner{background:var(--silver)}
+.wa-banner h2,.wa-banner h3{color:var(--ivory)}
