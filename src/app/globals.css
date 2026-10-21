@@ -1535,3 +1535,44 @@ body{background:var(--bg);color:var(--ink)}
 .ftr .legal{border-top-color:rgba(244,239,228,.18);color:rgba(244,239,228,.62)}
 .wa-banner{background:var(--silver)}
 .wa-banner h2,.wa-banner h3{color:var(--ivory)}
+
+
+/* =====================================================================
+   Paleta SAGGIO (ajuste): #E84840 principal (logo, botones, acentos y bloques), marfil de fondo,
+   plateado oscuro #4C5156 terciario (títulos, textos, pie). Variante #C93A32 para textos rojos chicos.
+   ===================================================================== */
+:root{
+  --red:#E84840; --red-dark:#C93A32; --silver-dark:#4C5156; --silver-deep:#3B3F43;
+  --brand:#E84840; --brand-dark:#C93A32; --brand-2:#C93A32; --accent:#4C5156; --accent-2:#3B3F43;
+  --ink:#3B3F43; --ink-2:#585D62; --brand-soft:#FBE4E2;
+}
+/* Logo en rojo */
+.lockup,.ftr .lockup{color:var(--red)}
+/* Títulos en plateado oscuro (legibles); el rojo queda para marca, botones y acentos */
+h1,h2,.page-title,.sec-head h2,.h2-copy h1,.bs-copy h2,.pinfo h1,.pi-title,.custom h2,.adm-h h2{color:var(--silver-dark)}
+.nav-dd > button,.nav a,.hdr nav a{color:var(--silver-dark)}
+.nav a:hover,.hdr nav a:hover,.nav-dd > button:hover{color:var(--red-dark)}
+/* Botones */
+.btn-cta,.btn-dark{background:var(--red);border-color:var(--red);color:#fff}
+.btn-cta:hover,.btn-dark:hover{background:var(--red-dark);border-color:var(--red-dark);color:#fff}
+.btn-ghost{border-color:var(--red);color:var(--red-dark)}
+.btn-ghost:hover{background:var(--red);border-color:var(--red);color:#fff}
+.bs-cta{box-shadow:0 10px 24px -14px rgba(232,72,64,.75)}
+.list-btn.has .list-btn-n{background:var(--red)}
+.demo-strip{background:var(--red-dark)}
+/* Íconos y detalles */
+.h2-icons svg{color:var(--red)}
+.h2-icons a{color:var(--silver-dark)}
+.h2-icons a:hover,.h2-icons a:hover svg{color:var(--red-dark)}
+.h2-tile b{color:var(--red-dark)}
+/* Tarjetas de rubro: rojo y marfil profundo; línea en plateado oscuro sobre rojo */
+.h2-banner.petrol .bn-txt{background:var(--red);color:#FFF8F0}
+.h2-banner.petrol .bn-txt i{background:#FFF8F0}
+.h2-banner.petrol .bn-txt small{font-weight:600}
+.h2-banner.sand .bn-txt{background:var(--ivory-2);color:var(--silver-dark)}
+.h2-banner.sand .bn-txt i{background:var(--red)}
+/* Bloques oscuros y pie en plateado oscuro (terciario) */
+.wa-banner{background:var(--silver-dark)}
+.ftr{background:var(--silver-deep)}
+.bs-steps .n{border-color:var(--red);color:var(--red-dark)}
+.bs-tech .lucide,.h2-facts .lucide{color:var(--red)}
