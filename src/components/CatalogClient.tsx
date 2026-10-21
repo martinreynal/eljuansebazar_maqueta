@@ -41,7 +41,7 @@ const COLORS: [string, RegExp][] = [
 const colorsOf = (p: Product) => { const t = norm(`${p.name} ${p.description.split(".").slice(0, 2).join(" ")}`); return COLORS.filter(([, r]) => r.test(t)).map(([c]) => c); };
 
 /** Menú desplegable de filtro con casillas (en celular se abre como panel inferior). */
-function FilterMenu({ label, options, value, onChange }: { label: string; options: [string, number][]; value: string[]; onChange: (v: string[]) => void }) {
+function FilterMenu({ label, options, value, onChange, more = false }: { label: string; options: [string, number][]; value: string[]; onChange: (v: string[]) => void; more?: boolean }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -52,9 +52,9 @@ function FilterMenu({ label, options, value, onChange }: { label: string; option
   }, [open]);
   const n = value.length;
   return (
-    <div className={`fdd ${open ? "open" : ""}`} ref={ref}>
+    <div className={`fdd ${open ? "open" : ""} ${more ? "fdd-more" : ""}`} ref={ref}>
       <button type="button" className={`fdd-btn ${n ? "on" : ""}`} aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-        <span>{label}{n ? <b>{n}</b> : null}</span><ChevronDown aria-hidden />
+        <span>{more && <Filter aria-hidden />}{label}{n ? <b>{n}</b> : null}</span>{!more && <ChevronDown aria-hidden />}
       </button>
       {open && (
         <div className="fdd-menu" role="listbox" aria-multiselectable aria-label={label}>
@@ -249,7 +249,7 @@ export function CatalogClient({ products, categories, settings, base, preset, ti
           <FilterMenu label="Material" options={matOpts} value={mats} onChange={setMats} />
           <FilterMenu label="Color" options={colorOpts} value={colors} onChange={setColors} />
           <FilterMenu label="Disponibilidad" options={availOpts} value={avail.map((a) => AVAILABILITY[a])} onChange={(v) => setAvail(AV_FILTERS.filter((a) => v.includes(AVAILABILITY[a])))} />
-          {extraOpts.length > 0 && <FilterMenu label="Más filtros" options={extraOpts} value={extra} onChange={setExtra} />}
+          <FilterMenu label="Más filtros" options={extraOpts.length ? extraOpts : [["Con vista 3D", 0]]} value={extra} onChange={setExtra} more />
         </div>
       </div>
 

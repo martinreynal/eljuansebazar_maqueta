@@ -1610,7 +1610,7 @@ h1,h2,.page-title,.sec-head h2,.h2-copy h1,.bs-copy h2,.pinfo h1,.pi-title,.cust
 .fdd.open .fdd-btn .lucide{transform:rotate(180deg)}
 .fdd-btn:hover,.fdd.open .fdd-btn{border-color:var(--silver)}
 .fdd-btn.on{border-color:var(--red)}
-.fdd:last-child .fdd-btn{background:#F1EBE0;font-weight:600}
+.fdd-more{flex:0 0 auto}.fdd-more .fdd-btn{background:#F1EBE0;font-weight:600;justify-content:center}.fdd-more .fdd-btn .lucide{width:17px;height:17px}
 .fdd-menu{position:absolute;z-index:60;top:calc(100% + 8px);left:0;min-width:260px;width:max-content;max-width:340px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 18px 40px -18px rgba(30,30,30,.4);display:flex;flex-direction:column;overflow:hidden}
 .fdd:last-child .fdd-menu,.fdd:nth-last-child(2) .fdd-menu{left:auto;right:0}
 .fdd-h{display:none;align-items:center;justify-content:space-between;padding:14px 16px 6px;font-weight:700;font-size:16px}
