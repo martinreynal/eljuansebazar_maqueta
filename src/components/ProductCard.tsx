@@ -54,11 +54,8 @@ export function ProductCard({ p, ctx, priority = false }: { p: Product; ctx: Car
         {p.availability === "sin_stock" && <span className="pc-stock">{AVAILABILITY[p.availability]}</span>}
       </div>
       <div className="pc-actions">
-        <WaLink href={consult} channel="product" productId={p.id} className="pc-btn pc-btn-wa" label={`Pedir cotización de ${p.name} por WhatsApp`}>
-          <span>Consultar</span>
-        </WaLink>
         <button
-          className={`pc-btn pc-btn-icon ${inList ? "in" : ""} ${added ? "added" : ""}`}
+          className={`pc-btn pc-btn-add ${inList ? "in" : ""} ${added ? "added" : ""}`}
           aria-label={inList ? `${p.name} está en tu lista (${inList.qty}). Sumar una unidad` : `Agregar ${p.name} a la lista de consulta`}
           title={inList ? `En tu lista (${inList.qty}) · sumar una unidad` : "Agregar a la lista de consulta"}
           onClick={() => {
@@ -68,7 +65,9 @@ export function ProductCard({ p, ctx, priority = false }: { p: Product; ctx: Car
           }}
         >
           <span className="pc-ic" key={added}>{added ? <Check /> : inList ? <ClipboardCheck /> : <ListPlus />}</span>
+          <span className="pc-add-txt">{added ? "Agregado" : inList ? <>En lista<span className="pc-add-n"> ({inList.qty})</span></> : "Agregar"}</span>
         </button>
+        <WaLink href={consult} channel="product" productId={p.id} className="pc-btn pc-btn-icon pc-btn-wa-ic" label={`Consultar ${p.name} por WhatsApp`} />
       </div>
     </article>
   );

@@ -1691,3 +1691,15 @@ h1,h2,.page-title,.sec-head h2,.h2-copy h1,.bs-copy h2,.pinfo h1,.pi-title,.cust
 .ftr .lockup{align-items:center}.ftr .lockup-iso{height:34px}
 .login .lockup-iso{height:40px}
 @media (max-width:860px){.lockup-iso{height:22px}.lockup{gap:8px}}
+
+/* Tarjeta: botón grande = agregar a la lista (rojo), botón chico = WhatsApp (verde) */
+.pc-btn-add{flex:1;min-width:0;border:1px solid var(--red);color:var(--red);background:#fff;padding:0 10px;white-space:nowrap}
+.pc-btn-add .pc-add-txt{overflow:hidden;text-overflow:ellipsis}
+.pc-btn-add:hover{background:var(--red);border-color:var(--red);color:#fff}
+.pc-btn-add.in{background:var(--red);border-color:var(--red);color:#fff}
+.pc-btn-add.in:hover{background:var(--red-dark);border-color:var(--red-dark)}
+.pc-btn-add.added,.pc-btn-add.added:hover{background:var(--red-dark);border-color:var(--red-dark);color:#fff;animation:mi-ring .6s ease-out}
+.pc-btn-add .pc-ic .lucide{width:17px;height:17px}
+.pc-btn-icon.pc-btn-wa-ic{border:1px solid var(--wa-green);color:var(--wa-green);background:#fff}
+.pc-btn-icon.pc-btn-wa-ic:hover{background:var(--wa-green);border-color:var(--wa-green);color:#fff}
+@media (max-width:560px){.pc-btn-add{gap:6px;padding:0 8px}.pc-add-n{display:none}}
