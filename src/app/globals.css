@@ -1682,3 +1682,12 @@ h1,h2,.page-title,.sec-head h2,.h2-copy h1,.bs-copy h2,.pinfo h1,.pi-title,.cust
 /* Rojo de marca igualado al de Argenprom: #EF241E (variante profunda #C81D18 para textos chicos) */
 :root{--red:#EF241E;--red-dark:#C81D18;--coral:#EF241E;--coral-text:#C81D18;--brand:#EF241E;--brand-dark:#C81D18;--brand-2:#C81D18;--promo:#EF241E}
 .bs-cta{box-shadow:0 10px 24px -14px rgba(239,36,30,.7)}
+
+/* Logo con isotipo */
+.lockup{flex-direction:row;align-items:center;gap:10px}
+.lockup-iso{display:block;height:28px;width:auto;fill:var(--red);flex:none}
+.lockup-word{line-height:1}
+.lockup-compact .lockup-iso{height:22px}
+.ftr .lockup{align-items:center}.ftr .lockup-iso{height:34px}
+.login .lockup-iso{height:40px}
+@media (max-width:860px){.lockup-iso{height:22px}.lockup{gap:8px}}
