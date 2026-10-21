@@ -1485,24 +1485,24 @@ h1,h2,.page-title,.sec-head h2,.h2-copy h1,.bs-copy h2,.pinfo h1,.pi-title,.cust
 
 
 /* =====================================================================
-   Paleta SAGGIO (octubre 2026): marfil como principal, plateado oscuro secundario, #E84840 terciario.
-   Sin azul. El plateado lleva logo, títulos, botones y pie; el #E84840 solo acentos.
+   Paleta SAGGIO (octubre 2026): marfil como principal, plateado oscuro secundario, #EF241E terciario.
+   Sin azul. El plateado lleva logo, títulos, botones y pie; el #EF241E solo acentos.
    Para textos chicos se usan variantes más profundas de cada color (contraste legible).
    ===================================================================== */
 :root{
-  --ivory:#F4EFE4; --ivory-2:#EAE3D5; --silver:#6B7177; --silver-dark:#4C5156; --coral:#E84840; --coral-text:#C93A32;
-  --brand:#6B7177; --brand-dark:#4C5156; --brand-2:#C93A32; --sand-brand:#EAE3D5; --bone:#F4EFE4;
-  --accent:#E84840; --accent-2:#C93A32;
+  --ivory:#F4EFE4; --ivory-2:#EAE3D5; --silver:#6B7177; --silver-dark:#4C5156; --coral:#EF241E; --coral-text:#C81D18;
+  --brand:#6B7177; --brand-dark:#4C5156; --brand-2:#C81D18; --sand-brand:#EAE3D5; --bone:#F4EFE4;
+  --accent:#EF241E; --accent-2:#C81D18;
   --bg:#F4EFE4; --surface:#FFFFFF; --sand:#EAE3D5; --stone:#D6CFC1;
   --ink:#3E4348; --ink-2:#5A6066; --muted:#8C8A84; --line:#E1D9CA;
-  --brand-soft:#ECEDEE; --accent-soft:#FBE4E2; --promo:#E84840; --promo-soft:#FBE4E2;
+  --brand-soft:#ECEDEE; --accent-soft:#FBE4E2; --promo:#EF241E; --promo-soft:#FBE4E2;
 }
 body{background:var(--bg);color:var(--ink)}
 .hdr{background:rgba(244,239,228,.94)}
 .demo-strip{background:var(--silver-dark)}
 .list-btn.has .list-btn-n{background:var(--coral);color:#fff}
 
-/* Botones: principal plateado oscuro (pasa a #E84840 al apoyar el cursor), secundario contorno */
+/* Botones: principal plateado oscuro (pasa a #EF241E al apoyar el cursor), secundario contorno */
 .btn-cta,.btn-dark{background:var(--silver);border-color:var(--silver);color:#fff}
 .btn-cta:hover,.btn-dark:hover{background:var(--coral);border-color:var(--coral);color:#fff}
 .btn-ghost{border-color:var(--silver);color:var(--silver-dark)}
@@ -1517,7 +1517,7 @@ body{background:var(--bg);color:var(--ink)}
 .h2-cap i{background:var(--coral)}
 .tag-oferta,.pc-tag-oferta{background:var(--coral);color:#fff}
 
-/* Tarjetas de rubro: plateado oscuro y marfil profundo, con la línea en #E84840 */
+/* Tarjetas de rubro: plateado oscuro y marfil profundo, con la línea en #EF241E */
 .h2-banner.petrol .bn-txt{background:var(--silver);color:var(--ivory)}
 .h2-banner.sand .bn-txt{background:var(--ivory-2);color:var(--silver-dark)}
 .h2-banner .bn-txt i{background:var(--coral);opacity:1}
@@ -1538,12 +1538,12 @@ body{background:var(--bg);color:var(--ink)}
 
 
 /* =====================================================================
-   Paleta SAGGIO (ajuste): #E84840 principal (logo, botones, acentos y bloques), marfil de fondo,
-   plateado oscuro #4C5156 terciario (títulos, textos, pie). Variante #C93A32 para textos rojos chicos.
+   Paleta SAGGIO (ajuste): #EF241E principal (logo, botones, acentos y bloques), marfil de fondo,
+   plateado oscuro #4C5156 terciario (títulos, textos, pie). Variante #C81D18 para textos rojos chicos.
    ===================================================================== */
 :root{
-  --red:#E84840; --red-dark:#C93A32; --silver-dark:#4C5156; --silver-deep:#3B3F43;
-  --brand:#E84840; --brand-dark:#C93A32; --brand-2:#C93A32; --accent:#4C5156; --accent-2:#3B3F43;
+  --red:#EF241E; --red-dark:#C81D18; --silver-dark:#4C5156; --silver-deep:#3B3F43;
+  --brand:#EF241E; --brand-dark:#C81D18; --brand-2:#C81D18; --accent:#4C5156; --accent-2:#3B3F43;
   --ink:#3B3F43; --ink-2:#585D62; --brand-soft:#FBE4E2;
 }
 /* Logo en rojo */
@@ -1557,7 +1557,7 @@ h1,h2,.page-title,.sec-head h2,.h2-copy h1,.bs-copy h2,.pinfo h1,.pi-title,.cust
 .btn-cta:hover,.btn-dark:hover{background:var(--red-dark);border-color:var(--red-dark);color:#fff}
 .btn-ghost{border-color:var(--red);color:var(--red-dark)}
 .btn-ghost:hover{background:var(--red);border-color:var(--red);color:#fff}
-.bs-cta{box-shadow:0 10px 24px -14px rgba(232,72,64,.75)}
+.bs-cta{box-shadow:0 10px 24px -14px rgba(239,36,30,.75)}
 .list-btn.has .list-btn-n{background:var(--red)}
 .demo-strip{background:var(--red-dark)}
 /* Íconos y detalles */
@@ -1676,3 +1676,7 @@ h1,h2,.page-title,.sec-head h2,.h2-copy h1,.bs-copy h2,.pinfo h1,.pi-title,.cust
 .by-ap span{font-family:var(--f-display);font-style:italic;font-size:15px;color:#6B6B6B}
 .by-ap img{height:24px;width:auto;display:block}
 @media (max-width:860px){.ftr{padding-bottom:0}.by-ap{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}}
+
+/* Rojo de marca igualado al de Argenprom: #EF241E (variante profunda #C81D18 para textos chicos) */
+:root{--red:#EF241E;--red-dark:#C81D18;--coral:#EF241E;--coral-text:#C81D18;--brand:#EF241E;--brand-dark:#C81D18;--brand-2:#C81D18;--promo:#EF241E}
+.bs-cta{box-shadow:0 10px 24px -14px rgba(239,36,30,.7)}
