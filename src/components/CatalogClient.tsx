@@ -83,7 +83,7 @@ const PAGE = 12;
 const AV_FILTERS: Availability[] = ["disponible", "consultar", "sin_stock"];
 
 /** Categorías con foto preparada (public/categorias). */
-const CATEGORY_IMG = new Set(["vajilla-estandar", "gres", "vajilla-blanca", "vajilla-decorada", "vajilla-marmolada", "cubiertos", "cristaleria", "cafe", "vajilla-oriental", "sillas", "mesas", "banquetas", "boxes-y-bancos", "sofas-y-sillones", "mesas-auxiliares", "exterior"]);
+const CATEGORY_IMG = new Set(["vajilla-blanca", "gres", "vajilla-decorada", "vajilla-marmolada", "platos-y-bowls", "vajilla-oriental", "cubiertos", "asado-y-parrilla", "cristaleria", "cafe", "sillas", "sofas-y-sillones", "banquetas", "boxes-y-bancos", "mesas", "mesas-auxiliares", "exterior", "exterior-lounge"]);
 
 export function CatalogClient({ products, categories, settings, base, preset, title }: Props) {
   const params = useSearchParams();

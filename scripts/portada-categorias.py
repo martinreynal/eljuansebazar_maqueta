@@ -8,10 +8,11 @@ import numpy as np
 from PIL import Image
 
 PICKS = {
-    "vajilla-estandar": "EST-07", "gres": "GR4-19", "vajilla-blanca": "BLC-06", "vajilla-decorada": "HOJ-01",
+    "platos-y-bowls": "EST-05", "gres": "GR4-19", "vajilla-blanca": "BLC-06", "vajilla-decorada": "HOJ-01",
     "vajilla-marmolada": "MAR-19", "cubiertos": "CUB-30", "cristaleria": "CRI-17", "cafe": "CER-07",
     "vajilla-oriental": "ORI-40", "sillas": "SIL-028", "mesas": "MES-013", "banquetas": "BAN-016",
     "boxes-y-bancos": "BOX-006", "sofas-y-sillones": "SOF-006", "mesas-auxiliares": "AUX-010", "exterior": "EXT-008",
+    "asado-y-parrilla": "CUB-31", "exterior-lounge": "EXT-051",
 }
 S, MARGIN = 600, 0.09
 

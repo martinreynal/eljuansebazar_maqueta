@@ -12,8 +12,8 @@ import Image from "next/image";
 
 export const revalidate = 300;
 
-const VAJILLA = "vajilla-estandar,gres,vajilla-blanca,vajilla-decorada,vajilla-marmolada";
-const MOBILIARIO = "sillas,mesas,banquetas,boxes-y-bancos,sofas-y-sillones,mesas-auxiliares,exterior";
+const VAJILLA = "vajilla-blanca,gres,vajilla-decorada,vajilla-marmolada,platos-y-bowls";
+const MOBILIARIO = "sillas,mesas,banquetas,boxes-y-bancos,sofas-y-sillones,mesas-auxiliares,exterior,exterior-lounge";
 
 
 const SIDE = [
@@ -35,7 +35,7 @@ const BANNERS = [
 ];
 
 /** Categorías con foto de portada preparada (public/categorias, ver scripts/portada-categorias.py). */
-const CATEGORY_COVERS = new Set(["vajilla-estandar", "gres", "vajilla-blanca", "vajilla-decorada", "vajilla-marmolada", "cubiertos", "cristaleria", "cafe", "vajilla-oriental", "sillas", "mesas", "banquetas", "boxes-y-bancos", "sofas-y-sillones", "mesas-auxiliares", "exterior"]);
+const CATEGORY_COVERS = new Set(["vajilla-blanca", "gres", "vajilla-decorada", "vajilla-marmolada", "platos-y-bowls", "vajilla-oriental", "cubiertos", "asado-y-parrilla", "cristaleria", "cafe", "sillas", "sofas-y-sillones", "banquetas", "boxes-y-bancos", "mesas", "mesas-auxiliares", "exterior", "exterior-lounge"]);
 
 export default async function Home() {
   const store = await getStore();
