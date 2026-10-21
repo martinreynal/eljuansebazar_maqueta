@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { HomeSearch } from "@/components/HomeSearch";
-import { Armchair, ArrowRight, ChevronRight, Clock, CloudUpload, Coffee, ConciergeBell, CookingPot, Droplet, FileDown, FilePen, Headset, Layers, ListPlus, Martini, MessageCircle, Package, Search, Tag, Truck, Utensils, Wine, Zap, type LucideProps } from "lucide-react";
+import { Armchair, ArrowRight, Clock, CloudUpload, Coffee, ConciergeBell, CookingPot, Droplet, FileDown, FilePen, Layers, ListPlus, Martini, MessageCircle, Package, Search, Tag, Utensils, Wine, Zap, type LucideProps } from "lucide-react";
 import { ProductGrid } from "@/components/ProductCard";
 import { ProductImage } from "@/components/ProductImage";
 import { WaLink } from "@/components/WaLink";
-import { getStore, getTopProductIds } from "@/lib/data";
+import { getStore } from "@/lib/data";
 import { mediaUrl, siteUrl } from "@/lib/env";
 import { inCategory, msgCustom, msgGeneral, msgQuote, waLink } from "@/lib/format";
 import Image from "next/image";
@@ -61,14 +61,7 @@ export default async function Home() {
   const d = settings.design;
   const base = siteUrl(settings.site_url);
   const ctx = { settings, base, categories };
-  const featured = products.filter((p) => p.featured).slice(0, 4);
   const offers = products.filter((p) => p.tag === "oferta").slice(0, 4);
-  const fresh = products.slice(0, 4);
-  const topIds = await getTopProductIds();
-  const byId = new Map(products.map((p) => [p.id, p]));
-  const top = [...topIds.map((id) => byId.get(id)).filter(Boolean), ...products.filter((p) => p.featured), ...products]
-    .filter((p, i, a) => p && a.indexOf(p) === i)
-    .slice(0, 6) as typeof products;
   const realCats = categories.filter((c) => !c.is_offers);
 
   return (
@@ -81,17 +74,11 @@ export default async function Home() {
       </div>
       <section className="hero2" aria-label="Presentación">
         <div className="h2-copy">
-          <span className="h2-eyebrow">{d.heroEyebrow}</span>
           <h1>{d.heroTitle}</h1>
           <p>{d.heroText}</p>
           <div className="hero-ctas">
             <Link className="btn btn-cta btn-lg" href="/catalogo">{d.heroCta}<ArrowRight /></Link>
             <WaLink href={waLink(settings.whatsapp, msgQuote(settings.business_name))} channel="quote" className="btn btn-ghost btn-lg">Pedir cotización</WaLink>
-          </div>
-          <div className="h2-facts">
-            <div><Headset /><span>Atención por<br />WhatsApp</span></div>
-            <div><Truck /><span>Envíos a<br />todo el país</span></div>
-            <div><Tag /><span>Productos<br />personalizables</span></div>
           </div>
         </div>
         <Link className="h2-main" href="/catalogo">
@@ -152,12 +139,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {featured.length > 0 && (
-        <section className="sec" aria-labelledby="h-feat">
-          <div className="sec-head"><div><h2 id="h-feat">Destacados del mes</h2><p>Los artículos que más recomendamos.</p></div><Link href="/catalogo">Ver más <ArrowRight /></Link></div>
-          <ProductGrid products={featured} ctx={ctx} rail />
-        </section>
-      )}
 
       {offers.length > 0 && (
         <section className="sec" aria-labelledby="h-off">
@@ -198,25 +179,6 @@ export default async function Home() {
           <li><span className="n">2</span><FilePen aria-hidden /><span><b>Te enviamos boceto y presupuesto</b>Ves cómo queda antes de confirmar.</span></li>
           <li><span className="n">3</span><Package aria-hidden /><span><b>Producimos y enviamos</b>A tu oficina o a cualquier punto del país.</span></li>
         </ol>
-      </section>
-
-      <section className="sec" aria-labelledby="h-new">
-        <div className="sec-head"><div><h2 id="h-new">Recién llegados</h2><p>Lo último que entró al catálogo.</p></div><Link href="/catalogo">Ver novedades <ArrowRight /></Link></div>
-        <ProductGrid products={fresh} ctx={ctx} rail />
-      </section>
-
-      <section className="sec" aria-labelledby="h-top">
-        <div className="sec-head"><div><h2 id="h-top">Los más consultados</h2><p>Lo que más nos preguntan por WhatsApp.</p></div></div>
-        <div className="rank">
-          {top.map((p, i) => (
-            <Link key={p.id} href={`/producto/${p.slug}`}>
-              <span className="n">{String(i + 1).padStart(2, "0")}</span>
-              <span className="t"><ProductImage p={p} view={1} label={false} sizes="64px" /></span>
-              <span><b>{p.name}</b><small><span className="mono">{p.sku}</span> · {categories.find((c) => c.id === p.category_id)?.name}</small></span>
-              <ChevronRight />
-            </Link>
-          ))}
-        </div>
       </section>
 
       {faqs.length > 0 && (
