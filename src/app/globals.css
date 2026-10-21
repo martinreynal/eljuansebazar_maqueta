@@ -1669,3 +1669,10 @@ h1,h2,.page-title,.sec-head h2,.h2-copy h1,.bs-copy h2,.pinfo h1,.pi-title,.cust
   .fmeta-r{margin-left:0;width:100%;justify-content:space-between}
   .fsort{height:40px}
 }
+
+/* "by Argenprom" al pie de todo, sobre franja clara para que el logo se lea bien */
+.ftr{padding-bottom:0}
+.by-ap{margin-top:28px;background:#F4EFE4;display:flex;align-items:center;justify-content:center;gap:10px;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px))}
+.by-ap span{font-family:var(--f-display);font-style:italic;font-size:15px;color:#6B6B6B}
+.by-ap img{height:24px;width:auto;display:block}
+@media (max-width:860px){.ftr{padding-bottom:0}.by-ap{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}}

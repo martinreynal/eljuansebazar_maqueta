@@ -39,6 +39,11 @@ export function Footer({ settings, categories }: { settings: Settings; categorie
           <span>No se realizan ventas en línea. Precios y disponibilidad se confirman por WhatsApp.</span>
         </div>
       </div>
+      <div className="by-ap">
+        <span>by</span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/argenprom.png" alt="Argenprom · Fidelización digital" width={600} height={166} loading="lazy" decoding="async" />
+      </div>
     </footer>
   );
 }
