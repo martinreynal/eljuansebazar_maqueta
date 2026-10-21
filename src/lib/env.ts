@@ -7,9 +7,10 @@ export const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "s
 export const hasSupabase = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 
 export function siteUrl(fromSettings?: string): string {
+  // La dirección cargada en Configuración del panel manda; si está vacía, la del entorno de Vercel
   const raw =
-    process.env.NEXT_PUBLIC_SITE_URL ||
     fromSettings ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
     (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "") ||
     "http://localhost:3000";
   return raw.replace(/\/$/, "");
