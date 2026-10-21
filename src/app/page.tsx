@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { HomeSearch } from "@/components/HomeSearch";
-import { Armchair, ArrowRight, Clock, CloudUpload, Coffee, ConciergeBell, CookingPot, Droplet, FileDown, FilePen, Layers, ListPlus, Martini, MessageCircle, Package, Search, Tag, Utensils, Wine, Zap, type LucideProps } from "lucide-react";
+import { ArrowRight, Clock, CloudUpload, Droplet, FileDown, FilePen, Layers, ListPlus, MessageCircle, Package, Search, Tag, Zap } from "lucide-react";
 import { ProductGrid } from "@/components/ProductCard";
 import { ProductImage } from "@/components/ProductImage";
 import { WaLink } from "@/components/WaLink";
@@ -15,29 +15,11 @@ export const revalidate = 300;
 const VAJILLA = "vajilla-estandar,gres,vajilla-blanca,vajilla-decorada,vajilla-marmolada";
 const MOBILIARIO = "sillas,mesas,banquetas,boxes-y-bancos,sofas-y-sillones,mesas-auxiliares,exterior";
 
-/** Plato visto desde arriba (no hay ícono de plato en la librería). */
-function Plate(props: LucideProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" width={24} height={24} {...props}>
-      <circle cx="12" cy="12" r="9.5" /><circle cx="12" cy="12" r="6" />
-    </svg>
-  );
-}
 
 const SIDE = [
   { title: "Colección institucional", href: "/categoria/vajilla-blanca", img: "/portada/coleccion-institucional.jpg", pos: "50% 30%" },
   { title: "Línea artesanal", href: "/categoria/gres", img: "/portada/linea-artesanal.jpg", pos: "50% 45%" },
   { title: "Soluciones para tu cocina", href: "/categoria/vajilla-oriental", img: "/portada/cocina.jpg", pos: "55% 50%" },
-];
-const ICONS: [string, string, (p: LucideProps) => React.ReactNode][] = [
-  ["Vajilla", `/catalogo?cat=${VAJILLA}`, Plate],
-  ["Cristalería", "/categoria/cristaleria", Wine],
-  ["Cubiertos", "/categoria/cubiertos", Utensils],
-  ["Utensilios de cocina", "/catalogo?cat=cubiertos,vajilla-oriental", CookingPot],
-  ["Mobiliario gastronómico", `/catalogo?cat=${MOBILIARIO}`, Armchair],
-  ["Cafetería", "/categoria/cafe", Coffee],
-  ["Bar y coctelería", "/catalogo?cat=cristaleria,cafe", Martini],
-  ["Servicio de mesa", "/catalogo?cat=vajilla-blanca,vajilla-decorada,cubiertos,cristaleria", ConciergeBell],
 ];
 const BRAND_WORKS = [
   { title: "Tazas de cerámica", sku: "CER-07", tech: "Sublimación o serigrafía", img: "/portada/marca-taza.jpg" },
@@ -98,11 +80,6 @@ export default async function Home() {
         </div>
       </section>
 
-      <nav className="h2-icons" aria-label="Rubros">
-        {ICONS.map(([label, href, I]) => (
-          <Link key={label} href={href}><I aria-hidden /><span>{label}</span></Link>
-        ))}
-      </nav>
 
       <section className="h2-banners" aria-label="Destacados">
         {BANNERS.map((b) => (
