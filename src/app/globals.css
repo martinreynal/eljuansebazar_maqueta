@@ -1409,7 +1409,9 @@ h1,h2,.page-title,.sec-head h2,.h2-copy h1,.bs-copy h2,.pinfo h1,.pi-title,.cust
 /* Encabezado sobre hueso */
 .hdr{background:rgba(245,241,232,.94);backdrop-filter:saturate(1.2) blur(8px);border-bottom-color:var(--line)}
 .nav-dd > button,.nav a,.hdr nav a{color:var(--brand)}
-.hdr-search,.hdr .search{background:#fff;border-color:var(--line)}
+.hdr-search{background:transparent}
+.hdr .search{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.hdr .search:focus-within{border-color:var(--red)}
 .list-btn{background:#fff;border-color:var(--line)}
 .list-btn.has .list-btn-n{background:var(--brand);color:#fff}
 .demo-strip{background:var(--brand)}
