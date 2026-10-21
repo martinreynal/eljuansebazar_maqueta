@@ -1162,20 +1162,7 @@ a:hover{color:var(--accent)}
 .main-img.is-3d{background:#161513;border-color:#161513}
 
 /* Lockup del logo SAGGIO */
-.lockup{display:inline-flex;align-items:center;gap:10px;line-height:1}
-.lockup-iso{width:40px;height:40px;flex:none;display:block;object-fit:contain}
-.lockup-text{display:flex;flex-direction:column;gap:5px;align-items:flex-start}
-.lockup-name{display:block;height:19px;width:auto;object-fit:contain}
-.lockup-tag{font-family:var(--f-ui);font-weight:500;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:#013657;line-height:1;white-space:nowrap;padding-left:1px}
-.lockup-compact .lockup-iso{width:32px;height:32px}
-.lockup-compact .lockup-name{height:15px}
-.ftr .lockup-iso{width:48px;height:48px}
-.ftr .lockup-name{height:22px}
-.ftr .lockup-tag{font-size:9.5px}
-.login .lockup-iso{width:56px;height:56px}
-.login .lockup-name{height:26px}
-@media (max-width:860px){.lockup-iso{width:32px;height:32px}.lockup-name{height:15px}.lockup-tag{display:none}.lockup{gap:8px}}
-@media (max-width:1180px){.hdr .lockup-tag{display:none}}
+
 
 /* Título del catálogo: botón PDF a la derecha, separado de los filtros */
 .cat-title{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:28px}
@@ -1382,3 +1369,113 @@ a.bs-card:hover .bs-img img{transform:scale(1.04)}
   .bs-steps > li > .lucide{width:36px;height:36px}
   .bs-steps .n{width:36px;height:36px;font-size:14px}
 }
+
+
+/* =====================================================================
+   Identidad SAGGIO 2026 (manual de marca): azul petróleo #214E5F, arena #D9C3A5, hueso #F5F1E8.
+   Playfair Display para títulos, Montserrat de apoyo. Fotos cálidas, líneas finas, mucho aire.
+   ===================================================================== */
+:root{
+  --brand:#214E5F; --brand-dark:#173A47; --brand-2:#8A6D47; --sand-brand:#D9C3A5; --bone:#F5F1E8;
+  --accent:#8A6D47; --accent-2:#735A39;
+  --bg:#F5F1E8; --surface:#FFFFFF; --ivory:#F5F1E8; --sand:#EDE4D6; --stone:#D9C3A5;
+  --ink:#1E2D35; --ink-2:#4A5961; --muted:#857D72; --line:#E3DACB;
+  --brand-soft:#E4ECEF; --accent-soft:#F1E8DA; --promo:#214E5F; --promo-soft:#E4ECEF; --ok:#2B7A50;
+  --f-display:var(--font-playfair),"Playfair Display",Georgia,"Times New Roman",serif;
+  --r-sm:4px; --r:8px; --r-lg:12px;
+}
+body{background:var(--bg)}
+
+/* Títulos en Playfair Display */
+h1,h2,.page-title,.sec-head h2,.h2-copy h1,.bs-copy h2,.pinfo h1,.pi-title,.custom h2,.wa-banner h2,.adm-h h2{font-family:var(--f-display);font-weight:500;letter-spacing:-.01em;color:var(--brand)}
+.h2-copy h1{font-size:clamp(36px,4vw,62px);line-height:1.06;font-weight:500}
+.page-title{font-size:clamp(30px,3.2vw,46px)}
+.sec-head h2{font-size:clamp(26px,2.6vw,36px)}
+.bs-copy h2{font-weight:500;font-size:clamp(34px,3.8vw,58px)}
+
+/* Etiquetas en mayúsculas espaciadas (como "HOSTELERÍA | RESTAURANTES") */
+.eyebrow,.h2-eyebrow{font-family:var(--f-ui);font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--brand-2);font-size:12px}
+
+/* Logo tipográfico */
+.lockup{display:inline-flex;flex-direction:column;align-items:center;gap:5px;line-height:1;color:var(--brand)}
+.lockup-word{font-family:var(--f-display);font-weight:500;font-size:30px;letter-spacing:.06em;line-height:.9}
+.lockup-tag{font-family:var(--f-ui);font-weight:600;font-size:7.5px;letter-spacing:.34em;text-transform:uppercase;white-space:nowrap;padding-left:.34em}
+.lockup-compact .lockup-word{font-size:22px}
+.ftr .lockup{align-items:flex-start}.ftr .lockup-word{font-size:36px}.ftr .lockup-tag{font-size:8.5px}
+.login .lockup-word{font-size:40px}.login .lockup-tag{font-size:10px}
+@media (max-width:1180px){.hdr .lockup-tag{display:none}}
+@media (max-width:860px){.lockup-word{font-size:24px}.lockup-tag{display:none}}
+
+/* Encabezado sobre hueso */
+.hdr{background:rgba(245,241,232,.94);backdrop-filter:saturate(1.2) blur(8px);border-bottom-color:var(--line)}
+.nav-dd > button,.nav a,.hdr nav a{color:var(--brand)}
+.hdr-search,.hdr .search{background:#fff;border-color:var(--line)}
+.list-btn{background:#fff;border-color:var(--line)}
+.list-btn.has .list-btn-n{background:var(--brand);color:#fff}
+.demo-strip{background:var(--brand)}
+
+/* Botones: principal azul petróleo, secundario contorno; WhatsApp sigue en verde */
+.btn-cta,.btn-dark{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn-cta:hover,.btn-dark:hover{background:var(--brand-dark);border-color:var(--brand-dark);color:#fff}
+.btn-ghost{background:transparent;border:1px solid var(--brand);color:var(--brand)}
+.btn-ghost:hover{background:var(--brand);color:#fff}
+.btn{border-radius:var(--r-sm);letter-spacing:.02em}
+.bs-cta{box-shadow:0 10px 24px -14px rgba(33,78,95,.7)}
+
+/* Portada */
+.h2-copy{background:transparent;padding-left:clamp(4px,1vw,16px)}
+.h2-facts{border-top-color:var(--line)}
+.h2-facts .lucide{color:var(--brand)}
+.h2-tile b{background:var(--bone);color:var(--brand)}
+.h2-tile:hover b{background:var(--brand);color:#fff}
+.h2-icons svg{color:var(--brand);stroke-width:1.2}
+.h2-icons a{color:var(--brand);font-weight:500;letter-spacing:.06em;text-transform:uppercase;font-size:11.5px}
+.h2-icons a:hover,.h2-icons a:hover svg{color:var(--brand-2)}
+.cat-tile .ph{background:#fff;border-color:var(--line)}
+.cat-tile:hover .ph{border-color:var(--brand)}
+.cat-tile:hover b,.pc-name a:hover,.rank a:hover{color:var(--brand-2)}
+
+/* Tarjetas de rubro estilo manual: foto arriba, bloque de color con título serif, línea y frase espaciada */
+.h2-banners{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:28px}
+.h2-banner{height:auto;display:flex;flex-direction:column;background:none;border-radius:0;overflow:hidden}
+.h2-banner::after{display:none}
+.h2-banner .bn-img{position:relative;display:block;aspect-ratio:4/3.1;overflow:hidden;max-width:none;left:auto;top:auto;width:100%}
+.h2-banner .bn-img img{object-fit:cover;transition:transform .7s var(--ease,ease)}
+.h2-banner:hover .bn-img img{transform:scale(1.04)}
+.h2-banner .bn-txt{position:static;display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:22px 16px 24px;max-width:none;min-height:150px;justify-content:center}
+.h2-banner .bn-txt b{font-family:var(--f-display);font-weight:500;font-size:clamp(24px,2.1vw,32px);line-height:1.1}
+.h2-banner .bn-txt i{display:block;width:30px;height:1.5px;background:currentColor;opacity:.8}
+.h2-banner .bn-txt small{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;line-height:1.7;font-weight:500;max-width:26ch}
+.h2-banner.petrol .bn-txt{background:var(--brand);color:#F5F1E8}
+.h2-banner.sand .bn-txt{background:var(--sand-brand);color:var(--brand)}
+@media (max-width:1100px){.h2-banners{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:860px){
+  .h2-banners{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;margin-inline:-16px;padding-inline:16px;gap:10px}
+  .h2-banner{flex:0 0 70%;height:auto;scroll-snap-align:start}
+  .h2-banner .bn-txt{min-height:128px;padding:18px 12px}
+}
+
+/* Regalos empresariales */
+.brand-sec{background:#EDE4D6}
+.bs-copy{background:linear-gradient(180deg,#EDE4D6 0%,#EDE4D6 58%,rgba(237,228,214,0) 76%),linear-gradient(90deg,#EDE4D6 0%,#EDE4D6 21%,rgba(237,228,214,0) 52%),url(/portada/marca-fondo.jpg) right calc(100% + 150px)/80% auto no-repeat #EDE4D6}
+@media (max-width:560px){.bs-copy{background:linear-gradient(180deg,#EDE4D6 0%,#EDE4D6 62%,rgba(237,228,214,0) 80%),url(/portada/marca-fondo.jpg) center calc(100% + 130px)/100% auto no-repeat #EDE4D6}}
+.bs-tech span{color:var(--brand);box-shadow:none;border:1px solid var(--line)}
+.bs-tech .lucide{color:var(--brand-2)}
+.bs-meta b{color:var(--brand);font-family:var(--f-display);font-weight:500;font-size:18px}
+.bs-pill{background:var(--bone)}
+.bs-steps .n{border-color:var(--brand);color:var(--brand)}
+.bs-steps > li > .lucide,.bs-steps li:nth-child(2) > .lucide{color:var(--brand)}
+.bs-steps b{color:var(--brand)}
+
+/* Tarjetas de producto y filtros */
+.pc{background:#fff;border-color:var(--line)}
+.pc-name,.pc-name a{color:var(--ink)}
+.filters h4,.f-group h4{color:var(--brand);letter-spacing:.24em;font-weight:600}
+.cat-top .search,.search{background:#fff}
+
+/* Pie de página en azul petróleo */
+.ftr{background:var(--brand);color:rgba(245,241,232,.78)}
+.ftr h4{color:#F5F1E8;letter-spacing:.24em;font-weight:600}
+.ftr a:hover{color:#fff}
+.ftr .lockup{color:#F5F1E8}
+.ftr .legal{border-top-color:rgba(245,241,232,.18);color:rgba(245,241,232,.6)}

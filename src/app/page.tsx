@@ -46,9 +46,10 @@ const BRAND_WORKS = [
   { title: "Cuchillos de asado", sku: "CUB-40", tech: "Grabado láser en la hoja", img: "/portada/marca-cuchillo.jpg" },
 ];
 const BANNERS = [
-  { title: "Mobiliario gastronómico", href: `/catalogo?cat=${MOBILIARIO}`, img: "/portada/mobiliario.jpg", pos: "50% 60%" },
-  { title: "Vajilla profesional", href: `/catalogo?cat=${VAJILLA}`, img: "/portada/mesa-servida.jpg", pos: "40% 70%" },
-  { title: "Cristalería para cada ocasión", href: "/categoria/cristaleria", img: "/portada/cristaleria.jpg", pos: "50% 45%" },
+  { title: "Vajilla", line: "Piezas que realzan cada creación.", href: `/catalogo?cat=${VAJILLA}`, img: "/portada/mesa-servida.jpg", pos: "40% 70%", tone: "petrol" },
+  { title: "Cristalería", line: "Transparencia para grandes momentos.", href: "/categoria/cristaleria", img: "/portada/cristaleria.jpg", pos: "45% 50%", tone: "sand" },
+  { title: "Mobiliario", line: "Espacios que inspiran hospitalidad.", href: `/catalogo?cat=${MOBILIARIO}`, img: "/portada/mobiliario.jpg", pos: "35% 60%", tone: "petrol" },
+  { title: "Personalización", line: "Tu marca también en cada detalle.", href: "/#personalizados", img: "/portada/marca-taza.jpg", pos: "50% 45%", tone: "sand" },
 ];
 
 /** Categorías con foto de portada preparada (public/categorias, ver scripts/portada-categorias.py). */
@@ -118,9 +119,9 @@ export default async function Home() {
 
       <section className="h2-banners" aria-label="Destacados">
         {BANNERS.map((b) => (
-          <Link key={b.title} className="h2-banner" href={b.href}>
-            <Image src={b.img} alt="" fill sizes="(max-width: 860px) 85vw, 33vw" style={{ objectPosition: b.pos }} />
-            <span>{b.title}</span>
+          <Link key={b.title} className={`h2-banner ${b.tone}`} href={b.href}>
+            <span className="bn-img"><Image src={b.img} alt="" fill sizes="(max-width: 860px) 70vw, 25vw" style={{ objectPosition: b.pos }} /></span>
+            <span className="bn-txt"><b>{b.title}</b><i aria-hidden /><small>{b.line}</small></span>
           </Link>
         ))}
       </section>

@@ -20,6 +20,17 @@ const montserrat = localFont({
     { path: "../fonts/montserrat-latin-800-normal.woff2", weight: "800" },
   ],
 });
+const playfair = localFont({
+  variable: "--font-playfair",
+  display: "swap",
+  src: [
+    { path: "../fonts/playfair-display-latin-400-normal.woff2", weight: "400" },
+    { path: "../fonts/playfair-display-latin-400-italic.woff2", weight: "400", style: "italic" },
+    { path: "../fonts/playfair-display-latin-500-normal.woff2", weight: "500" },
+    { path: "../fonts/playfair-display-latin-600-normal.woff2", weight: "600" },
+    { path: "../fonts/playfair-display-latin-700-normal.woff2", weight: "700" },
+  ],
+});
 const dmMono = localFont({
   variable: "--font-dm-mono",
   display: "swap",
@@ -46,7 +57,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#FFFFFF",
+  themeColor: "#F5F1E8",
   viewportFit: "cover",
 };
 
@@ -54,7 +65,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const { settings, categories, products } = await getStore();
   const hasOffers = products.some((p) => p.tag === "oferta");
   return (
-    <html lang="es-AR" className={`${montserrat.variable} ${dmMono.variable}`}>
+    <html lang="es-AR" className={`${montserrat.variable} ${playfair.variable} ${dmMono.variable}`}>
       <body>
         <StoreProvider>
           {settings.design.notice && <div className="demo-strip">{settings.design.notice}</div>}
