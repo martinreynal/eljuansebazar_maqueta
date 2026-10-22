@@ -21,17 +21,11 @@ const SIDE = [
   { title: "Línea artesanal", href: "/categoria/gres", img: "/portada/linea-artesanal-2.jpg", pos: "50% 55%" },
   { title: "Soluciones para tu cocina", href: "/categoria/vajilla-oriental", img: "/portada/cocina.jpg", pos: "55% 50%" },
 ];
-const BRAND_WORKS = [
-  { title: "Tazas de cerámica", sku: "CER-07", tech: "Sublimación o serigrafía", img: "/portada/marca-taza.jpg" },
-  { title: "Bandejas de bambú", sku: "BAM-01", tech: "Grabado láser", img: "/portada/marca-bandeja.jpg" },
-  { title: "Vasos de vidrio", sku: "CRI-14", tech: "Serigrafía", img: "/portada/marca-vaso.jpg" },
-  { title: "Cuchillos de asado", sku: "CUB-40", tech: "Grabado láser en la hoja", img: "/portada/marca-cuchillo.jpg" },
-];
 const BANNERS = [
   { title: "Vajilla", line: "Piezas que realzan cada creación.", href: `/catalogo?cat=${VAJILLA}`, img: "/portada/mesa-servida.jpg", pos: "40% 70%", tone: "petrol" },
   { title: "Cristalería", line: "Transparencia para grandes momentos.", href: "/categoria/cristaleria", img: "/portada/cristaleria.jpg", pos: "45% 50%", tone: "sand" },
   { title: "Mobiliario", line: "Espacios que inspiran hospitalidad.", href: `/catalogo?cat=${MOBILIARIO}`, img: "/portada/mobiliario.jpg", pos: "35% 60%", tone: "petrol" },
-  { title: "Personalización", line: "Tu marca también en cada detalle.", href: "/#personalizados", img: "/portada/marca-taza.jpg", pos: "50% 45%", tone: "sand" },
+  { title: "Personalización", line: "Tu marca también en cada detalle.", href: "/personalizados", img: "/portada/marca-taza.jpg", pos: "50% 45%", tone: "sand" },
 ];
 
 /** Categorías con foto de portada preparada (public/categorias, ver scripts/portada-categorias.py). */
@@ -126,37 +120,6 @@ export default async function Home() {
         </section>
       )}
 
-      <section className="sec" id="personalizados" aria-labelledby="h-custom">
-        <div className="brand-sec">
-          <div className="bs-copy">
-            <span className="h2-eyebrow">Regalos empresariales</span>
-            <h2 id="h-custom">Tu marca,<br />en cada detalle.</h2>
-            <p>Personalizamos tazas, vasos, tablas, utensilios y más con el logo de tu empresa. Ideal para regalos de fin de año, eventos, kits de bienvenida y merchandising.</p>
-            <div className="bs-tech">
-              <span><Zap />Grabado láser</span><span><Droplet />Sublimación</span><span><Layers />Serigrafía</span><span><Tag />Etiquetas</span>
-            </div>
-            <WaLink href={waLink(settings.whatsapp, msgCustom())} channel="custom" className="btn btn-cta btn-lg bs-cta">Pedir presupuesto con mi logo<ArrowRight /></WaLink>
-          </div>
-          <div className="bs-grid">
-            {BRAND_WORKS.map((w) => {
-              const p = products.find((x) => x.sku === w.sku);
-              const body = (
-                <>
-                  <span className="bs-img"><Image src={w.img} alt={`${w.title} personalizados con logo`} fill sizes="(max-width: 860px) 50vw, 24vw" /></span>
-                  <span className="bs-meta"><b>{w.title}</b><small className="mono">{w.sku}</small></span>
-                  <span className="bs-pill">{w.tech}</span>
-                </>
-              );
-              return p ? <Link key={w.sku} className="bs-card" href={`/producto/${p.slug}`}>{body}</Link> : <div key={w.sku} className="bs-card">{body}</div>;
-            })}
-          </div>
-        </div>
-        <ol className="bs-steps">
-          <li><span className="n">1</span><CloudUpload aria-hidden /><span><b>Nos mandás tu logo</b>En PDF, AI o PNG en buena calidad, con la cantidad y los productos que te interesan.</span></li>
-          <li><span className="n">2</span><FilePen aria-hidden /><span><b>Te enviamos boceto y presupuesto</b>Ves cómo queda antes de confirmar.</span></li>
-          <li><span className="n">3</span><Package aria-hidden /><span><b>Producimos y enviamos</b>A tu oficina o a cualquier punto del país.</span></li>
-        </ol>
-      </section>
 
       {faqs.length > 0 && (
         <section className="sec" id="preguntas" aria-labelledby="h-faq">

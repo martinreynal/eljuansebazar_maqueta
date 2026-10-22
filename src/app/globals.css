@@ -1703,3 +1703,6 @@ h1,h2,.page-title,.sec-head h2,.h2-copy h1,.bs-copy h2,.pinfo h1,.pi-title,.cust
 .pc-btn-icon.pc-btn-wa-ic{border:1px solid var(--wa-green);color:var(--wa-green);background:#fff}
 .pc-btn-icon.pc-btn-wa-ic:hover{background:var(--wa-green);border-color:var(--wa-green);color:#fff}
 @media (max-width:560px){.pc-btn-add{gap:6px;padding:0 8px}.pc-add-n{display:none}}
+
+/* Página Personalizados: el título de la sección es el h1 */
+.bs-copy h1{font-family:var(--f-display);font-weight:500;font-size:clamp(34px,3.8vw,58px);letter-spacing:-.01em;line-height:1.02;color:var(--silver-dark);margin-top:-4px}
