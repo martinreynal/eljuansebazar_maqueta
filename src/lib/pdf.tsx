@@ -2,7 +2,7 @@ import { Document, Image, Link, Page, StyleSheet, Text, View } from "@react-pdf/
 import { formatPhone, waLink } from "./format";
 import type { StoreData } from "./types";
 
-const C = { ink: "#3B3F43", ink2: "#5A6066", muted: "#8C8A84", line: "#E3DCCD", bg: "#F4EFE4", accent: "#EF241E", wa: "#EF241E" };
+const C = { ink: "#1E4D3D", ink2: "#3E6557", muted: "#7A8F84", line: "#E2D9CB", bg: "#F4EFE7", accent: "#C96F4A", wa: "#1E4D3D" };
 
 const s = StyleSheet.create({
   page: { paddingTop: 40, paddingBottom: 52, paddingHorizontal: 40, fontFamily: "Helvetica", fontSize: 9, color: C.ink, lineHeight: 1.4 },
@@ -43,8 +43,7 @@ export function CatalogPdf({ data, images, base }: { data: StoreData; images: Pd
         <View style={{ flex: 1, justifyContent: "space-between" }}>
           <Text style={[s.eyebrow, { textAlign: "right" }]}>Catálogo · {date}</Text>
           <View>
-            {images.logo ? <Image src={images.logo} style={{ width: 300, marginBottom: 18, marginLeft: -6 }} /> : <Text style={{ fontSize: 40, fontFamily: "Helvetica-Bold", color: "#EF241E", letterSpacing: 2 }}>SAGGIO</Text>}
-            <Text style={{ fontSize: 14, color: C.accent, fontFamily: "Helvetica-Bold", marginBottom: 8 }}>{settings.tagline}</Text>
+            {images.logo ? <Image src={images.logo} style={{ width: 300, marginBottom: 18, marginLeft: -6 }} /> : <Text style={{ fontSize: 40, fontFamily: "Helvetica-Bold", color: "#1E4D3D", letterSpacing: 2 }}>SAGGIO</Text>}
             <Text style={{ fontSize: 12, color: C.ink2, maxWidth: 360 }}>Equipamiento gastronómico: vajilla, cristalería, cubiertos y utensilios para restaurantes, cafeterías y hoteles, con opción de personalización con logo.</Text>
           </View>
           <View style={{ flexDirection: "row", borderTopWidth: 1.5, borderTopColor: C.ink, paddingTop: 10 }}>

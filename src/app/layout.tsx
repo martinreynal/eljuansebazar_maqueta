@@ -9,27 +9,15 @@ import { getStore } from "@/lib/data";
 import { siteUrl } from "@/lib/env";
 import "./globals.css";
 
-const montserrat = localFont({
-  variable: "--font-montserrat",
+const dmSans = localFont({
+  variable: "--font-dm-sans",
   display: "swap",
-  src: [
-    { path: "../fonts/montserrat-latin-400-normal.woff2", weight: "400" },
-    { path: "../fonts/montserrat-latin-500-normal.woff2", weight: "500" },
-    { path: "../fonts/montserrat-latin-600-normal.woff2", weight: "600" },
-    { path: "../fonts/montserrat-latin-700-normal.woff2", weight: "700" },
-    { path: "../fonts/montserrat-latin-800-normal.woff2", weight: "800" },
-  ],
+  src: [{ path: "../fonts/dm-sans-latin-opsz-normal.woff2", weight: "100 1000", style: "normal" }],
 });
-const playfair = localFont({
-  variable: "--font-playfair",
+const fraunces = localFont({
+  variable: "--font-fraunces",
   display: "swap",
-  src: [
-    { path: "../fonts/playfair-display-latin-400-normal.woff2", weight: "400" },
-    { path: "../fonts/playfair-display-latin-400-italic.woff2", weight: "400", style: "italic" },
-    { path: "../fonts/playfair-display-latin-500-normal.woff2", weight: "500" },
-    { path: "../fonts/playfair-display-latin-600-normal.woff2", weight: "600" },
-    { path: "../fonts/playfair-display-latin-700-normal.woff2", weight: "700" },
-  ],
+  src: [{ path: "../fonts/fraunces-latin-full-normal.woff2", weight: "100 900", style: "normal" }],
 });
 const dmMono = localFont({
   variable: "--font-dm-mono",
@@ -57,7 +45,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#F4EFE4",
+  themeColor: "#F4EFE7",
   viewportFit: "cover",
 };
 
@@ -65,7 +53,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const { settings, categories, products } = await getStore();
   const hasOffers = products.some((p) => p.tag === "oferta");
   return (
-    <html lang="es-AR" className={`${montserrat.variable} ${playfair.variable} ${dmMono.variable}`}>
+    <html lang="es-AR" className={`${dmSans.variable} ${fraunces.variable} ${dmMono.variable}`}>
       <body>
         <StoreProvider>
           {settings.design.notice && <div className="demo-strip">{settings.design.notice}</div>}
