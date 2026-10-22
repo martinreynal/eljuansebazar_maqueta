@@ -24,7 +24,7 @@ const SIDE = [
 const BANNERS = [
   { title: "Vajilla", line: "Piezas que realzan cada creación.", href: `/catalogo?cat=${VAJILLA}`, img: "/portada/mesa-servida.jpg", pos: "40% 70%", tone: "petrol" },
   { title: "Cristalería", line: "Transparencia para grandes momentos.", href: "/categoria/cristaleria", img: "/portada/cristaleria.jpg", pos: "45% 50%", tone: "sand" },
-  { title: "Mobiliario", line: "Espacios que inspiran hospitalidad.", href: `/catalogo?cat=${MOBILIARIO}`, img: "/portada/mobiliario.jpg", pos: "35% 60%", tone: "petrol" },
+  { title: "Mobiliario", line: "Espacios que inspiran hospitalidad.", href: `/catalogo?cat=${MOBILIARIO}`, img: "/portada/silla-terracota.jpg", pos: "50% 62%", tone: "petrol" },
   { title: "Personalización", line: "Tu marca también en cada detalle.", href: "/personalizados", img: "/portada/marca-taza.jpg", pos: "50% 45%", tone: "sand" },
 ];
 
@@ -59,8 +59,8 @@ export default async function Home() {
         </div>
         <Link className="h2-main" href="/catalogo">
           {/* Vertical en computadora; apaisada en tablet y celular */}
-          <Image className="h2-v" src="/portada/mesa-servida-vertical-2.jpg" alt="Mesa servida con vajilla de gres en tonos rojos, copa y cubiertos" fill priority sizes="(max-width: 1180px) 1px, 36vw" style={{ objectPosition: "50% 60%" }} />
-          <Image className="h2-h" src="/portada/mesa-servida-h-2.jpg" alt="" fill sizes="(max-width: 1180px) 100vw, 1px" style={{ objectPosition: "50% 55%" }} />
+          <Image className="h2-v" src="/portada/ambiente-verde.jpg" alt="Restaurante con banqueta de terciopelo verde, sillas terracota y mesas de madera servidas" fill priority sizes="(max-width: 1180px) 1px, 36vw" style={{ objectPosition: "50% 55%" }} />
+          <Image className="h2-h" src="/portada/ambiente-arcos-h.jpg" alt="" fill sizes="(max-width: 1180px) 100vw, 1px" style={{ objectPosition: "50% 50%" }} />
           <span className="h2-cap"><i />Vajilla que realza<br />tu propuesta.</span>
         </Link>
         <div className="h2-side">
