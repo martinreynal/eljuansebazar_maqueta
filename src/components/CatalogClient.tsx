@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowDownUp, Check, ChevronDown, ChevronLeft, ChevronRight, FileDown, Filter, Search, SearchX, X } from "lucide-react";
+import { ArrowDownUp, ArrowRight, Check, ChevronDown, ChevronLeft, ChevronRight, FileDown, Filter, Search, SearchX, X } from "lucide-react";
 import { AVAILABILITY, inCategory, money, priceShown, searchable, waLink } from "@/lib/format";
 /* eslint-disable @next/next/no-img-element */
 import { track } from "@/lib/track";
@@ -81,6 +81,11 @@ function FilterMenu({ label, options, value, onChange, more = false }: { label: 
 
 type Props = { products: Product[]; categories: Category[]; settings: Settings; base: string; preset?: string; group?: CategoryGroup; title: string };
 const PAGE = 12;
+/** Tarjetas de grupo del catálogo (fotos en public/catalogo-grupos, 1600×800). */
+const GROUP_CARDS: { key: CategoryGroup; name: string; line: string; img: string }[] = [
+  { key: "mobiliario", name: "Mobiliario", line: "Sillas, sillones, sofás, banquetas, mesas y más.", img: "/catalogo-grupos/mobiliario.jpg" },
+  { key: "bazar", name: "Bazar", line: "Vajilla, cristalería, cubiertos, utensilios y más.", img: "/catalogo-grupos/bazar.jpg" },
+];
 const AV_FILTERS: Availability[] = ["disponible", "consultar", "sin_stock"];
 
 /** Categorías con foto preparada (public/categorias). */
@@ -235,14 +240,23 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
         <h1 className="page-title">{title}</h1>
         <a className="btn btn-ghost btn-sm only-d" href="/catalogo.pdf" target="_blank" rel="noopener"><FileDown />Descargar catálogo en PDF</a>
       </div>
-      {/* Grupos: Bazar / Mobiliario */}
-      <div className="cgroups" role="tablist" aria-label="Grupos de categorías">
-        {([["todo", "Todo"], ...GROUPS.map((g) => [g.key, g.name])] as [CategoryGroup | "todo", string][]).map(([k, t]) => (
-          <button key={k} type="button" role="tab" aria-selected={railGroup === k} className={`cgroup ${railGroup === k ? "on" : ""}`} onClick={() => pickGroup(k)}>{t}</button>
-        ))}
+      {/* Grupos: Mobiliario / Bazar (al elegir uno aparecen sus subcategorías) */}
+      <div className="gcards" role="tablist" aria-label="Grupos de categorías">
+        {GROUP_CARDS.map((g) => {
+          const on = railGroup === g.key;
+          return (
+            <button key={g.key} type="button" role="tab" aria-selected={on} className={`gcard ${on ? "on" : ""}`} onClick={() => pickGroup(on ? "todo" : g.key)}>
+              <img className="gcard-img" src={g.img} alt="" loading="eager" decoding="async" />
+              <span className="gcard-txt">
+                <b>{g.name}</b>
+                <span>{g.line}</span>
+                <i className="gcard-go" aria-hidden><ArrowRight /></i>
+              </span>
+            </button>
+          );
+        })}
       </div>
-      {/* Categorías en carrusel */}
-      <div className="crail">
+      {railGroup !== "todo" && <div className="crail">
         <div className="crail-track" ref={railRef} role="tablist" aria-label="Categorías">
           {catTiles.map((c) => {
             const on = !fullGroup && cats.includes(c.id);
@@ -257,7 +271,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
         </div>
         <button type="button" className="crail-arrow l" aria-label="Ver categorías anteriores" onClick={() => scrollRail(-1)}><ChevronLeft /></button>
         <button type="button" className="crail-arrow r" aria-label="Ver más categorías" onClick={() => scrollRail(1)}><ChevronRight /></button>
-      </div>
+      </div>}
 
       {/* Barra de búsqueda y filtros */}
       <div className="fbar">
