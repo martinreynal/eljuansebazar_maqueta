@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
   },
   serverExternalPackages: ["@resvg/resvg-js", "@react-pdf/renderer"],
   poweredByHeader: false,
+  // Restaura la posición de scroll al volver atrás entre páginas
+  experimental: { scrollRestoration: true },
   outputFileTracingIncludes: { "/catalogo.pdf": ["./public/logo-saggio.png", "./public/catalogo/mini/**"] },
   // El simulador de mesa 3D está desactivado por ahora: su dirección lleva al catálogo
   async redirects() {

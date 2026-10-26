@@ -81,6 +81,10 @@ function FilterMenu({ label, options, value, onChange, more = false }: { label: 
 
 type Props = { products: Product[]; categories: Category[]; settings: Settings; base: string; preset?: string; group?: CategoryGroup; title: string };
 const PAGE = 12;
+// Al volver atrás (popstate) el catálogo recupera cuántos productos mostraba y la posición de scroll
+let lastPop = 0;
+if (typeof window !== "undefined") window.addEventListener("popstate", () => { lastPop = Date.now(); });
+const SCROLL_KEY = (url: string) => `saggio:cat:${url}`;
 /** Tarjetas de grupo del catálogo (fotos en public/catalogo-grupos, 1600×800). */
 const GROUP_CARDS: { key: CategoryGroup; name: string; line: string; img: string }[] = [
   { key: "mobiliario", name: "Mobiliario", line: "Sillas, sillones, sofás, banquetas, mesas y más.", img: "/catalogo-grupos/mobiliario.jpg" },
@@ -98,19 +102,23 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
   const q = params.get("q") ?? "";
   // ?cat=slug1,slug2 preselecciona categorías (accesos de la portada)
   const idsOf = (g: CategoryGroup) => categories.filter((c) => groupOf(c) === g).map((c) => c.id);
+  // El grupo (?g=) y las categorías (?cat=) viven también en la URL para que "atrás" vuelva al mismo lugar
+  const gParam = params.get("g");
+  const urlGroup = gParam === "bazar" || gParam === "mobiliario" || gParam === "todo" ? (gParam as CategoryGroup | "todo") : null;
+  const urlSlugs = (params.get("cat") ?? "").split(",").filter(Boolean);
+  const defCats = preset ? [preset] : group ? idsOf(group) : [];
+  const groupFromCats = (ids: string[]): CategoryGroup | "todo" => {
+    const gs = new Set(categories.filter((c) => ids.includes(c.id)).map((c) => groupOf(c)));
+    return ids.length && gs.size === 1 ? ([...gs][0] ?? "todo") : "todo";
+  };
+  const defGroup: CategoryGroup | "todo" = group ?? groupFromCats(defCats);
   const [cats, setCats] = useState<string[]>(() => {
-    if (preset) return [preset];
-    if (group) return idsOf(group);
-    const slugs = (params.get("cat") ?? "").split(",").filter(Boolean);
-    return categories.filter((c) => slugs.includes(c.slug)).map((c) => c.id);
+    if (urlSlugs.length) return categories.filter((c) => urlSlugs.includes(c.slug)).map((c) => c.id);
+    if (urlGroup) return urlGroup === "todo" ? [] : idsOf(urlGroup);
+    return defCats;
   });
   // Grupo visible en el carrusel (Bazar / Mobiliario / todo)
-  const [railGroup, setRailGroup] = useState<CategoryGroup | "todo">(() => {
-    if (group) return group;
-    const sel = categories.filter((c) => cats.includes(c.id));
-    const gs = new Set(sel.map((c) => groupOf(c)));
-    return sel.length && gs.size === 1 ? ([...gs][0] ?? "todo") : "todo";
-  });
+  const [railGroup, setRailGroup] = useState<CategoryGroup | "todo">(() => urlGroup ?? (urlSlugs.length ? groupFromCats(cats) : defGroup));
   const [avail, setAvail] = useState<Availability[]>([]);
   const [types, setTypes] = useState<string[]>([]);
   const [mats, setMats] = useState<string[]>([]);
@@ -130,7 +138,51 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
       if (c && !c.is_offers) track("category_view", { category_id: c.id });
     }
   }, [preset, categories]);
-  useEffect(() => setShown(PAGE), [q, cats, avail, min, max, sort, types, mats, colors, extra]);
+  const mounted = useRef(false);
+  useEffect(() => { if (mounted.current) setShown(PAGE); }, [q, cats, avail, min, max, sort, types, mats, colors, extra]);
+
+  // Grupo y categorías → URL (sin agregar entradas al historial)
+  useEffect(() => {
+    if (!mounted.current) return;
+    const sp = new URLSearchParams(window.location.search);
+    const same = (a: string[], b: string[]) => a.length === b.length && a.every((x) => b.includes(x));
+    if (railGroup === defGroup) sp.delete("g"); else sp.set("g", railGroup);
+    if (same(cats, defCats) || (railGroup !== "todo" && same(cats, idsOf(railGroup)))) sp.delete("cat");
+    else sp.set("cat", categories.filter((c) => cats.includes(c.id)).map((c) => c.slug).join(","));
+    const url = `${pathname}${sp.toString() ? `?${sp}` : ""}`;
+    if (url !== `${window.location.pathname}${window.location.search}`) router.replace(url, { scroll: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [railGroup, cats]);
+
+  // Posición de scroll y cantidad de productos visibles, guardadas por URL
+  const [restoreY, setRestoreY] = useState<number | null>(null);
+  useEffect(() => {
+    if (Date.now() - lastPop < 4000) {
+      try {
+        const saved = JSON.parse(sessionStorage.getItem(SCROLL_KEY(window.location.pathname + window.location.search)) ?? "null");
+        if (saved) { setShown(Math.max(PAGE, saved.shown || PAGE)); setRestoreY(saved.y || 0); }
+      } catch { /* sin almacenamiento disponible */ }
+    }
+    mounted.current = true;
+  }, []);
+  useEffect(() => {
+    if (restoreY === null) return;
+    let n = 0;
+    const tick = () => { window.scrollTo(0, restoreY); if (++n < 6 && Math.abs(window.scrollY - restoreY) > 4) requestAnimationFrame(tick); else setRestoreY(null); };
+    requestAnimationFrame(() => requestAnimationFrame(tick));
+  }, [restoreY]);
+  useEffect(() => {
+    let raf = 0;
+    const save = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        try { sessionStorage.setItem(SCROLL_KEY(window.location.pathname + window.location.search), JSON.stringify({ y: window.scrollY, shown })); } catch { /* ignorar */ }
+      });
+    };
+    save();
+    window.addEventListener("scroll", save, { passive: true });
+    return () => { window.removeEventListener("scroll", save); cancelAnimationFrame(raf); };
+  }, [shown]);
   // Datos derivados para los filtros (tipo, material, color)
   const meta = useMemo(() => new Map(products.map((p) => [p.id, { type: typeOf(p), mats: matsOf(p), colors: colorsOf(p) }])), [products]);
 
@@ -295,9 +347,13 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
         </div>
       </div>}
 
-      <div className="fmeta">
+      {!showFilters && (
+        <div className="cat-pick-hint">
+          <p>Elegí <b>Mobiliario</b> o <b>Bazar</b> para ver los productos.</p>
+        </div>
+      )}
+      {showFilters && <div className="fmeta">
         <div className="fmeta-chips">
-          {!showFilters && <span className="fmeta-hint">Elegí Mobiliario o Bazar para ver sus categorías y filtros.</span>}
           {showFilters && chips.length > 0 && <span className="fmeta-l">Filtros activos:</span>}
           {showFilters && chips.map((c) => <button key={c.label} className="chip" onClick={c.clear} aria-label={`Quitar filtro ${c.label}`}>{c.label}<X /></button>)}
           {showFilters && chips.length > 0 && <button className="fmeta-clear" onClick={clearAll}>Limpiar filtros</button>}
@@ -317,9 +373,9 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
             <ChevronDown aria-hidden />
           </label>
         </div>
-      </div>
+      </div>}
 
-      <div className="cat-full">
+      {showFilters && <div className="cat-full">
           {results.length ? (
             <ProductGrid products={results.slice(0, shown)} ctx={ctx} priorityFirst={4} />
           ) : (
@@ -341,7 +397,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
               <button className="btn btn-ghost" onClick={() => setShown((s) => s + PAGE)}>Cargar más productos</button>
             </div>
           )}
-      </div>
+      </div>}
     </div>
   );
 }

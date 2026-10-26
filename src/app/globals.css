@@ -1932,5 +1932,5 @@ a.by-ap:hover img{opacity:.8}
 .h2-copy .hero-ctas .btn-cta:hover{background:var(--terra-dark);border-color:var(--terra-dark);color:var(--ivory)}
 .h2-copy .hero-ctas .btn-ghost{background:var(--ivory);border:1px solid var(--forest);color:var(--forest)}
 .h2-copy .hero-ctas .btn-ghost:hover{background:var(--forest);border-color:var(--forest);color:var(--ivory)}
-.fmeta-hint{color:var(--muted);font-size:14px}
-@media (max-width:860px){.fmeta-hint{display:none}}
+.cat-pick-hint{text-align:center;padding:28px 16px 56px;color:var(--muted);font-size:16px}
+.cat-pick-hint b{color:var(--forest);font-weight:600}
