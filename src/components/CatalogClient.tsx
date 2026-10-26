@@ -194,7 +194,13 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
   const availOpts: [string, number][] = AV_FILTERS.map((a) => [AVAILABILITY[a], pool.filter((p) => p.availability === a).length] as [string, number]).filter(([, n]) => n > 0);
   const extraOpts: [string, number][] = ([["Con vista 3D", pool.filter((p) => p.model_url).length], ["Ofertas", pool.filter((p) => p.tag === "oferta").length]] as [string, number][]).filter(([, n]) => n > 0);
   const catTiles = categories.filter((c) => !c.is_offers && (railGroup === "todo" || groupOf(c) === railGroup) && products.some((p) => inCategory(p, c)));
-  const pickGroup = (g: CategoryGroup | "todo") => { setRailGroup(g); setCats(g === "todo" ? [] : idsOf(g)); railRef.current?.scrollTo({ left: 0 }); };
+  const pickGroup = (g: CategoryGroup | "todo") => {
+    setRailGroup(g); setCats(g === "todo" ? [] : idsOf(g)); railRef.current?.scrollTo({ left: 0 });
+    // Sin grupo elegido los filtros quedan ocultos: se limpian para que no sigan aplicándose
+    if (g === "todo") { setAvail([]); setTypes([]); setMats([]); setColors([]); setExtra([]); setMin(""); setMax(""); }
+  };
+  // Filtros visibles solo con un grupo elegido (o en búsquedas y en Ofertas)
+  const showFilters = railGroup !== "todo" || !!q || !!preset;
   const fullGroup = GROUPS.find((g) => { const ids = idsOf(g.key); return ids.length > 0 && ids.length === cats.length && ids.every((i) => cats.includes(i)); });
   const scrollRail = (d: number) => railRef.current?.scrollBy({ left: d * Math.max(300, (railRef.current?.clientWidth ?? 600) * 0.8), behavior: "smooth" });
   const pickCat = (id: string) => {
@@ -274,7 +280,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
       </div>}
 
       {/* Barra de búsqueda y filtros */}
-      <div className="fbar">
+      {showFilters && <div className="fbar">
         <form className="fbar-search" role="search" onSubmit={(e) => { e.preventDefault(); (e.currentTarget.querySelector("input") as HTMLInputElement)?.blur(); }}>
           <Search aria-hidden />
           <input id="cat-q" type="search" placeholder="Buscar producto…" aria-label="Buscar por nombre o código de producto" enterKeyHint="search" value={q} onChange={(e) => setQ(e.target.value)} autoComplete="off" />
@@ -287,13 +293,14 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
           <FilterMenu label="Disponibilidad" options={availOpts} value={avail.map((a) => AVAILABILITY[a])} onChange={(v) => setAvail(AV_FILTERS.filter((a) => v.includes(AVAILABILITY[a])))} />
           <FilterMenu label="Más filtros" options={extraOpts.length ? extraOpts : [["Con vista 3D", 0]]} value={extra} onChange={setExtra} more />
         </div>
-      </div>
+      </div>}
 
       <div className="fmeta">
         <div className="fmeta-chips">
-          {chips.length > 0 && <span className="fmeta-l">Filtros activos:</span>}
-          {chips.map((c) => <button key={c.label} className="chip" onClick={c.clear} aria-label={`Quitar filtro ${c.label}`}>{c.label}<X /></button>)}
-          {chips.length > 0 && <button className="fmeta-clear" onClick={clearAll}>Limpiar filtros</button>}
+          {!showFilters && <span className="fmeta-hint">Elegí Mobiliario o Bazar para ver sus categorías y filtros.</span>}
+          {showFilters && chips.length > 0 && <span className="fmeta-l">Filtros activos:</span>}
+          {showFilters && chips.map((c) => <button key={c.label} className="chip" onClick={c.clear} aria-label={`Quitar filtro ${c.label}`}>{c.label}<X /></button>)}
+          {showFilters && chips.length > 0 && <button className="fmeta-clear" onClick={clearAll}>Limpiar filtros</button>}
         </div>
         <div className="fmeta-r">
           <span className="fmeta-n"><b>{results.length}</b> producto{results.length === 1 ? "" : "s"}</span>
