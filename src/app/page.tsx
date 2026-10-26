@@ -13,19 +13,18 @@ import Image from "next/image";
 
 export const revalidate = 300;
 
-const VAJILLA = "vajilla-blanca,gres,vajilla-decorada,vajilla-marmolada,platos-y-bowls";
 
 
-const SIDE = [
-  { title: "Colección institucional", href: "/categoria/vajilla-blanca", img: "/portada/coleccion-institucional-2.jpg", pos: "45% 45%" },
-  { title: "Línea artesanal", href: "/categoria/gres", img: "/portada/linea-artesanal-2.jpg", pos: "50% 55%" },
-  { title: "Soluciones para tu cocina", href: "/categoria/vajilla-oriental", img: "/portada/cocina.jpg", pos: "55% 50%" },
+/** Accesos grandes de la portada: los dos grupos del catálogo. */
+const HERO_GROUPS = [
+  { title: "Mobiliario", line: "Espacios que inspiran hospitalidad.", href: "/categoria/mobiliario", img: "/catalogo-grupos/mobiliario.jpg", pos: "60% 55%" },
+  { title: "Bazar", line: "Detalles que hacen la diferencia.", href: "/categoria/bazar", img: "/catalogo-grupos/bazar.jpg", pos: "60% 55%" },
 ];
 const BANNERS = [
-  { title: "Vajilla", line: "Piezas que realzan cada creación.", href: `/catalogo?cat=${VAJILLA}`, img: "/portada/mesa-servida.jpg", pos: "40% 70%", tone: "petrol" },
-  { title: "Cristalería", line: "Transparencia para grandes momentos.", href: "/categoria/cristaleria", img: "/portada/cristaleria.jpg", pos: "45% 50%", tone: "sand" },
-  { title: "Mobiliario", line: "Espacios que inspiran hospitalidad.", href: "/categoria/mobiliario", img: "/portada/silla-terracota.jpg", pos: "50% 62%", tone: "petrol" },
-  { title: "Personalización", line: "Tu marca también en cada detalle.", href: "/personalizados", img: "/portada/marca-taza.jpg", pos: "50% 45%", tone: "sand" },
+  { title: "Sillas", line: "Comodidad que realza tus espacios.", href: "/categoria/sillas", img: "/portada/banner-sillas.jpg", pos: "50% 55%", tone: "petrol" },
+  { title: "Cristalería", line: "Transparencia para grandes momentos.", href: "/categoria/cristaleria", img: "/portada/banner-cristaleria.jpg", pos: "50% 50%", tone: "sand" },
+  { title: "Mesas", line: "El centro de cada encuentro.", href: "/categoria/mesas", img: "/portada/banner-mesas.jpg", pos: "50% 55%", tone: "petrol" },
+  { title: "Cubiertos", line: "Funcionalidad y estilo en cada servicio.", href: "/categoria/cubiertos", img: "/portada/banner-cubiertos.jpg", pos: "50% 50%", tone: "sand" },
 ];
 
 /** Categorías con foto de portada preparada (public/categorias, ver scripts/portada-categorias.py). */
@@ -58,18 +57,16 @@ export default async function Home() {
             <WaLink href={waLink(settings.whatsapp, msgQuote(settings.business_name))} channel="quote" className="btn btn-ghost btn-lg">Pedir cotización</WaLink>
           </div>
         </div>
-        <Link className="h2-main" href="/catalogo">
-          {/* Vertical en computadora; apaisada en tablet y celular */}
-          <Image className="h2-v" src="/portada/ambiente-verde.jpg" alt="Restaurante con banqueta de terciopelo verde, sillas terracota y mesas de madera servidas" fill priority sizes="(max-width: 1180px) 1px, 36vw" style={{ objectPosition: "50% 55%" }} />
-          <Image className="h2-h" src="/portada/ambiente-arcos-h.jpg" alt="" fill sizes="(max-width: 1180px) 100vw, 1px" style={{ objectPosition: "50% 50%" }} />
-          <span className="h2-cap"><i />Vajilla que realza<br />tu propuesta.</span>
-        </Link>
-        <div className="h2-side">
-          {SIDE.map((t) => (
-            <Link key={t.href} className="h2-tile" href={t.href}>
-              <Image src={t.img} alt="" fill sizes="(max-width: 860px) 33vw, 19vw" style={{ objectPosition: t.pos }} />
-              <span>{t.title}</span>
-              <b aria-hidden><ArrowRight /></b>
+        <div className="h2-groups">
+          {HERO_GROUPS.map((g, i) => (
+            <Link key={g.href} className="h2-group" href={g.href}>
+              <Image src={g.img} alt="" fill priority={i === 0} sizes="(max-width: 860px) 100vw, 56vw" style={{ objectPosition: g.pos }} />
+              <span className="hg-txt">
+                <b>{g.title}</b>
+                <i aria-hidden />
+                <small>{g.line}</small>
+                <span className="hg-go" aria-hidden><ArrowRight /></span>
+              </span>
             </Link>
           ))}
         </div>

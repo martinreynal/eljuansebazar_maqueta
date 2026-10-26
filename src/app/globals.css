@@ -1902,3 +1902,28 @@ a.by-ap:hover img{opacity:.8}
   .gcard-go{width:40px;height:40px}
   .gcard::before{background:linear-gradient(90deg,var(--ivory) 0%,rgba(244,239,231,.92) 40%,rgba(244,239,231,.4) 60%,rgba(244,239,231,0) 75%)}
 }
+
+/* Portada rediseñada: texto + dos accesos grandes (Mobiliario / Bazar) */
+.hero2{grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);gap:28px;min-height:0;align-items:stretch}
+.h2-copy{padding:clamp(20px,3vw,40px) clamp(4px,1vw,16px);gap:22px}
+.h2-copy h1{font-size:clamp(40px,4.4vw,66px);line-height:1.02}
+.h2-groups{display:grid;grid-template-rows:1fr 1fr;gap:12px;min-width:0}
+.h2-group{position:relative;display:block;min-height:clamp(220px,19vw,262px);border-radius:var(--r-lg);overflow:hidden;isolation:isolate;background:var(--forest-dark)}
+.h2-group img{object-fit:cover;z-index:-2;transition:transform .7s var(--ease,ease)}
+.h2-group:hover img{transform:scale(1.035)}
+.h2-group::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(22,40,32,.62) 0%,rgba(22,40,32,.38) 34%,rgba(22,40,32,0) 62%)}
+.hg-txt{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:12px;height:100%;padding:clamp(22px,2.6vw,34px)}
+.hg-txt b{font-family:var(--f-display);font-variation-settings:"SOFT" 100,"WONK" 0;font-weight:420;font-size:clamp(36px,3.6vw,52px);line-height:1;letter-spacing:-.02em;color:var(--ivory)}
+.hg-txt i{display:block;width:34px;height:2px;background:var(--terra)}
+.hg-txt small{font-size:12px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--ivory);max-width:26ch;line-height:1.55}
+.hg-go{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--ivory);color:var(--forest);margin-top:4px;transition:background .2s,color .2s,transform .2s}
+.h2-group:hover .hg-go{background:var(--terra);color:var(--ivory);transform:translateX(3px)}
+.hg-go .lucide{width:20px;height:20px}
+@media (max-width:1180px){.hero2{grid-template-columns:1fr 1fr}.h2-copy h1{font-size:clamp(36px,4.6vw,52px)}}
+@media (max-width:860px){
+  .hero2{grid-template-columns:1fr;gap:14px}
+  .h2-group{min-height:190px}
+  .hg-txt b{font-size:36px}
+  .hg-txt small{font-size:11px;letter-spacing:.2em}
+  .hg-go{width:42px;height:42px}
+}
