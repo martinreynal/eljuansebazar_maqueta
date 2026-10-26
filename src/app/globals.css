@@ -1793,7 +1793,11 @@ h1,h2,.page-title,.sec-head h2,.h2-copy h1,.bs-copy h1,.bs-copy h2,.pinfo h1,.pi
 .band .sec-head h2{color:var(--forest)}
 #h-faq{font-weight:420!important;letter-spacing:-.018em!important}
 .wa-banner h2{font-weight:420}
-.wa-banner .btn,.wa-banner .btn-wa{background:var(--terra);border-color:var(--terra);color:var(--ivory)}
-.wa-banner .btn:hover,.wa-banner .btn-wa:hover{background:var(--terra-dark);border-color:var(--terra-dark)}
+/* "¿No encontrás lo que buscás?": bloque terracota con botón verde bosque */
+.wa-banner{background:var(--terra);color:var(--ivory)}
+.wa-banner p,.wa-banner span,.wa-banner .lucide{color:var(--ivory)}
+.wa-banner .btn,.wa-banner .btn-wa{background:var(--forest);border-color:var(--forest);color:var(--ivory)}
+.wa-banner .btn .lucide,.wa-banner .btn-wa .lucide{color:var(--ivory)}
+.wa-banner .btn:hover,.wa-banner .btn-wa:hover{background:var(--forest-dark);border-color:var(--forest-dark)}
 /* La etiqueta (Nuevo/Oferta) de la foto principal no debe estirarse */
 .main-img > .pc-tag{width:auto;height:auto;position:absolute;z-index:2}
