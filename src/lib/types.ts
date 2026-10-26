@@ -38,7 +38,10 @@ export type Category = {
   position: number;
   active: boolean;
   is_offers: boolean;
+  /** Grupo al que pertenece (Bazar o Mobiliario). */
+  grupo?: CategoryGroup | null;
 };
+export type CategoryGroup = "bazar" | "mobiliario";
 
 export type Design = {
   notice: string; // franja superior; vacía = oculta

@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { Check, ChevronDown, Pencil, Plus, Search, Star, Trash2, X } from "lucide-react";
 import { deleteProduct, updateProductFlags } from "@/app/admin/actions";
 import { AVAILABILITY, TAGS, money, searchable } from "@/lib/format";
+import { GROUPS, groupOf } from "@/lib/groups";
 import type { Category, Product } from "@/lib/types";
 import { ProductImage } from "../ProductImage";
 
@@ -36,10 +37,15 @@ function CategoryPicker({ p, categories, onPick, disabled }: { p: Product; categ
       {open && (
         <div className="catpick-menu" role="listbox" aria-label={`Categoría de ${p.name}`}>
           <div className="catpick-h">Mover a…</div>
-          {list.map((c) => (
-            <button type="button" role="option" aria-selected={c.id === p.category_id} key={c.id} onClick={() => { setOpen(false); if (c.id !== p.category_id) onPick(c.id); }}>
-              <span>{c.name}</span>{c.id === p.category_id && <Check aria-hidden />}
-            </button>
+          {GROUPS.map((g) => (
+            <div key={g.key} role="group" aria-label={g.name}>
+              <div className="catpick-g">{g.name}</div>
+              {list.filter((c) => groupOf(c) === g.key).map((c) => (
+                <button type="button" role="option" aria-selected={c.id === p.category_id} key={c.id} onClick={() => { setOpen(false); if (c.id !== p.category_id) onPick(c.id); }}>
+                  <span>{c.name}</span>{c.id === p.category_id && <Check aria-hidden />}
+                </button>
+              ))}
+            </div>
           ))}
         </div>
       )}

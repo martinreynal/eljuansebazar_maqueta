@@ -6,7 +6,8 @@ import { ArrowDownUp, Check, ChevronDown, ChevronLeft, ChevronRight, FileDown, F
 import { AVAILABILITY, inCategory, money, priceShown, searchable, waLink } from "@/lib/format";
 /* eslint-disable @next/next/no-img-element */
 import { track } from "@/lib/track";
-import type { Availability, Category, Product, Settings } from "@/lib/types";
+import { GROUPS, groupByKey, groupHref, groupOf } from "@/lib/groups";
+import type { Availability, Category, CategoryGroup, Product, Settings } from "@/lib/types";
 import { ProductGrid } from "./ProductCard";
 import { WaLink } from "./WaLink";
 
@@ -78,23 +79,32 @@ function FilterMenu({ label, options, value, onChange, more = false }: { label: 
   );
 }
 
-type Props = { products: Product[]; categories: Category[]; settings: Settings; base: string; preset?: string; title: string };
+type Props = { products: Product[]; categories: Category[]; settings: Settings; base: string; preset?: string; group?: CategoryGroup; title: string };
 const PAGE = 12;
 const AV_FILTERS: Availability[] = ["disponible", "consultar", "sin_stock"];
 
 /** Categorías con foto preparada (public/categorias). */
 const CATEGORY_IMG = new Set(["vajilla-blanca", "gres", "vajilla-decorada", "vajilla-marmolada", "platos-y-bowls", "vajilla-oriental", "cubiertos", "asado-y-parrilla", "cristaleria", "cafe", "sillas", "sofas-y-sillones", "banquetas", "boxes-y-bancos", "mesas", "mesas-auxiliares", "exterior", "exterior-lounge"]);
 
-export function CatalogClient({ products, categories, settings, base, preset, title }: Props) {
+export function CatalogClient({ products, categories, settings, base, preset, group, title }: Props) {
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const q = params.get("q") ?? "";
   // ?cat=slug1,slug2 preselecciona categorías (accesos de la portada)
+  const idsOf = (g: CategoryGroup) => categories.filter((c) => groupOf(c) === g).map((c) => c.id);
   const [cats, setCats] = useState<string[]>(() => {
     if (preset) return [preset];
+    if (group) return idsOf(group);
     const slugs = (params.get("cat") ?? "").split(",").filter(Boolean);
     return categories.filter((c) => slugs.includes(c.slug)).map((c) => c.id);
+  });
+  // Grupo visible en el carrusel (Bazar / Mobiliario / todo)
+  const [railGroup, setRailGroup] = useState<CategoryGroup | "todo">(() => {
+    if (group) return group;
+    const sel = categories.filter((c) => cats.includes(c.id));
+    const gs = new Set(sel.map((c) => groupOf(c)));
+    return sel.length && gs.size === 1 ? ([...gs][0] ?? "todo") : "todo";
   });
   const [avail, setAvail] = useState<Availability[]>([]);
   const [types, setTypes] = useState<string[]>([]);
@@ -178,17 +188,19 @@ export function CatalogClient({ products, categories, settings, base, preset, ti
   const colorOpts = count((p) => meta.get(p.id)!.colors);
   const availOpts: [string, number][] = AV_FILTERS.map((a) => [AVAILABILITY[a], pool.filter((p) => p.availability === a).length] as [string, number]).filter(([, n]) => n > 0);
   const extraOpts: [string, number][] = ([["Con vista 3D", pool.filter((p) => p.model_url).length], ["Ofertas", pool.filter((p) => p.tag === "oferta").length]] as [string, number][]).filter(([, n]) => n > 0);
-  const catTiles = categories.filter((c) => !c.is_offers && products.some((p) => inCategory(p, c)));
+  const catTiles = categories.filter((c) => !c.is_offers && (railGroup === "todo" || groupOf(c) === railGroup) && products.some((p) => inCategory(p, c)));
+  const pickGroup = (g: CategoryGroup | "todo") => { setRailGroup(g); setCats(g === "todo" ? [] : idsOf(g)); railRef.current?.scrollTo({ left: 0 }); };
+  const fullGroup = GROUPS.find((g) => { const ids = idsOf(g.key); return ids.length > 0 && ids.length === cats.length && ids.every((i) => cats.includes(i)); });
   const scrollRail = (d: number) => railRef.current?.scrollBy({ left: d * Math.max(300, (railRef.current?.clientWidth ?? 600) * 0.8), behavior: "smooth" });
   const pickCat = (id: string) => {
-    setCats((v) => (v.length === 1 && v[0] === id ? [] : [id]));
+    setCats((v) => (v.length === 1 && v[0] === id ? (railGroup === "todo" ? [] : idsOf(railGroup)) : [id]));
     const c = categories.find((x) => x.id === id);
     if (c && !c.is_offers) track("category_view", { category_id: c.id });
   };
 
   const chips: { label: string; clear: () => void }[] = [
     ...(q ? [{ label: `“${q}”`, clear: () => setQ("") }] : []),
-    ...cats.map((id) => ({ label: categories.find((c) => c.id === id)?.name ?? id, clear: () => setCats((c) => c.filter((x) => x !== id)) })),
+    ...(fullGroup ? [{ label: fullGroup.name, clear: () => pickGroup("todo") }] : cats.map((id) => ({ label: categories.find((c) => c.id === id)?.name ?? id, clear: () => setCats((c) => c.filter((x) => x !== id)) }))),
     ...avail.map((a) => ({ label: AVAILABILITY[a], clear: () => setAvail((v) => v.filter((x) => x !== a)) })),
     ...types.map((t) => ({ label: t, clear: () => setTypes((v) => v.filter((x) => x !== t)) })),
     ...mats.map((t) => ({ label: t, clear: () => setMats((v) => v.filter((x) => x !== t)) })),
@@ -197,7 +209,7 @@ export function CatalogClient({ products, categories, settings, base, preset, ti
     ...(min ? [{ label: `Desde ${money(+min.replace(/\D/g, "") || 0)}`, clear: () => setMin("") }] : []),
     ...(max ? [{ label: `Hasta ${money(+max.replace(/\D/g, "") || 0)}`, clear: () => setMax("") }] : []),
   ];
-  const clearAll = () => { setCats([]); setAvail([]); setTypes([]); setMats([]); setColors([]); setExtra([]); setMin(""); setMax(""); if (q) setQ(""); };
+  const clearAll = () => { setCats([]); setRailGroup("todo"); setAvail([]); setTypes([]); setMats([]); setColors([]); setExtra([]); setMin(""); setMax(""); if (q) setQ(""); };
   const more = results.length > shown;
   // Carga automática al llegar al final (el botón queda como respaldo)
   useEffect(() => {
@@ -208,7 +220,11 @@ export function CatalogClient({ products, categories, settings, base, preset, ti
     return () => io.disconnect();
   }, [more, shown]);
 
-  const crumbs = preset ? [["Inicio", "/"], ["Catálogo", "/catalogo"], [title, ""]] : [["Inicio", "/"], ["Catálogo", ""]];
+  const presetCat = preset ? categories.find((c) => c.id === preset) : undefined;
+  const presetGroup = presetCat ? groupByKey(groupOf(presetCat) ?? "") : undefined;
+  const crumbs = preset
+    ? [["Inicio", "/"], ["Catálogo", "/catalogo"], ...(presetGroup ? [[presetGroup.name, groupHref(presetGroup.key)]] : []), [title, ""]]
+    : group ? [["Inicio", "/"], ["Catálogo", "/catalogo"], [title, ""]] : [["Inicio", "/"], ["Catálogo", ""]];
 
   return (
     <div className="wrap">
@@ -219,11 +235,17 @@ export function CatalogClient({ products, categories, settings, base, preset, ti
         <h1 className="page-title">{title}</h1>
         <a className="btn btn-ghost btn-sm only-d" href="/catalogo.pdf" target="_blank" rel="noopener"><FileDown />Descargar catálogo en PDF</a>
       </div>
+      {/* Grupos: Bazar / Mobiliario */}
+      <div className="cgroups" role="tablist" aria-label="Grupos de categorías">
+        {([["todo", "Todo"], ...GROUPS.map((g) => [g.key, g.name])] as [CategoryGroup | "todo", string][]).map(([k, t]) => (
+          <button key={k} type="button" role="tab" aria-selected={railGroup === k} className={`cgroup ${railGroup === k ? "on" : ""}`} onClick={() => pickGroup(k)}>{t}</button>
+        ))}
+      </div>
       {/* Categorías en carrusel */}
       <div className="crail">
         <div className="crail-track" ref={railRef} role="tablist" aria-label="Categorías">
           {catTiles.map((c) => {
-            const on = cats.includes(c.id);
+            const on = !fullGroup && cats.includes(c.id);
             const img = CATEGORY_IMG.has(c.slug) ? `/categorias/${c.slug}.jpg` : null;
             return (
               <button key={c.id} type="button" role="tab" aria-selected={on} className={`crail-tile ${on ? "on" : ""}`} onClick={() => pickCat(c.id)}>

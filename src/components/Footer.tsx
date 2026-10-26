@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { formatPhone } from "@/lib/format";
+import { GROUPS, groupHref } from "@/lib/groups";
 import type { Category, Settings } from "@/lib/types";
 import { Logo } from "./Logo";
 
@@ -14,7 +15,12 @@ export function Footer({ settings, categories }: { settings: Settings; categorie
           </div>
           <div className="only-d-block">
             <h4>Categorías</h4>
-            <ul>{categories.filter((c) => !c.is_offers).slice(0, 8).map((c) => <li key={c.id}><Link href={`/categoria/${c.slug}`}>{c.name}</Link></li>)}</ul>
+            <ul>
+              {GROUPS.map((g) => <li key={g.key}><Link href={groupHref(g.key)}>{g.name}</Link></li>)}
+              {categories.some((c) => c.is_offers) && <li><Link href="/ofertas">Ofertas</Link></li>}
+              <li><Link href="/personalizados">Personalizados</Link></li>
+              <li><Link href="/catalogo">Todo el catálogo</Link></li>
+            </ul>
           </div>
           <div>
             <h4>Atención</h4>
@@ -39,11 +45,11 @@ export function Footer({ settings, categories }: { settings: Settings; categorie
           <span>No se realizan ventas en línea. Precios y disponibilidad se confirman por WhatsApp.</span>
         </div>
       </div>
-      <div className="by-ap">
+      <a className="by-ap" href="https://www.argenprom.com.ar/" target="_blank" rel="noopener noreferrer" aria-label="by Argenprom (abre argenprom.com.ar en una pestaña nueva)">
         <span>by</span>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/argenprom.png" alt="Argenprom · Fidelización digital" width={600} height={166} loading="lazy" decoding="async" />
-      </div>
+      </a>
     </footer>
   );
 }

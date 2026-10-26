@@ -1845,3 +1845,35 @@ h1,h2,.page-title,.sec-head h2,.h2-copy h1,.bs-copy h1,.bs-copy h2,.pinfo h1,.pi
   .ab-cta{flex-direction:column;align-items:flex-start;padding:28px 24px}
   .ab-cta-btns{width:100%}.ab-cta-btns .btn{flex:1;justify-content:center}
 }
+
+/* Grupos del catálogo: Bazar / Mobiliario */
+.cgroups{display:flex;gap:8px;margin:4px 0 14px;flex-wrap:wrap}
+.cgroup{height:38px;padding:0 18px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--forest);font-weight:600;font-size:14px;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.cgroup:hover{border-color:var(--terra);color:var(--terra-dark)}
+.cgroup.on{background:var(--forest);border-color:var(--forest);color:var(--ivory)}
+/* Menú Catálogo agrupado (Bazar | Mobiliario) */
+.dd{min-width:600px}
+.dd-groups{display:grid;grid-template-columns:1.25fr 1fr;gap:14px}
+.dd-group .dd-grid{grid-template-columns:1fr}
+.dd-groups .dd-group:first-child .dd-grid{grid-template-columns:1fr 1fr}
+.nav .dd a.dd-group-h{display:flex;align-items:center;gap:6px;font-family:var(--f-display);font-weight:500;font-size:19px;color:var(--forest);padding:6px 12px 8px;border-bottom:1px solid var(--line);border-radius:0;margin-bottom:6px}
+.nav .dd a.dd-group-h .lucide{width:16px;height:16px;color:var(--terra)}
+.nav .dd a.dd-group-h:hover{background:transparent;color:var(--terra-dark);padding-left:12px}
+.m-group{display:flex;flex-direction:column;gap:6px}
+.m-group-h{display:flex;align-items:center;justify-content:space-between;color:var(--terra-dark)}
+.m-group-h .lucide{width:16px;height:16px}
+a.by-ap{text-decoration:none;cursor:pointer}
+a.by-ap:hover img{opacity:.8}
+/* Portada: categorías agrupadas */
+.cat-group + .cat-group{margin-top:34px}
+.cat-group-h{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.cat-group-h h3{font-family:var(--f-display);font-weight:450;font-size:26px;color:var(--forest)}
+.cat-group-h h3 a:hover{color:var(--terra-dark)}
+.cat-group-h > span{color:var(--muted);font-size:14px}
+.cat-group-all{margin-left:auto;display:inline-flex;align-items:center;gap:6px;color:var(--terra-dark);font-weight:600;font-size:14px}
+.cat-group-all .lucide{width:16px;height:16px}
+.quick-cats a.qc-group{background:var(--forest);border-color:var(--forest);color:var(--ivory)}
+@media (max-width:560px){.cat-group-h > span{display:none}.cat-group-h h3{font-size:22px}}
+.cat-row{grid-template-columns:auto 44px minmax(0,1fr) auto auto auto}
+@media (max-width:860px){.cat-row{grid-template-columns:auto 40px minmax(0,1fr) auto;}.cat-row select{grid-column:3}}
+.catpick-g{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--terra-dark);padding:8px 10px 4px}

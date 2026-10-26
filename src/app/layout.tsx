@@ -62,7 +62,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               name={settings.business_name}
               tagline={settings.tagline}
               whatsapp={settings.whatsapp}
-              categories={categories.filter((c) => hasOffers || !c.is_offers).map(({ id, slug, name, is_offers }) => ({ id, slug, name, is_offers }))}
+              categories={categories.filter((c) => hasOffers || !c.is_offers).map(({ id, slug, name, is_offers, grupo }) => ({ id, slug, name, is_offers, grupo }))}
             />
           </Suspense>
           <main id="main">{children}</main>

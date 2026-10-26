@@ -6,12 +6,13 @@ import {
   ChevronDown, ChevronRight, ClipboardList, FileDown, Heart, House, LayoutGrid, Menu, Search, Stamp, Tag, Users, X,
 } from "lucide-react";
 import { msgGeneral, waLink } from "@/lib/format";
+import { GROUPS, groupHref, groupOf } from "@/lib/groups";
 import type { Category } from "@/lib/types";
 import { Logo } from "./Logo";
 import { useStore } from "./store/StoreProvider";
 import { WaLink } from "./WaLink";
 
-type Props = { name: string; tagline: string; whatsapp: string; categories: Pick<Category, "id" | "slug" | "name" | "is_offers">[] };
+type Props = { name: string; tagline: string; whatsapp: string; categories: Pick<Category, "id" | "slug" | "name" | "is_offers" | "grupo">[] };
 
 const catHref = (c: { slug: string; is_offers: boolean }) => (c.is_offers ? "/ofertas" : `/categoria/${c.slug}`);
 
@@ -106,9 +107,16 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
             </Link>
             <button type="button" className="nav-dd-btn" aria-label="Ver categorías" aria-expanded={cats} aria-haspopup="true" onClick={() => setCats((v) => !v)}><ChevronDown /></button>
             <div className={`dd ${cats ? "open" : ""}`} role="menu">
-              <div className="dd-grid">
-                {categories.map((c) => (
-                  <Link key={c.id} role="menuitem" href={catHref(c)} className={c.is_offers ? "promo" : undefined} aria-current={pathname === catHref(c) ? "page" : undefined}>{c.name}</Link>
+              <div className="dd-groups">
+                {GROUPS.filter((g) => categories.some((c) => groupOf(c) === g.key)).map((g) => (
+                  <div key={g.key} className="dd-group">
+                    <Link role="menuitem" href={groupHref(g.key)} className="dd-group-h" aria-current={pathname === groupHref(g.key) ? "page" : undefined}>{g.name}<ChevronRight /></Link>
+                    <div className="dd-grid">
+                      {categories.filter((c) => groupOf(c) === g.key).map((c) => (
+                        <Link key={c.id} role="menuitem" href={catHref(c)} aria-current={pathname === catHref(c) ? "page" : undefined}>{c.name}</Link>
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
               <div className="dd-foot">
@@ -153,12 +161,16 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
             ))}
             <a href="/catalogo.pdf" target="_blank" rel="noopener"><FileDown />Catálogo en PDF<ChevronRight /></a>
           </nav>
-          <span className="eyebrow">Categorías</span>
-          <nav className="m-nav">
-            {categories.map((c) => (
-              <Link key={c.id} href={catHref(c)} onClick={() => setMenu(false)}>{c.name}<ChevronRight /></Link>
-            ))}
-          </nav>
+          {GROUPS.map((g) => (
+            <div key={g.key} className="m-group">
+              <Link className="eyebrow m-group-h" href={groupHref(g.key)} onClick={() => setMenu(false)}>{g.name}<ChevronRight /></Link>
+              <nav className="m-nav">
+                {categories.filter((c) => groupOf(c) === g.key).map((c) => (
+                  <Link key={c.id} href={catHref(c)} onClick={() => setMenu(false)}>{c.name}<ChevronRight /></Link>
+                ))}
+              </nav>
+            </div>
+          ))}
           <WaLink href={waHref} channel="general" className="btn btn-wa">Escribinos por WhatsApp</WaLink>
         </div>
       </aside>

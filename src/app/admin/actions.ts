@@ -138,6 +138,7 @@ const CategoryInput = z.object({
   name: z.string().trim().min(2, "El nombre necesita al menos 2 letras.").max(60),
   active: z.boolean(),
   image_path: z.string().regex(/^categories\/[\w.-]+$/).nullable(),
+  grupo: z.enum(["bazar", "mobiliario"]).nullable().optional(),
 });
 
 export async function saveCategory(input: z.input<typeof CategoryInput>): Promise<Result<{ id: string }>> {
@@ -147,8 +148,9 @@ export async function saveCategory(input: z.input<typeof CategoryInput>): Promis
     const sb = await requireAdmin();
     const { id, ...v } = parsed.data;
     if (id) {
-      const { data: prev } = await sb.from("categories").select("image_path, is_offers").eq("id", id).single();
-      const patch = prev?.is_offers ? v : { ...v, slug: slugify(v.name) };
+      const { data: prev } = await sb.from("categories").select("image_path, is_offers, name").eq("id", id).single();
+      // El slug (dirección de la categoría) solo cambia si cambia el nombre
+      const patch = prev?.is_offers ? { ...v, grupo: null } : prev?.name === v.name ? v : { ...v, slug: slugify(v.name) };
       const { error } = await sb.from("categories").update(patch).eq("id", id);
       if (error) return fail(error);
       if (prev?.image_path && prev.image_path !== v.image_path) await media(sb).remove([prev.image_path]);

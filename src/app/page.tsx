@@ -7,13 +7,13 @@ import { WaLink } from "@/components/WaLink";
 import { getStore } from "@/lib/data";
 import { mediaUrl, siteUrl } from "@/lib/env";
 import { inCategory, msgCustom, msgGeneral, msgQuote, waLink } from "@/lib/format";
+import { GROUPS, groupHref, groupOf } from "@/lib/groups";
 import Image from "next/image";
 /* eslint-disable @next/next/no-img-element */
 
 export const revalidate = 300;
 
 const VAJILLA = "vajilla-blanca,gres,vajilla-decorada,vajilla-marmolada,platos-y-bowls";
-const MOBILIARIO = "sillas,mesas,banquetas,boxes-y-bancos,sofas-y-sillones,mesas-auxiliares,exterior,exterior-lounge";
 
 
 const SIDE = [
@@ -24,7 +24,7 @@ const SIDE = [
 const BANNERS = [
   { title: "Vajilla", line: "Piezas que realzan cada creación.", href: `/catalogo?cat=${VAJILLA}`, img: "/portada/mesa-servida.jpg", pos: "40% 70%", tone: "petrol" },
   { title: "Cristalería", line: "Transparencia para grandes momentos.", href: "/categoria/cristaleria", img: "/portada/cristaleria.jpg", pos: "45% 50%", tone: "sand" },
-  { title: "Mobiliario", line: "Espacios que inspiran hospitalidad.", href: `/catalogo?cat=${MOBILIARIO}`, img: "/portada/silla-terracota.jpg", pos: "50% 62%", tone: "petrol" },
+  { title: "Mobiliario", line: "Espacios que inspiran hospitalidad.", href: "/categoria/mobiliario", img: "/portada/silla-terracota.jpg", pos: "50% 62%", tone: "petrol" },
   { title: "Personalización", line: "Tu marca también en cada detalle.", href: "/personalizados", img: "/portada/marca-taza.jpg", pos: "50% 45%", tone: "sand" },
 ];
 
@@ -45,6 +45,7 @@ export default async function Home() {
       <div className="m-quick only-m">
         <HomeSearch />
         <nav className="quick-cats" aria-label="Categorías">
+          {GROUPS.map((g) => <Link key={g.key} className="qc-group" href={groupHref(g.key)}>{g.name}</Link>)}
           {realCats.map((c) => <Link key={c.id} href={`/categoria/${c.slug}`}>{c.name}</Link>)}
         </nav>
       </div>
@@ -92,22 +93,31 @@ export default async function Home() {
             <Link href="/catalogo">Todo el catálogo <ArrowRight /></Link>
           </div>
         </div>
-        <div className="cat-grid cat-rail">
-          {realCats.map((c) => {
-            const n = products.filter((p) => inCategory(p, c)).length;
-            const cover = products.find((p) => p.category_id === c.id);
-            const img = CATEGORY_COVERS.has(c.slug) ? `/categorias/${c.slug}.jpg` : mediaUrl(c.image_path);
-            return (
-              <Link key={c.id} className="cat-tile" href={`/categoria/${c.slug}`}>
-                <div className="ph">
-                  {img ? <img className="cat-cover" src={img} alt="" width={600} height={600} loading="lazy" decoding="async" /> : cover ? <ProductImage p={cover} view={1} label={false} sizes="(max-width: 560px) 33vw, 14vw" /> : null}
-                </div>
-                <b>{c.name}</b>
-                <span>{n} producto{n === 1 ? "" : "s"}</span>
-              </Link>
-            );
-          })}
-        </div>
+        {GROUPS.filter((g) => realCats.some((c) => groupOf(c) === g.key)).map((g) => (
+          <div key={g.key} className="cat-group">
+            <div className="cat-group-h">
+              <h3><Link href={groupHref(g.key)}>{g.name}</Link></h3>
+              <span>{g.line}</span>
+              <Link className="cat-group-all" href={groupHref(g.key)}>Ver todo {g.name.toLowerCase()} <ArrowRight /></Link>
+            </div>
+            <div className="cat-grid cat-rail">
+              {realCats.filter((c) => groupOf(c) === g.key).map((c) => {
+                const n = products.filter((p) => inCategory(p, c)).length;
+                const cover = products.find((p) => p.category_id === c.id);
+                const img = CATEGORY_COVERS.has(c.slug) ? `/categorias/${c.slug}.jpg` : mediaUrl(c.image_path);
+                return (
+                  <Link key={c.id} className="cat-tile" href={`/categoria/${c.slug}`}>
+                    <div className="ph">
+                      {img ? <img className="cat-cover" src={img} alt="" width={600} height={600} loading="lazy" decoding="async" /> : cover ? <ProductImage p={cover} view={1} label={false} sizes="(max-width: 560px) 33vw, 14vw" /> : null}
+                    </div>
+                    <b>{c.name}</b>
+                    <span>{n} producto{n === 1 ? "" : "s"}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </section>
 
 

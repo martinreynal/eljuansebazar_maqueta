@@ -3,15 +3,16 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Check, ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 import { deleteCategory, reorderCategories, saveCategory } from "@/app/admin/actions";
-import type { Category } from "@/lib/types";
+import { GROUPS, groupOf } from "@/lib/groups";
+import type { Category, CategoryGroup } from "@/lib/types";
 import { ImageUploader } from "./ImageUploader";
 
 export function CategoriesEditor({ categories, counts }: { categories: Category[]; counts: Record<string, number> }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
-  const [drafts, setDrafts] = useState<Record<string, { name: string; active: boolean; image: string[] }>>(
-    Object.fromEntries(categories.map((c) => [c.id, { name: c.name, active: c.active, image: c.image_path ? [c.image_path] : [] }])),
+  const [drafts, setDrafts] = useState<Record<string, { name: string; active: boolean; image: string[]; grupo: CategoryGroup | null }>>(
+    Object.fromEntries(categories.map((c) => [c.id, { name: c.name, active: c.active, image: c.image_path ? [c.image_path] : [], grupo: groupOf(c) }])),
   );
   const [confirm, setConfirm] = useState<string | null>(null);
   const [newName, setNewName] = useState("");
@@ -26,17 +27,17 @@ export function CategoriesEditor({ categories, counts }: { categories: Category[
   };
   const save = (c: Category) => {
     const d = drafts[c.id];
-    start(async () => after(await saveCategory({ id: c.id, name: d.name, active: d.active, image_path: d.image[0] ?? null }), `Categoría “${d.name}” guardada.`));
+    start(async () => after(await saveCategory({ id: c.id, name: d.name, active: d.active, image_path: d.image[0] ?? null, grupo: c.is_offers ? null : d.grupo }), `Categoría “${d.name}” guardada.`));
   };
 
   return (
     <>
-      <div className="adm-h"><div><h2>Categorías</h2><p>El orden de esta lista es el que se ve en la tienda.</p></div></div>
+      <div className="adm-h"><div><h2>Categorías</h2><p>El orden de esta lista es el que se ve en la tienda. Cada categoría pertenece a un grupo: Bazar o Mobiliario.</p></div></div>
       {msg && <div className={`adm-msg ${msg.ok ? "ok" : "bad"}`} role="status">{msg.text}</div>}
       <div className="panel" aria-busy={pending}>
         {categories.map((c, i) => {
-          const d = drafts[c.id] ?? { name: c.name, active: c.active, image: [] };
-          const dirty = d.name !== c.name || d.active !== c.active || (d.image[0] ?? null) !== c.image_path;
+          const d = drafts[c.id] ?? { name: c.name, active: c.active, image: [], grupo: groupOf(c) };
+          const dirty = d.name !== c.name || d.active !== c.active || (d.image[0] ?? null) !== c.image_path || d.grupo !== groupOf(c);
           const setD = (patch: Partial<typeof d>) => setDrafts((x) => ({ ...x, [c.id]: { ...d, ...patch } }));
           return (
             <div key={c.id} style={{ borderBottom: "1px solid var(--line)", padding: "12px 0" }}>
@@ -50,6 +51,11 @@ export function CategoriesEditor({ categories, counts }: { categories: Category[
                   <input className="input" value={d.name} onChange={(e) => setD({ name: e.target.value })} aria-label="Nombre de la categoría" />
                   {c.is_offers && <span className="hint">Muestra los productos con la etiqueta Oferta.</span>}
                 </div>
+                {c.is_offers ? <span /> : (
+                  <select className="input" style={{ width: 130 }} value={d.grupo ?? "bazar"} onChange={(e) => setD({ grupo: e.target.value as CategoryGroup })} aria-label={`Grupo de ${c.name}`}>
+                    {GROUPS.map((g) => <option key={g.key} value={g.key}>{g.name}</option>)}
+                  </select>
+                )}
                 <label className="switch" title="Activa"><input type="checkbox" checked={d.active} onChange={(e) => setD({ active: e.target.checked })} aria-label={`Categoría activa: ${c.name}`} /><span /></label>
                 <div style={{ display: "flex", gap: 6 }}>
                   <button className="btn btn-dark btn-sm" onClick={() => save(c)} disabled={!dirty || pending}><Check />Guardar</button>
