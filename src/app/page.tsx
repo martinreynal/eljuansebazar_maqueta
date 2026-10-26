@@ -21,10 +21,10 @@ const HERO_GROUPS = [
   { title: "Bazar", line: "Detalles que hacen la diferencia.", href: "/categoria/bazar", img: "/catalogo-grupos/bazar.jpg", pos: "60% 55%" },
 ];
 const BANNERS = [
-  { title: "Sillas", line: "Comodidad que realza tus espacios.", href: "/categoria/sillas", img: "/portada/banner-sillas.jpg", pos: "50% 55%", tone: "petrol" },
-  { title: "Cristalería", line: "Transparencia para grandes momentos.", href: "/categoria/cristaleria", img: "/portada/banner-cristaleria.jpg", pos: "50% 50%", tone: "sand" },
-  { title: "Mesas", line: "El centro de cada encuentro.", href: "/categoria/mesas", img: "/portada/banner-mesas.jpg", pos: "50% 55%", tone: "petrol" },
-  { title: "Cubiertos", line: "Funcionalidad y estilo en cada servicio.", href: "/categoria/cubiertos", img: "/portada/banner-cubiertos.jpg", pos: "50% 50%", tone: "sand" },
+  { title: "Sillas", line: "Comodidad que realza tus espacios.", href: "/categoria/sillas", img: "/portada/banner-sillas-2.jpg", pos: "50% 55%", tone: "petrol" },
+  { title: "Cristalería", line: "Transparencia para grandes momentos.", href: "/categoria/cristaleria", img: "/portada/banner-cristaleria-2.jpg", pos: "50% 50%", tone: "sand" },
+  { title: "Mesas", line: "El centro de cada encuentro.", href: "/categoria/mesas", img: "/portada/banner-mesas-2.jpg", pos: "50% 55%", tone: "petrol" },
+  { title: "Cubiertos", line: "Funcionalidad y estilo en cada servicio.", href: "/categoria/cubiertos", img: "/portada/banner-cubiertos-2.jpg", pos: "50% 50%", tone: "sand" },
 ];
 
 /** Categorías con foto de portada preparada (public/categorias, ver scripts/portada-categorias.py). */
