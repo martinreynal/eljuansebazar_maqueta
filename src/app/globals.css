@@ -1934,3 +1934,10 @@ a.by-ap:hover img{opacity:.8}
 .h2-copy .hero-ctas .btn-ghost:hover{background:var(--forest);border-color:var(--forest);color:var(--ivory)}
 .cat-pick-hint{text-align:center;padding:28px 16px 56px;color:var(--muted);font-size:16px}
 .cat-pick-hint b{color:var(--forest);font-weight:600}
+/* Logo nuevo (isotipo cuadrado + nombre más grueso): proporciones del lockup horizontal */
+.lockup{gap:11px}
+.lockup-iso{height:30px}.lockup-word{height:24px}
+.lockup-compact .lockup-iso{height:24px}.lockup-compact .lockup-word{height:19px}
+.ftr .lockup-iso{height:40px}.ftr .lockup-word{height:32px}
+.login .lockup-iso{height:64px}.login .lockup-word{height:34px}
+@media (max-width:860px){.lockup{gap:9px}.lockup-iso{height:25px}.lockup-word{height:20px}}
