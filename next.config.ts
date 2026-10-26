@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: { "/catalogo.pdf": ["./public/logo-saggio.png", "./public/catalogo/mini/**"] },
   // El simulador de mesa 3D está desactivado por ahora: su dirección lleva al catálogo
   async redirects() {
-    return [{ source: "/simulador", destination: "/catalogo", permanent: false }, { source: "/simulador/:path*", destination: "/catalogo", permanent: false }, { source: "/categoria/vajilla-estandar", destination: "/categoria/platos-y-bowls", permanent: true }];
+    return [{ source: "/simulador", destination: "/catalogo", permanent: false }, { source: "/simulador/:path*", destination: "/catalogo", permanent: false }, { source: "/categoria/vajilla-estandar", destination: "/categoria/platos-y-bowls", permanent: true }, { source: "/categoria/asado-y-parrilla", destination: "/categoria/cubiertos", permanent: true }];
   },
   async headers() {
     return [

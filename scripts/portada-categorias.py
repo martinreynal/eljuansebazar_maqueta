@@ -11,8 +11,7 @@ PICKS = {
     "platos-y-bowls": "EST-06", "gres": "GR4-04", "vajilla-blanca": "EST-01", "vajilla-decorada": "FLO-02",
     "vajilla-marmolada": "MAR-17", "cubiertos": "CUB-30", "cristaleria": "CRI-15", "cafe": "CER-07",
     "vajilla-oriental": "ORI-26", "sillas": "SIL-167", "mesas": "MES-017", "banquetas": "BAN-004",
-    "boxes-y-bancos": "BOX-007", "sofas-y-sillones": "SOF-008", "mesas-auxiliares": "AUX-012", "exterior": "EXT-008",
-    "asado-y-parrilla": "CUB-31", "exterior-lounge": "EXT-080",
+    "boxes-y-bancos": "BOX-007", "sofas-y-sillones": "SOF-008", "mesas-auxiliares": "AUX-012", "exterior": "EXT-008", "exterior-lounge": "EXT-080",
 }
 S, MARGIN = 600, 0.09
 

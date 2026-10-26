@@ -1927,3 +1927,8 @@ a.by-ap:hover img{opacity:.8}
   .hg-txt small{font-size:11px;letter-spacing:.2em}
   .hg-go{width:42px;height:42px}
 }
+/* Portada: "Ver catálogo" en terracota y "Pedir cotización" en verde bosque */
+.h2-copy .hero-ctas .btn-cta{background:var(--terra);border-color:var(--terra);color:var(--ivory)}
+.h2-copy .hero-ctas .btn-cta:hover{background:var(--terra-dark);border-color:var(--terra-dark);color:var(--ivory)}
+.h2-copy .hero-ctas .btn-ghost{background:var(--ivory);border:1px solid var(--forest);color:var(--forest)}
+.h2-copy .hero-ctas .btn-ghost:hover{background:var(--forest);border-color:var(--forest);color:var(--ivory)}
