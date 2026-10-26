@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowDownUp, ArrowRight, Check, ChevronDown, ChevronLeft, ChevronRight, FileDown, Filter, Search, SearchX, X } from "lucide-react";
+import { ArrowDownUp, ArrowRight, Check, ChevronDown, FileDown, Filter, Search, SearchX, X } from "lucide-react";
 import { AVAILABILITY, inCategory, money, priceShown, searchable, waLink } from "@/lib/format";
 /* eslint-disable @next/next/no-img-element */
 import { track } from "@/lib/track";
@@ -254,7 +254,6 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
   // Filtros visibles solo con un grupo elegido (o en búsquedas y en Ofertas)
   const showFilters = railGroup !== "todo" || !!q || !!preset;
   const fullGroup = GROUPS.find((g) => { const ids = idsOf(g.key); return ids.length > 0 && ids.length === cats.length && ids.every((i) => cats.includes(i)); });
-  const scrollRail = (d: number) => railRef.current?.scrollBy({ left: d * Math.max(300, (railRef.current?.clientWidth ?? 600) * 0.8), behavior: "smooth" });
   const pickCat = (id: string) => {
     setCats((v) => (v.length === 1 && v[0] === id ? (railGroup === "todo" ? [] : idsOf(railGroup)) : [id]));
     const c = categories.find((x) => x.id === id);
@@ -315,7 +314,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
         })}
       </div>
       {railGroup !== "todo" && <div className="crail">
-        <div className="crail-track" ref={railRef} role="tablist" aria-label="Categorías">
+        <div className="crail-track" ref={railRef} role="tablist" aria-label="Categorías" style={{ ["--n" as string]: catTiles.length }}>
           {catTiles.map((c) => {
             const on = !fullGroup && cats.includes(c.id);
             const img = CATEGORY_IMG.has(c.slug) ? `/categorias/${c.slug}.jpg` : null;
@@ -327,8 +326,6 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
             );
           })}
         </div>
-        <button type="button" className="crail-arrow l" aria-label="Ver categorías anteriores" onClick={() => scrollRail(-1)}><ChevronLeft /></button>
-        <button type="button" className="crail-arrow r" aria-label="Ver más categorías" onClick={() => scrollRail(1)}><ChevronRight /></button>
       </div>}
 
       {/* Barra de búsqueda y filtros */}

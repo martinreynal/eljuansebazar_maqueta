@@ -1941,3 +1941,11 @@ a.by-ap:hover img{opacity:.8}
 .ftr .lockup-iso{height:40px}.ftr .lockup-word{height:32px}
 .login .lockup-iso{height:64px}.login .lockup-word{height:34px}
 @media (max-width:860px){.lockup{gap:9px}.lockup-iso{height:25px}.lockup-word{height:20px}}
+/* Subcategorías: todas a la vista, en una grilla (sin carrusel ni flechas) */
+.crail{margin:0 0 22px}
+.crail-track{display:grid;grid-template-columns:repeat(var(--n,9),minmax(0,1fr));gap:10px;overflow:visible;padding:2px}
+.crail-tile{flex:none;min-width:0;padding:8px 6px 10px;gap:6px}
+.crail-n{font-size:13px}
+.crail-arrow{display:none}
+@media (max-width:1100px){.crail-track{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media (max-width:860px){.crail{margin-inline:0}.crail-track{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:2px}.crail-n{font-size:12px}}
