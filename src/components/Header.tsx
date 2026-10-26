@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
-  ChevronDown, ChevronRight, CircleHelp, ClipboardList, FileDown, Heart, House, LayoutGrid, Menu, Search, Stamp, Tag, X,
+  ChevronDown, ChevronRight, ClipboardList, FileDown, Heart, House, LayoutGrid, Menu, Search, Stamp, Tag, Users, X,
 } from "lucide-react";
 import { msgGeneral, waLink } from "@/lib/format";
 import type { Category } from "@/lib/types";
@@ -119,7 +119,7 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
           </div>
           {hasOffers && <Link href="/ofertas" className="promo" aria-current={pathname === "/ofertas" ? "page" : undefined}>Ofertas</Link>}
           <Link href="/personalizados">Personalizados</Link>
-          <Link href="/#preguntas" className="nav-faq">Preguntas</Link>
+          <Link href="/nosotros" className="nav-faq">Nosotros</Link>
         </nav>
 
         <div className="hdr-search only-d">{searchBox("hdr-q", searchRef)}</div>
@@ -148,7 +148,7 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
         <div className="drawer-head"><h3>{name}</h3><button className="icon-btn" onClick={() => setMenu(false)} aria-label="Cerrar menú"><X /></button></div>
         <div className="drawer-body">
           <nav className="m-nav">
-            {([["/", House, "Inicio"], ["/catalogo", LayoutGrid, "Catálogo"], ["/ofertas", Tag, "Ofertas"], ["/personalizados", Stamp, "Productos con tu logo"], ["/#preguntas", CircleHelp, "Preguntas frecuentes"], ["/favoritos", Heart, "Favoritos"], ["/lista", ClipboardList, "Lista de consulta"]] as const).filter(([h]) => hasOffers || h !== "/ofertas").map(([h, I, t]) => (
+            {([["/", House, "Inicio"], ["/catalogo", LayoutGrid, "Catálogo"], ["/ofertas", Tag, "Ofertas"], ["/personalizados", Stamp, "Productos con tu logo"], ["/nosotros", Users, "Nosotros"], ["/favoritos", Heart, "Favoritos"], ["/lista", ClipboardList, "Lista de consulta"]] as const).filter(([h]) => hasOffers || h !== "/ofertas").map(([h, I, t]) => (
               <Link key={h} href={h} onClick={() => setMenu(false)}><I />{t}<ChevronRight /></Link>
             ))}
             <a href="/catalogo.pdf" target="_blank" rel="noopener"><FileDown />Catálogo en PDF<ChevronRight /></a>

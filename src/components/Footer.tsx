@@ -30,7 +30,7 @@ export function Footer({ settings, categories }: { settings: Settings; categorie
               <li><a href="/catalogo.pdf" target="_blank" rel="noopener">Catálogo en PDF</a></li>
               {settings.instagram && <li>Instagram {settings.instagram}</li>}
               {settings.facebook && <li>Facebook {settings.facebook}</li>}
-              <li><Link href="/#preguntas">Preguntas frecuentes</Link></li>
+              <li><Link href="/nosotros">Nosotros</Link></li>
             </ul>
           </div>
         </div>

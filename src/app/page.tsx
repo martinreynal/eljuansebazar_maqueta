@@ -33,7 +33,7 @@ const CATEGORY_COVERS = new Set(["vajilla-blanca", "gres", "vajilla-decorada", "
 
 export default async function Home() {
   const store = await getStore();
-  const { settings, categories, products, faqs } = store;
+  const { settings, categories, products } = store;
   const d = settings.design;
   const base = siteUrl(settings.site_url);
   const ctx = { settings, base, categories };
@@ -120,27 +120,6 @@ export default async function Home() {
         </section>
       )}
 
-
-      {faqs.length > 0 && (
-        <section className="sec" id="preguntas" aria-labelledby="h-faq">
-          <div className="faq-wrap">
-            <div className="side">
-              <h2 id="h-faq" style={{ fontSize: "clamp(24px,3vw,34px)", fontWeight: 800, letterSpacing: "-.03em" }}>Preguntas frecuentes</h2>
-              <p>Lo que más nos consultan antes de comprar. ¿No está tu duda? Escribinos.</p>
-              <WaLink href={waLink(settings.whatsapp, msgGeneral(settings.business_name))} channel="general" className="btn btn-ghost" >Hacer otra pregunta</WaLink>
-            </div>
-            <div className="faq">
-              {faqs.map((f, i) => (
-                <details key={f.id} open={i === 0}>
-                  <summary>{f.question}<span aria-hidden className="plus">+</span></summary>
-                  <div className="ans">{f.answer}</div>
-                </details>
-              ))}
-            </div>
-          </div>
-          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.question, acceptedAnswer: { "@type": "Answer", text: f.answer } })) }) }} />
-        </section>
-      )}
 
       <section className="sec" id="contacto">
         <div className="wa-banner">
