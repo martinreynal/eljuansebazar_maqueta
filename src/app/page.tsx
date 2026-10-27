@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { HomeSearch } from "@/components/HomeSearch";
+import { HeroCarousel } from "@/components/HeroCarousel";
 import { ArrowRight, Clock, CloudUpload, Droplet, FileDown, FilePen, Layers, ListPlus, MessageCircle, Package, Search, Tag, Zap } from "lucide-react";
 import { ProductGrid } from "@/components/ProductCard";
 import { WaLink } from "@/components/WaLink";
@@ -19,11 +20,9 @@ const HERO_GROUPS = [
   { title: "Mobiliario", line: "Espacios que inspiran hospitalidad.", href: "/categoria/mobiliario", img: "/catalogo-grupos/mobiliario.jpg", pos: "60% 55%" },
   { title: "Bazar", line: "Detalles que hacen la diferencia.", href: "/categoria/bazar", img: "/catalogo-grupos/bazar.jpg", pos: "60% 55%" },
 ];
-const BANNERS = [
-  { title: "Sillas", line: "Comodidad que realza tus espacios.", href: "/categoria/sillas", img: "/portada/banner-sillas-2.jpg", pos: "50% 55%", tone: "petrol" },
-  { title: "Cristalería", line: "Transparencia para grandes momentos.", href: "/categoria/cristaleria", img: "/portada/banner-cristaleria-2.jpg", pos: "50% 50%", tone: "sand" },
-  { title: "Mesas", line: "El centro de cada encuentro.", href: "/categoria/mesas", img: "/portada/banner-mesas-2.jpg", pos: "50% 55%", tone: "petrol" },
-  { title: "Cubiertos", line: "Funcionalidad y estilo en cada servicio.", href: "/categoria/cubiertos", img: "/portada/banner-cubiertos-2.jpg", pos: "50% 50%", tone: "sand" },
+/** Carrusel de productos destacados (fotos en public/destacados: 2400×900 compu, vertical para celular). */
+const FEATURED: { sku: string; eyebrow: string; title: string; line: string; img: string; imgMobile: string; alt: string }[] = [
+  { sku: "SIL-012", eyebrow: "Silla", title: "Silla Numana", line: "Tapizado azul y madera clara: calidez y confort para cada mesa.", img: "/destacados/silla-numana.jpg", imgMobile: "/destacados/silla-numana-m.jpg", alt: "Silla Numana tapizada en azul con patas de madera clara" },
 ];
 
 
@@ -70,14 +69,7 @@ export default async function Home() {
       </section>
 
 
-      <section className="h2-banners" aria-label="Destacados">
-        {BANNERS.map((b) => (
-          <Link key={b.title} className={`h2-banner ${b.tone}`} href={b.href}>
-            <span className="bn-img"><Image src={b.img} alt="" fill sizes="(max-width: 860px) 70vw, 25vw" style={{ objectPosition: b.pos }} /></span>
-            <span className="bn-txt"><b>{b.title}</b><i aria-hidden /><small>{b.line}</small></span>
-          </Link>
-        ))}
-      </section>
+      <HeroCarousel slides={FEATURED.map((f) => { const p = products.find((x) => x.sku === f.sku); return { ...f, href: p ? `/producto/${p.slug}` : "/catalogo" }; })} />
 
 
 
