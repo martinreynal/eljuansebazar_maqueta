@@ -39,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     openGraph: { type: "website", locale: "es_AR", siteName: settings.business_name, title, description, images: ["/og-image.png"] },
     twitter: { card: "summary_large_image", title, description, images: ["/og-image.png"] },
-    icons: { icon: "/favicon.png", apple: "/apple-touch-icon.png" },
+    icons: { icon: [{ url: "/icon.svg", type: "image/svg+xml" }, { url: "/icono-saggio.png", type: "image/png", sizes: "512x512" }], shortcut: "/favicon.ico", apple: "/apple-icon-saggio.png" },
     alternates: { canonical: "/" },
   };
 }
