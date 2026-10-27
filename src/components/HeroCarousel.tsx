@@ -3,7 +3,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
 
-export type Slide = { eyebrow: string; title: string; line: string; href: string; img: string; imgMobile?: string; alt: string };
+/** side: lado del texto (el producto queda del otro lado). fx: encuadre horizontal en celular (0–100). */
+export type Slide = { eyebrow: string; title: string; line: string; href: string; img: string; imgMobile?: string; alt: string; side?: "left" | "right"; fx?: number; catHref?: string; catLabel?: string };
 
 /** Carrusel de productos destacados: uno por vez, sin flechas (puntos, deslizar y avance automático). */
 export function HeroCarousel({ slides }: { slides: Slide[] }) {
@@ -38,7 +39,7 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
       }}
     >
       {slides.map((s, k) => (
-        <div key={s.href + k} className={`hc-slide ${k === i ? "on" : ""}`} role="group" aria-roledescription="diapositiva" aria-label={`${k + 1} de ${n}`} aria-hidden={k !== i}>
+        <div key={s.href + k} className={`hc-slide ${s.side ?? "right"} ${k === i ? "on" : ""}`} style={{ ["--fx" as string]: `${s.fx ?? 50}%` }} role="group" aria-roledescription="diapositiva" aria-label={`${k + 1} de ${n}`} aria-hidden={k !== i}>
           <picture>
             {s.imgMobile && <source media="(max-width: 860px)" srcSet={s.imgMobile} />}
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -49,7 +50,10 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
             <i aria-hidden />
             <h2>{s.title}</h2>
             <p>{s.line}</p>
-            <Link className="hc-cta" href={s.href} tabIndex={k === i ? 0 : -1}>Ver producto <ArrowRight /></Link>
+            <div className="hc-ctas">
+              <Link className="hc-cta hc-cta-main" href={s.href} tabIndex={k === i ? 0 : -1}>Ver producto <ArrowRight /></Link>
+              {s.catHref && s.catLabel && <Link className="hc-cta" href={s.catHref} tabIndex={k === i ? 0 : -1}>{s.catLabel}</Link>}
+            </div>
           </div>
         </div>
       ))}

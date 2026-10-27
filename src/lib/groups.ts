@@ -5,7 +5,7 @@ export const GROUPS: { key: CategoryGroup; name: string; line: string }[] = [
   { key: "bazar", name: "Bazar", line: "Vajilla, cristalería, cubiertos y utensilios" },
   { key: "mobiliario", name: "Mobiliario", line: "Sillas, mesas, banquetas, sillones y exterior" },
 ];
-const MOBILIARIO = new Set(["sillas", "sofas-y-sillones", "banquetas", "boxes-y-bancos", "mesas", "mesas-auxiliares", "exterior", "exterior-lounge"]);
+const MOBILIARIO = new Set(["sillas", "sofas-y-sillones", "banquetas", "boxes-y-bancos", "mesas", "mesas-auxiliares", "sets", "exterior", "exterior-lounge"]);
 
 /** Grupo de una categoría (si falta el dato, se deduce: lo que no es mobiliario es bazar). */
 export function groupOf(c: Pick<Category, "slug" | "is_offers"> & { grupo?: CategoryGroup | null }): CategoryGroup | null {

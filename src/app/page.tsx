@@ -20,9 +20,14 @@ const HERO_GROUPS = [
   { title: "Mobiliario", line: "Espacios que inspiran hospitalidad.", href: "/categoria/mobiliario", img: "/catalogo-grupos/mobiliario.jpg", pos: "60% 55%" },
   { title: "Bazar", line: "Detalles que hacen la diferencia.", href: "/categoria/bazar", img: "/catalogo-grupos/bazar.jpg", pos: "60% 55%" },
 ];
-/** Carrusel de productos destacados (fotos en public/destacados: 2400×900 compu, vertical para celular). */
-const FEATURED: { sku: string; eyebrow: string; title: string; line: string; img: string; imgMobile: string; alt: string }[] = [
-  { sku: "SIL-012", eyebrow: "Silla", title: "Silla Numana", line: "Tapizado azul y madera clara: calidez y confort para cada mesa.", img: "/destacados/silla-numana.jpg", imgMobile: "/destacados/silla-numana-m.jpg", alt: "Silla Numana tapizada en azul con patas de madera clara" },
+/** Carrusel de productos destacados (fotos en public/destacados, 2048×768). side = lado del texto; fx = encuadre en celular. */
+const FEATURED: { sku: string; eyebrow: string; line: string; img: string; alt: string; side: "left" | "right"; fx: number }[] = [
+  { sku: "SIL-012", eyebrow: "Silla", line: "Tapizado azul y madera clara: calidez y confort para cada mesa.", img: "/destacados/silla-numana-2.jpg", alt: "Silla Numana tapizada en azul con patas de madera clara", side: "left", fx: 55 },
+  { sku: "SOF-016", eyebrow: "Sillón", line: "Cuero y estructura metálica para lobbies y salones con carácter.", img: "/destacados/sillon-certaldo.jpg", alt: "Sillón Certaldo de cuero marrón con estructura negra", side: "left", fx: 60 },
+  { sku: "BAN-009", eyebrow: "Banqueta", line: "Altura de barra con respaldo envolvente y tapizado en contraste.", img: "/destacados/banqueta-rossano.jpg", alt: "Banqueta Rossano tapizada en rojo con patas de madera", side: "right", fx: 38 },
+  { sku: "MES-010", eyebrow: "Mesa", line: "Madera cálida y doble base de acero para el día a día del salón.", img: "/destacados/mesa-lajatico.jpg", alt: "Mesa Lajatico con tapa de madera y doble pie negro", side: "right", fx: 54 },
+  { sku: "EXT-018", eyebrow: "Sillón de exterior", line: "Trama natural y estructura liviana para terrazas y galerías.", img: "/destacados/sillon-lodi.jpg", alt: "Sillón Lodi de fibra natural tejida", side: "left", fx: 58 },
+  { sku: "EXT-011", eyebrow: "Set de exterior", line: "Mesa y cuatro sillones listos para el patio o la vereda.", img: "/destacados/set-todi.jpg", alt: "Set Todi de mesa y cuatro sillones de exterior", side: "left", fx: 50 },
 ];
 
 
@@ -69,7 +74,12 @@ export default async function Home() {
       </section>
 
 
-      <HeroCarousel slides={FEATURED.map((f) => { const p = products.find((x) => x.sku === f.sku); return { ...f, href: p ? `/producto/${p.slug}` : "/catalogo" }; })} />
+      <HeroCarousel slides={FEATURED.flatMap((f) => {
+        const p = products.find((x) => x.sku === f.sku);
+        if (!p) return [];
+        const c = categories.find((x) => x.id === p.category_id);
+        return [{ ...f, title: p.name, href: `/producto/${p.slug}`, catHref: c ? `/categoria/${c.slug}` : undefined, catLabel: c ? `Ver ${c.name.split(":")[0].toLowerCase()}` : undefined }];
+      })} />
 
 
 

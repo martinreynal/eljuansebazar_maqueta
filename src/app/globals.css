@@ -2016,3 +2016,29 @@ html,body{overflow-x:clip}
   .hc-dots{bottom:16px}
 }
 @media (max-width:860px){.hc{aspect-ratio:4/5.6}.hc-slide img{object-position:50% 0%}.hc-slide::after{background:linear-gradient(180deg,rgba(22,40,32,0) 34%,rgba(22,40,32,.55) 58%,rgba(22,40,32,.85) 100%)}}
+/* Carrusel: texto a izquierda o derecha según el producto, dos botones */
+.hc-slide img{object-position:50% 50%}
+.hc-slide.left::after{background:linear-gradient(270deg,rgba(22,40,32,0) 38%,rgba(22,40,32,.35) 56%,rgba(22,40,32,.66) 100%)}
+.hc-slide.left .hc-txt{right:auto;left:max(24px,calc(50vw - 620px))}
+.hc-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.hc-ctas .hc-cta{margin-top:0}
+.hc-cta-main{background:var(--ivory);color:var(--forest);border-color:var(--ivory)}
+.hc-cta-main:hover{background:var(--terra);border-color:var(--terra);color:var(--ivory)}
+@media (max-width:860px){
+  .hc-slide img{object-position:var(--fx,50%) 50%}
+  .hc-slide.left::after,.hc-slide.right::after{background:linear-gradient(180deg,rgba(22,40,32,0) 34%,rgba(22,40,32,.55) 58%,rgba(22,40,32,.88) 100%)}
+  .hc-slide.left .hc-txt{left:20px}
+  .hc-ctas{gap:8px}.hc-ctas .hc-cta{height:44px;padding:0 18px;font-size:14.5px}
+}
+/* Carrusel en celular: foto arriba (producto completo) y texto abajo sobre verde */
+@media (max-width:860px){
+  .hc{height:auto;aspect-ratio:auto;max-height:none;display:grid;background:var(--forest-dark)}
+  .hc-slide{position:relative;inset:auto;grid-area:1/1;display:flex;flex-direction:column}
+  .hc-slide picture{position:relative;inset:auto;display:block;width:100%;aspect-ratio:16/11;overflow:hidden}
+  .hc-slide img{position:absolute;inset:0;width:100%;height:100%;object-position:var(--fx,50%) 60%}
+  .hc-slide::after{display:none}
+  .hc-txt,.hc-slide.left .hc-txt{position:relative;top:auto;bottom:auto;left:auto;right:auto;transform:none;width:auto;padding:22px 20px 48px;background:var(--forest-dark)}
+  .hc-txt h2{font-size:34px}
+  .hc-dots{bottom:18px}
+}
+@media (max-width:860px){.hc{grid-template-columns:minmax(0,1fr);grid-template-rows:auto}.hc-slide{min-width:0;width:100%}.hc-txt p{max-width:none}}
