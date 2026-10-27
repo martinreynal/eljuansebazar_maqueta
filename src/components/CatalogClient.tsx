@@ -252,12 +252,21 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
     if (g === "todo") { setAvail([]); setTypes([]); setMats([]); setColors([]); setExtra([]); setMin(""); setMax(""); }
   };
   // Filtros visibles solo con un grupo elegido (o en búsquedas y en Ofertas)
-  const showFilters = railGroup !== "todo" || !!q || !!preset;
+  // Productos y filtros solo con una subcategoría elegida (o en búsquedas, Ofertas y páginas de subcategoría)
   const fullGroup = GROUPS.find((g) => { const ids = idsOf(g.key); return ids.length > 0 && ids.length === cats.length && ids.every((i) => cats.includes(i)); });
+  const subPicked = cats.length > 0 && !fullGroup;
+  const showFilters = subPicked || !!q || !!preset;
   const pickCat = (id: string) => {
     setCats((v) => (v.length === 1 && v[0] === id ? (railGroup === "todo" ? [] : idsOf(railGroup)) : [id]));
     const c = categories.find((x) => x.id === id);
     if (c && !c.is_offers) track("category_view", { category_id: c.id });
+    // Al elegir una subcategoría, bajar suavemente hasta los productos
+    if (!(cats.length === 1 && cats[0] === id)) {
+      setTimeout(() => {
+        const el = document.querySelector(".fbar");
+        if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 96, behavior: "smooth" });
+      }, 80);
+    }
   };
 
   const chips: { label: string; clear: () => void }[] = [
@@ -346,7 +355,9 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
 
       {!showFilters && (
         <div className="cat-pick-hint">
-          <p>Elegí <b>Mobiliario</b> o <b>Bazar</b> para ver los productos.</p>
+          {railGroup === "todo"
+            ? <p>Elegí <b>Mobiliario</b> o <b>Bazar</b> para ver sus categorías.</p>
+            : <p>Elegí una categoría para ver los productos.</p>}
         </div>
       )}
       {showFilters && <div className="fmeta">

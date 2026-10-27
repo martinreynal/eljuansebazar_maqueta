@@ -1949,3 +1949,10 @@ a.by-ap:hover img{opacity:.8}
 .crail-arrow{display:none}
 @media (max-width:1100px){.crail-track{grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media (max-width:860px){.crail{margin-inline:0}.crail-track{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:2px}.crail-n{font-size:12px}}
+/* Subcategorías de a 4 por fila, con fotos más grandes */
+.crail-track{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.crail-tile{padding:12px 12px 14px;gap:10px}
+.crail-ph{aspect-ratio:1.5}
+.crail-n{font-size:15px}
+@media (max-width:1100px){.crail-track{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:860px){.crail-track{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.crail-n{font-size:13.5px}.crail-tile{padding:10px 10px 12px}}
