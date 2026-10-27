@@ -2,12 +2,13 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Check, ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
-import { deleteCategory, reorderCategories, saveCategory } from "@/app/admin/actions";
+import { deleteCategory, reorderCategories, saveCategory, updateProductFlags } from "@/app/admin/actions";
 import { GROUPS, groupOf } from "@/lib/groups";
-import type { Category, CategoryGroup } from "@/lib/types";
+import type { Category, CategoryGroup, Product } from "@/lib/types";
+import { ProductImage } from "../ProductImage";
 import { ImageUploader } from "./ImageUploader";
 
-export function CategoriesEditor({ categories, counts }: { categories: Category[]; counts: Record<string, number> }) {
+export function CategoriesEditor({ categories, counts, products }: { categories: Category[]; counts: Record<string, number>; products: Product[] }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -62,6 +63,7 @@ export function CategoriesEditor({ categories, counts }: { categories: Category[
                   {!c.is_offers && <button className="icon-btn" style={{ color: "var(--bad)" }} onClick={() => setConfirm(c.id)} aria-label={`Eliminar ${c.name}`}><Trash2 /></button>}
                 </div>
               </div>
+              {!c.is_offers && <CategoryProducts category={c} categories={categories} products={products} />}
               {!c.is_offers && (
                 <details style={{ marginTop: 8 }}>
                   <summary className="hint" style={{ cursor: "pointer" }}>Imagen de portada {c.image_path ? "(cargada)" : "(opcional)"}</summary>
@@ -86,5 +88,60 @@ export function CategoriesEditor({ categories, counts }: { categories: Category[
         </form>
       </div>
     </>
+  );
+}
+
+/** Listado desplegable de los productos de una categoría, con cambio rápido de categoría. */
+function CategoryProducts({ category, categories, products }: { category: Category; categories: Category[]; products: Product[] }) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const [moved, setMoved] = useState<Record<string, string>>({});
+  const [busy, setBusy] = useState<string | null>(null);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const list = products.filter((p) => (moved[p.id] ?? p.category_id) === category.id);
+  const term = q.trim().toLowerCase();
+  const shown = term ? list.filter((p) => `${p.sku} ${p.name}`.toLowerCase().includes(term)) : list;
+  const targets = categories.filter((c) => !c.is_offers);
+
+  const move = async (p: Product, to: string) => {
+    if (to === category.id) return;
+    setBusy(p.id); setMsg(null);
+    const r = await updateProductFlags(p.id, { category_id: to });
+    setBusy(null);
+    if (r.ok) {
+      setMoved((m) => ({ ...m, [p.id]: to }));
+      setMsg({ ok: true, text: `${p.sku} pasó a “${categories.find((c) => c.id === to)?.name ?? ""}”.` });
+      router.refresh();
+    } else setMsg({ ok: false, text: r.error ?? "No se pudo mover el producto." });
+  };
+
+  return (
+    <details className="catprod" open={open} onToggle={(e) => setOpen((e.currentTarget as HTMLDetailsElement).open)}>
+      <summary>Ver productos ({list.length})</summary>
+      {open && (
+        <div className="catprod-body">
+          {list.length > 8 && <input className="input catprod-q" placeholder="Buscar por código o nombre" value={q} onChange={(e) => setQ(e.target.value)} aria-label={`Buscar en ${category.name}`} />}
+          {msg && <div className={`adm-msg ${msg.ok ? "ok" : "bad"}`} role="status">{msg.text}</div>}
+          {shown.length === 0 ? <p className="hint">{list.length ? "Ningún producto coincide con la búsqueda." : "Esta categoría no tiene productos."}</p> : (
+            <ul className="catprod-list">
+              {shown.map((p) => (
+                <li key={p.id} aria-busy={busy === p.id}>
+                  <span className="catprod-img"><ProductImage p={p} label={false} sizes="44px" /></span>
+                  <span className="catprod-n"><b className="mono">{p.sku}</b><span>{p.name}</span></span>
+                  <select className="input catprod-sel" value={category.id} disabled={busy === p.id} onChange={(e) => move(p, e.target.value)} aria-label={`Mover ${p.name} a otra categoría`}>
+                    {GROUPS.map((g) => (
+                      <optgroup key={g.key} label={g.name}>
+                        {targets.filter((c) => groupOf(c) === g.key).map((c) => <option key={c.id} value={c.id}>{c.id === category.id ? `${c.name} (actual)` : c.name}</option>)}
+                      </optgroup>
+                    ))}
+                  </select>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+    </details>
   );
 }

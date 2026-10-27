@@ -2,7 +2,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
-import { Box, Check, Copy, Heart, Image as ImageIcon, Info, ListPlus } from "lucide-react";
+import { Box, Check, Copy, Image as ImageIcon, Info, ListPlus } from "lucide-react";
 import { mediaUrl } from "@/lib/env";
 
 // El visor 3D (Three.js) se descarga solo cuando el usuario elige «Ver en 3D»
@@ -20,16 +20,14 @@ import { WaLink } from "./WaLink";
 const TableIcon = () => <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M3 9h18M5 9v10M19 9v10M8 9V6h8v3" /></svg>;
 
 export function ProductDetail({ p, category, settings, base }: { p: Product; category?: Category; settings: Settings; base: string }) {
-  const { favs, list, toggleFav, addToList, toast } = useStore();
+  const { list, addToList, toast } = useStore();
   const [img, setImg] = useState(0);
   const [media, setMedia] = useState<"foto" | "3d" | "mesa">("foto");
   const model = mediaUrl(p.model_url);
   const [variant, setVariant] = useState(p.variants[0] ?? "");
   const [qty, setQty] = useState(1);
-  const fav = favs.includes(p.sku);
   const inList = list.find((i) => i.sku === p.sku && i.variant === variant);
   const [added, flashAdded] = useFlash(1800);
-  const [pop, flashPop] = useFlash(500);
   const [copied, flashCopied] = useFlash(1500);
   const views = p.images.map((_, i) => i);
   const showPrice = priceShown(p, settings);
@@ -55,11 +53,6 @@ export function ProductDetail({ p, category, settings, base }: { p: Product; cat
     addToList(p.sku, variant, qty);
     flashAdded();
     toast(`${qty > 1 ? `${qty} unidades agregadas` : "Agregado"} a tu lista`, ["Ver lista", "/lista"]);
-  };
-  const toggle = () => {
-    const on = toggleFav(p.sku);
-    if (on) flashPop();
-    toast(on ? "Guardado en favoritos" : "Quitado de favoritos");
   };
 
   const specs: [string, React.ReactNode][] = [
@@ -144,7 +137,6 @@ export function ProductDetail({ p, category, settings, base }: { p: Product; cat
               <span className="pc-ic" key={added}>{added ? <Check /> : <ListPlus />}</span>
               {added ? "Agregado a tu lista" : "Agregar a la lista"}
             </button>
-            <button className={`btn btn-ghost sq fav-inline ${fav ? "on" : ""} ${pop ? "pop" : ""}`} aria-pressed={fav} aria-label={`${fav ? "Quitar de" : "Agregar a"} favoritos`} title="Favoritos" onClick={toggle}><Heart /></button>
           </div>
           <p className="bb-hint">
             {inList ? <><Link href="/lista">Ya está en tu lista ({inList.qty})</Link>. </> : null}

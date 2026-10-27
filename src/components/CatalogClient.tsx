@@ -93,7 +93,7 @@ const GROUP_CARDS: { key: CategoryGroup; name: string; line: string; img: string
 const AV_FILTERS: Availability[] = ["disponible", "consultar", "sin_stock"];
 
 /** Categorías con foto preparada (public/categorias). */
-const CATEGORY_IMG = new Set(["vajilla-blanca", "gres", "vajilla-decorada", "vajilla-marmolada", "platos-y-bowls", "vajilla-oriental", "cubiertos", "cristaleria", "cafe", "sillas", "sofas-y-sillones", "banquetas", "boxes-y-bancos", "mesas", "mesas-auxiliares", "exterior", "exterior-lounge"]);
+const CATEGORY_IMG = new Set(["vajilla-blanca", "gres", "vajilla-decorada", "platos-y-bowls", "vajilla-oriental", "cubiertos", "cristaleria", "cafe", "sillas", "sofas-y-sillones", "banquetas", "boxes-y-bancos", "mesas", "mesas-auxiliares", "exterior", "exterior-lounge"]);
 
 export function CatalogClient({ products, categories, settings, base, preset, group, title }: Props) {
   const params = useSearchParams();

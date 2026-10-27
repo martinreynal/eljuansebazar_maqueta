@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
-  ChevronDown, ChevronRight, ClipboardList, FileDown, Heart, House, LayoutGrid, Menu, Search, Stamp, Tag, Users, X,
+  ChevronDown, ChevronRight, ClipboardList, FileDown, House, LayoutGrid, Menu, Search, Stamp, Tag, Users, X,
 } from "lucide-react";
 import { msgGeneral, waLink } from "@/lib/format";
 import { GROUPS, groupHref, groupOf } from "@/lib/groups";
@@ -20,7 +20,7 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
-  const { list, favs } = useStore();
+  const { list } = useStore();
   const [q, setQ] = useState(params.get("q") ?? "");
   const [menu, setMenu] = useState(false);
   const [mSearch, setMSearch] = useState(false);
@@ -133,9 +133,6 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
         <div className="hdr-search only-d">{searchBox("hdr-q", searchRef)}</div>
 
         <div className="hdr-actions">
-          <Link className="icon-btn" href="/favoritos" aria-label={`Favoritos (${favs.length})`} title="Favoritos" aria-current={pathname === "/favoritos" ? "page" : undefined}>
-            <Heart /><span className="badge" data-n={favs.length} key={favs.length}>{favs.length}</span>
-          </Link>
           <Link className={`list-btn only-d ${list.length ? "has" : ""}`} href="/lista" aria-label={`Lista de consulta (${list.length} productos)`} title="Lista de consulta" aria-current={pathname === "/lista" ? "page" : undefined}>
             <ClipboardList />
             <span className="list-btn-t">Mi lista</span>
@@ -156,7 +153,7 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
         <div className="drawer-head"><h3>{name}</h3><button className="icon-btn" onClick={() => setMenu(false)} aria-label="Cerrar menú"><X /></button></div>
         <div className="drawer-body">
           <nav className="m-nav">
-            {([["/", House, "Inicio"], ["/catalogo", LayoutGrid, "Catálogo"], ["/ofertas", Tag, "Ofertas"], ["/personalizados", Stamp, "Productos con tu logo"], ["/nosotros", Users, "Nosotros"], ["/favoritos", Heart, "Favoritos"], ["/lista", ClipboardList, "Lista de consulta"]] as const).filter(([h]) => hasOffers || h !== "/ofertas").map(([h, I, t]) => (
+            {([["/", House, "Inicio"], ["/catalogo", LayoutGrid, "Catálogo"], ["/ofertas", Tag, "Ofertas"], ["/personalizados", Stamp, "Productos con tu logo"], ["/nosotros", Users, "Nosotros"], ["/lista", ClipboardList, "Lista de consulta"]] as const).filter(([h]) => hasOffers || h !== "/ofertas").map(([h, I, t]) => (
               <Link key={h} href={h} onClick={() => setMenu(false)}><I />{t}<ChevronRight /></Link>
             ))}
             <a href="/catalogo.pdf" target="_blank" rel="noopener"><FileDown />Catálogo en PDF<ChevronRight /></a>

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Check, ClipboardCheck, Heart, ListPlus } from "lucide-react";
+import { Check, ClipboardCheck, ListPlus } from "lucide-react";
 import { AVAILABILITY, TAGS, money, msgProduct, priceShown, waLink } from "@/lib/format";
 import type { Category, Product, Settings } from "@/lib/types";
 import { ProductImage } from "./ProductImage";
@@ -11,11 +11,9 @@ import { useFlash } from "./useFlash";
 export type CardCtx = { settings: Settings; base: string; categories: Category[] };
 
 export function ProductCard({ p, ctx, priority = false }: { p: Product; ctx: CardCtx; priority?: boolean }) {
-  const { favs, list, toggleFav, addToList, toast } = useStore();
-  const fav = favs.includes(p.sku);
+  const { list, addToList, toast } = useStore();
   const inList = list.find((i) => i.sku === p.sku);
   const [added, flashAdded] = useFlash();
-  const [pop, flashPop] = useFlash(500);
   const cat = ctx.categories.find((c) => c.id === p.category_id);
   const href = `/producto/${p.slug}`;
   const consult = waLink(ctx.settings.whatsapp, msgProduct(ctx.base, p));
@@ -25,18 +23,6 @@ export function ProductCard({ p, ctx, priority = false }: { p: Product; ctx: Car
         <ProductImage p={p} priority={priority} label={false} />
       </Link>
       {p.tag && <span className={`pc-tag pc-tag-${p.tag}`}>{TAGS[p.tag]}</span>}
-      <button
-        className={`pc-fav ${fav ? "on" : ""} ${pop ? "pop" : ""}`}
-        aria-pressed={fav}
-        aria-label={`${fav ? "Quitar de" : "Agregar a"} favoritos`}
-        onClick={() => {
-          const on = toggleFav(p.sku);
-          if (on) flashPop();
-          toast(on ? "Guardado en favoritos" : "Quitado de favoritos", on ? ["Ver favoritos", "/favoritos"] : undefined);
-        }}
-      >
-        <Heart />
-      </button>
       <div className="pc-body">
         <div className="pc-meta">
           <span className="pc-sku">{p.sku}</span>
