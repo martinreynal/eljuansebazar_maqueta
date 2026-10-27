@@ -93,6 +93,8 @@ const GROUP_CARDS: { key: CategoryGroup; name: string; line: string; img: string
 const AV_FILTERS: Availability[] = ["disponible", "consultar", "sin_stock"];
 
 /** Categorías con foto preparada (public/categorias). */
+/** Archivo de portada cuando difiere del slug (versiones nuevas). */
+const COVER_FILE: Record<string, string> = { sets: "sets-2" };
 const CATEGORY_IMG = new Set(["vajilla-blanca", "gres", "vajilla-decorada", "platos-y-bowls", "vajilla-oriental", "cubiertos", "cristaleria", "cafe", "sillas", "sofas-y-sillones", "banquetas", "boxes-y-bancos", "mesas", "sets", "exterior", "exterior-lounge"]);
 
 export function CatalogClient({ products, categories, settings, base, preset, group, title }: Props) {
@@ -326,7 +328,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
         <div className="crail-track" ref={railRef} role="tablist" aria-label="Categorías" style={{ ["--n" as string]: catTiles.length }}>
           {catTiles.map((c) => {
             const on = !fullGroup && cats.includes(c.id);
-            const img = CATEGORY_IMG.has(c.slug) ? `/categorias/${c.slug}.jpg` : null;
+            const img = CATEGORY_IMG.has(c.slug) ? `/categorias/${COVER_FILE[c.slug] ?? c.slug}.jpg` : null;
             return (
               <button key={c.id} type="button" role="tab" aria-selected={on} className={`crail-tile ${on ? "on" : ""}`} onClick={() => pickCat(c.id)}>
                 <span className="crail-ph">{img && <img src={img} alt="" loading="lazy" decoding="async" />}</span>
