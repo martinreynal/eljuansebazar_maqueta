@@ -3,6 +3,7 @@ import path from "node:path";
 import { createElement, type ReactElement } from "react";
 import { renderToBuffer, type DocumentProps } from "@react-pdf/renderer";
 import { Resvg } from "@resvg/resvg-js";
+import sharp from "sharp";
 import { artSvg } from "@/lib/art";
 import { getStore } from "@/lib/data";
 import { isLocalImage, mediaUrl, miniImage, siteUrl } from "@/lib/env";
@@ -13,12 +14,21 @@ export const revalidate = 3600;
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
+/** Achica cada foto para el PDF (miniatura liviana) y así el archivo no supera el límite de Vercel. */
+async function thumb(buf: Buffer): Promise<Buffer> {
+  try {
+    return await sharp(buf).rotate().resize(280, 280, { fit: "inside", withoutEnlargement: true }).flatten({ background: "#ffffff" }).jpeg({ quality: 66, mozjpeg: true }).toBuffer();
+  } catch {
+    return buf;
+  }
+}
+
 async function productImage(p: { images: string[]; placeholder: Parameters<typeof artSvg>[0]; name: string }): Promise<Buffer | string | undefined> {
   const first = p.images[0];
   if (first && isLocalImage(first)) {
     // Foto del catálogo incluida en la web: se usa la versión chica para que el PDF no pese de más
     try {
-      return await readFile(path.join(process.cwd(), "public", miniImage(first)));
+      return await thumb(await readFile(path.join(process.cwd(), "public", miniImage(first))));
     } catch { /* si falta el archivo, se usa el dibujo */ }
   }
   const url = first && !isLocalImage(first) ? mediaUrl(first) : null;
@@ -26,7 +36,7 @@ async function productImage(p: { images: string[]; placeholder: Parameters<typeo
     try {
       const res = await fetch(url);
       const type = res.headers.get("content-type") ?? "";
-      if (res.ok && /jpe?g|png/.test(type)) return Buffer.from(await res.arrayBuffer());
+      if (res.ok && /jpe?g|png|webp/.test(type)) return await thumb(Buffer.from(await res.arrayBuffer()));
     } catch { /* si falla la foto, se usa el dibujo */ }
   }
   try {
