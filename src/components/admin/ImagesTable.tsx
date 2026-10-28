@@ -8,7 +8,8 @@ import { searchable } from "@/lib/format";
 import { mediaUrl } from "@/lib/env";
 import { knownScore, measureScore, preScore, type ImageScore } from "@/lib/image-score";
 import { uploadImage } from "@/lib/upload";
-import type { Product } from "@/lib/types";
+import { GROUPS, groupOf } from "@/lib/groups";
+import type { Category, Product } from "@/lib/types";
 import { ProductImage } from "../ProductImage";
 
 type Sort = "peor" | "mejor" | "recientes";
@@ -53,10 +54,14 @@ function lensLink(path: string | undefined): string | undefined {
 
 type Compare = { p: Product; status: "buscando" | "listo" | "error" | "sin-clave"; matches: LensMatch[]; pick: number; error?: string; lensUrl?: string; manual?: string };
 
-export function ImagesTable({ products }: { products: Product[] }) {
+export function ImagesTable({ products, categories }: { products: Product[]; categories: Category[] }) {
   const router = useRouter();
   const [q, setQ] = useState("");
   const [sort, setSort] = useState<Sort>("peor");
+  // Filtro por categoría: "" = todas, "g:bazar" / "g:mobiliario" = grupo completo, o el id de una categoría
+  const [cat, setCat] = useState("");
+  const realCats = useMemo(() => categories.filter((c) => !c.is_offers), [categories]);
+  const catName = useMemo(() => new Map(categories.map((c) => [c.id, c.name])), [categories]);
   const [cmp, setCmp] = useState<Compare | null>(null);
   const [busy, setBusy] = useState(false);
   const [, start] = useTransition();
@@ -68,11 +73,16 @@ export function ImagesTable({ products }: { products: Product[] }) {
     const list = products
       .filter((p) => !p.archived)
       .map((p) => (override[p.id] ? { ...p, images: [override[p.id], ...p.images.slice(1)] } : p))
+      .filter((p) => {
+        if (!cat) return true;
+        if (cat.startsWith("g:")) { const c = realCats.find((x) => x.id === p.category_id); return !!c && groupOf(c) === cat.slice(2); }
+        return p.category_id === cat;
+      })
       .filter((p) => !w.length || w.every((x) => searchable(`${p.name} ${p.sku}`).includes(x)));
     if (sort === "recientes") return list;
     const sc = (p: Product) => (p.images[0] ? preScore(p.images[0])?.[2] ?? 5.5 : 0);
     return [...list].sort((a, b) => (sort === "peor" ? sc(a) - sc(b) : sc(b) - sc(a)));
-  }, [products, q, sort, override]);
+  }, [products, q, sort, override, cat, realCats]);
 
   const search = (p: Product) => {
     const lensUrl = lensLink(p.images[0]);
@@ -157,6 +167,16 @@ export function ImagesTable({ products }: { products: Product[] }) {
       )}
       <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12, alignItems: "center" }}>
         <div className="search" style={{ display: "flex", maxWidth: 380, flex: "1 1 240px" }}><Search aria-hidden /><input type="search" placeholder="Buscar por nombre o SKU" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar productos" /></div>
+        <select className="input" style={{ width: "auto", minWidth: 220, height: 42 }} value={cat} onChange={(e) => setCat(e.target.value)} aria-label="Ver por categoría">
+          <option value="">Todas las categorías</option>
+          {GROUPS.map((g) => (
+            <optgroup key={g.key} label={g.name}>
+              <option value={`g:${g.key}`}>Todo {g.name.toLowerCase()}</option>
+              {realCats.filter((c) => groupOf(c) === g.key).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </optgroup>
+          ))}
+        </select>
+        <span className="hint">{rows.length} producto{rows.length === 1 ? "" : "s"}</span>
         <div className="seg" role="group" aria-label="Ordenar">
           <button aria-pressed={sort === "peor"} onClick={() => setSort("peor")}>Peor definición primero</button>
           <button aria-pressed={sort === "mejor"} onClick={() => setSort("mejor")}>Mejor primero</button>
@@ -170,7 +190,7 @@ export function ImagesTable({ products }: { products: Product[] }) {
           <tbody>
             {rows.map((p) => (
               <tr key={p.id} className={p.visible ? "" : "muted"}>
-                <td><div className="pt"><span className="t"><ProductImage p={p} view={0} label={false} sizes="42px" /></span><span>{p.name}</span></div></td>
+                <td><div className="pt"><span className="t"><ProductImage p={p} view={0} label={false} sizes="42px" /></span><span>{p.name}{!cat || cat.startsWith("g:") ? <small className="hint" style={{ display: "block" }}>{catName.get(p.category_id ?? "") ?? "Sin categoría"}</small> : null}</span></div></td>
                 <td className="mono">{p.sku}</td>
                 <td><ScoreBadge path={p.images[0]} /></td>
                 <td>
