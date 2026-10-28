@@ -20,7 +20,7 @@ const VALUES = [
 ];
 
 export default async function AboutPage() {
-  const { settings } = await getStore();
+  const { settings, faqs } = await getStore();
   const wa = waLink(settings.whatsapp, msgGeneral(settings.business_name));
   return (
     <div className="wrap ab">
@@ -43,6 +43,26 @@ export default async function AboutPage() {
           <Image src="/portada/ambiente-verde.jpg" alt="Salón de restaurante con banqueta verde, sillas terracota y mesas de madera servidas" fill priority sizes="(max-width: 860px) 100vw, 44vw" style={{ objectPosition: "50% 55%" }} />
         </div>
       </section>
+      {faqs.length > 0 && (
+        <section className="sec" id="preguntas" aria-labelledby="h-faq">
+          <div className="faq-wrap">
+            <div className="side">
+              <h2 id="h-faq">Preguntas frecuentes</h2>
+              <p>Lo que más nos consultan. ¿No está tu duda? Escribinos.</p>
+              <WaLink href={wa} channel="general" className="btn btn-ghost">Hacer otra pregunta</WaLink>
+            </div>
+            <div className="faq">
+              {faqs.map((f, i) => (
+                <details key={f.id} open={i === 0}>
+                  <summary>{f.question}<span aria-hidden className="plus">+</span></summary>
+                  <div className="ans">{f.answer}</div>
+                </details>
+              ))}
+            </div>
+          </div>
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.question, acceptedAnswer: { "@type": "Answer", text: f.answer } })) }) }} />
+        </section>
+      )}
     </div>
   );
 }

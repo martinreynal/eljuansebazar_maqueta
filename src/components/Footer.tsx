@@ -37,6 +37,7 @@ export function Footer({ settings, categories }: { settings: Settings; categorie
               {settings.instagram && <li>Instagram {settings.instagram}</li>}
               {settings.facebook && <li>Facebook {settings.facebook}</li>}
               <li><Link href="/nosotros">Nosotros</Link></li>
+              <li><Link href="/nosotros#preguntas">Preguntas frecuentes</Link></li>
             </ul>
           </div>
         </div>

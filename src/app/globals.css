@@ -2042,3 +2042,6 @@ html,body{overflow-x:clip}
   .hc-dots{bottom:18px}
 }
 @media (max-width:860px){.hc{grid-template-columns:minmax(0,1fr);grid-template-rows:auto}.hc-slide{min-width:0;width:100%}.hc-txt p{max-width:none}}
+/* Nosotros: preguntas frecuentes */
+.ab #h-faq{font-size:clamp(26px,3vw,36px)}
+.ab .faq-wrap .side p{color:var(--ink-2);margin:8px 0 14px}
