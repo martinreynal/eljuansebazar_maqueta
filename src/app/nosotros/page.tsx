@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Compass, Gem, Stamp } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { WaLink } from "@/components/WaLink";
 import { getStore } from "@/lib/data";
 import { msgGeneral, waLink } from "@/lib/format";
@@ -13,12 +13,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/nosotros" },
 };
 
-const VALUES = [
-  { icon: Gem, title: "Curaduría", text: "Piezas elegidas por diseño y resistencia al servicio diario." },
-  { icon: Compass, title: "Asesoramiento", text: "Te ayudamos a definir estilos, materiales y cantidades." },
-  { icon: Stamp, title: "Personalización", text: "Sumamos tu logo para que tu marca esté en cada detalle." },
-];
-
 export default async function AboutPage() {
   const { settings, faqs } = await getStore();
   const wa = waLink(settings.whatsapp, msgGeneral(settings.business_name));
@@ -29,11 +23,10 @@ export default async function AboutPage() {
           <span className="h2-eyebrow">Nosotros</span>
           <h1 id="h-ab">Equipamos los espacios donde la gente se encuentra.</h1>
           <p className="ab-lead">En SAGGIO seleccionamos vajilla, cristalería, cubiertos y mobiliario para restaurantes, bares, cafeterías y hoteles, y armamos cada propuesta a medida.</p>
-          <ul className="ab-mini">
-            {VALUES.map(({ icon: I, title, text }) => (
-              <li key={title}><span className="ab-ic"><I aria-hidden /></span><span><b>{title}</b>{text}</span></li>
-            ))}
-          </ul>
+          <div className="ab-import">
+            <p>Trabajamos con <b>productos importados de la más alta calidad</b>, seleccionados uno a uno entre fabricantes que cumplen estándares internacionales de diseño y durabilidad.</p>
+            <p>Cada pieza, de la vajilla al mobiliario, se elige por sus materiales nobles, sus terminaciones cuidadas y su resistencia al ritmo real de un salón, para que tu propuesta luzca impecable hoy y después de miles de servicios.</p>
+          </div>
           <div className="ab-cta-btns">
             <WaLink href={wa} channel="general" className="btn btn-wa btn-lg">Escribinos por WhatsApp</WaLink>
             <Link href="/catalogo" className="btn btn-ghost btn-lg">Ver catálogo <ArrowRight /></Link>

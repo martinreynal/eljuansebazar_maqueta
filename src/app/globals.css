@@ -2055,3 +2055,6 @@ html,body{overflow-x:clip}
 .hc-arrow:focus-visible{outline:1px solid rgba(244,239,231,.6);outline-offset:2px;border-radius:6px}
 @media (max-width:860px){.hc-arrow{top:calc((100vw * 11 / 16) / 2);width:40px;height:56px}.hc-arrow .lucide{width:32px;height:32px}}
 @media (min-width:861px){.hc-txt{right:max(92px,calc(50vw - 620px))}.hc-slide.left .hc-txt{left:max(92px,calc(50vw - 620px));right:auto}}
+.ab-import{display:flex;flex-direction:column;gap:12px;padding-left:18px;border-left:2px solid var(--terra);margin:4px 0}
+.ab-import p{color:var(--ink-2);font-size:16px;line-height:1.7;max-width:56ch}
+.ab-import b{color:var(--forest);font-weight:600}
