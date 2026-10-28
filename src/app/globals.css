@@ -2058,3 +2058,7 @@ html,body{overflow-x:clip}
 .ab-import{display:flex;flex-direction:column;gap:12px;padding-left:18px;border-left:2px solid var(--terra);margin:4px 0}
 .ab-import p{color:var(--ink-2);font-size:16px;line-height:1.7;max-width:56ch}
 .ab-import b{color:var(--forest);font-weight:600}
+/* Fotos de producto subidas desde el panel: siempre completas (sin recortes), centradas sobre blanco */
+.main-img .media-fill{background:#fff}
+.main-img .media-fill > img{object-fit:contain!important;padding:4%}
+.li .t img,.rank .t img,.tbl .pt .t img,.cat-row .t img{object-fit:contain!important;background:#fff}
