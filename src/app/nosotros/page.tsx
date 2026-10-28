@@ -45,8 +45,8 @@ export default async function AboutPage() {
               <WaLink href={wa} channel="general" className="btn btn-ghost">Hacer otra pregunta</WaLink>
             </div>
             <div className="faq">
-              {faqs.map((f, i) => (
-                <details key={f.id} open={i === 0}>
+              {faqs.map((f) => (
+                <details key={f.id}>
                   <summary>{f.question}<span aria-hidden className="plus">+</span></summary>
                   <div className="ans">{f.answer}</div>
                 </details>
