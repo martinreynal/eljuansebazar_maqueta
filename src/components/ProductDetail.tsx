@@ -102,10 +102,8 @@ export function ProductDetail({ p, category, settings, base }: { p: Product; cat
             </button>
           </div>
           <h1>{p.name}</h1>
-          {showPrice ? (
+          {showPrice && (
             <div className="price">{money(p.price!)}{p.tag === "oferta" && p.old_price ? <s>{money(p.old_price)}</s> : null}</div>
-          ) : (
-            <p className="pi-ask">Precio y disponibilidad a consultar</p>
           )}
           {p.availability !== "consultar" && (
             <span className={`avail ${p.availability === "sin_stock" ? "sin-stock" : p.availability}`}><i className="dot" />{AVAILABILITY[p.availability]}</span>
