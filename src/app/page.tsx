@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { HomeSearch } from "@/components/HomeSearch";
 import { HeroCarousel } from "@/components/HeroCarousel";
+import { WaSteps } from "@/components/WaSteps";
 import { ArrowRight, Clock, CloudUpload, Droplet, FileDown, FilePen, Layers, ListPlus, MessageCircle, Package, Search, Tag, Zap } from "lucide-react";
 import { ProductGrid } from "@/components/ProductCard";
 import { WaLink } from "@/components/WaLink";
@@ -99,7 +100,7 @@ export default async function Home() {
           <div>
             <h2>{d.waTitle}</h2>
             <p>{d.waText}</p>
-            <div className="steps"><span><Search />Buscá</span><span><ListPlus />Armá tu lista</span><span><MessageCircle />Consultanos</span>{settings.hours && <span><Clock />{settings.hours}</span>}</div>
+            <WaSteps wa={waLink(settings.whatsapp, msgGeneral(settings.business_name))} hours={settings.hours} />
           </div>
           <WaLink href={waLink(settings.whatsapp, msgGeneral(settings.business_name))} channel="general" className="btn btn-wa btn-lg">Escribinos por WhatsApp</WaLink>
         </div>
