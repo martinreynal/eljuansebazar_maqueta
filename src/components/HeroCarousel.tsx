@@ -1,12 +1,12 @@
 "use client";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 /** side: lado del texto (el producto queda del otro lado). fx: encuadre horizontal en celular (0–100). */
 export type Slide = { eyebrow: string; title: string; line: string; href: string; img: string; imgMobile?: string; alt: string; side?: "left" | "right"; fx?: number; catHref?: string; catLabel?: string };
 
-/** Carrusel de productos destacados: uno por vez, sin flechas (puntos, deslizar y avance automático). */
+/** Carrusel de productos destacados: uno por vez, con flechas sutiles, puntos, deslizar y avance automático cada 5 s. */
 export function HeroCarousel({ slides }: { slides: Slide[] }) {
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -18,7 +18,7 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
     if (n < 2 || paused) return;
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     if (reduce) return;
-    const t = setTimeout(() => go(i + 1), 6500);
+    const t = setTimeout(() => go(i + 1), 5000);
     return () => clearTimeout(t);
   }, [i, n, paused, go]);
 
@@ -57,6 +57,12 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
           </div>
         </div>
       ))}
+      {n > 1 && (
+        <>
+          <button type="button" className="hc-arrow l" aria-label="Producto anterior" onClick={() => go(i - 1)}><ChevronLeft strokeWidth={1.25} /></button>
+          <button type="button" className="hc-arrow r" aria-label="Producto siguiente" onClick={() => go(i + 1)}><ChevronRight strokeWidth={1.25} /></button>
+        </>
+      )}
       {n > 1 && (
         <div className="hc-dots" role="tablist" aria-label="Elegir producto destacado">
           {slides.map((s, k) => (
