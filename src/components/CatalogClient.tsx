@@ -6,6 +6,7 @@ import { ArrowDownUp, ArrowRight, Check, ChevronDown, FileDown, Filter, Search, 
 import { AVAILABILITY, inCategory, money, priceShown, searchable, waLink } from "@/lib/format";
 /* eslint-disable @next/next/no-img-element */
 import { track } from "@/lib/track";
+import { SHOW_3D } from "@/lib/features";
 import { GROUPS, groupByKey, groupHref, groupOf } from "@/lib/groups";
 import type { Availability, Category, CategoryGroup, Product, Settings } from "@/lib/types";
 import { ProductGrid } from "./ProductCard";
@@ -246,7 +247,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
   const matOpts = count((p) => meta.get(p.id)!.mats);
   const colorOpts = count((p) => meta.get(p.id)!.colors);
   const availOpts: [string, number][] = AV_FILTERS.map((a) => [AVAILABILITY[a], pool.filter((p) => p.availability === a).length] as [string, number]).filter(([, n]) => n > 0);
-  const extraOpts: [string, number][] = ([["Con vista 3D", pool.filter((p) => p.model_url).length], ["Ofertas", pool.filter((p) => p.tag === "oferta").length]] as [string, number][]).filter(([, n]) => n > 0);
+  const extraOpts: [string, number][] = ([...(SHOW_3D ? [["Con vista 3D", pool.filter((p) => p.model_url).length]] : []), ["Ofertas", pool.filter((p) => p.tag === "oferta").length]] as [string, number][]).filter(([, n]) => n > 0);
   const catTiles = categories.filter((c) => !c.is_offers && (railGroup === "todo" || groupOf(c) === railGroup) && products.some((p) => inCategory(p, c)));
   const pickGroup = (g: CategoryGroup | "todo") => {
     setRailGroup(g); setCats(g === "todo" ? [] : idsOf(g)); railRef.current?.scrollTo({ left: 0 });
@@ -351,7 +352,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
           <FilterMenu label="Material" options={matOpts} value={mats} onChange={setMats} />
           <FilterMenu label="Color" options={colorOpts} value={colors} onChange={setColors} />
           <FilterMenu label="Disponibilidad" options={availOpts} value={avail.map((a) => AVAILABILITY[a])} onChange={(v) => setAvail(AV_FILTERS.filter((a) => v.includes(AVAILABILITY[a])))} />
-          <FilterMenu label="Más filtros" options={extraOpts.length ? extraOpts : [["Con vista 3D", 0]]} value={extra} onChange={setExtra} more />
+          <FilterMenu label="Más filtros" options={extraOpts.length ? extraOpts : [["Ofertas", 0]]} value={extra} onChange={setExtra} more />
         </div>
       </div>}
 

@@ -14,6 +14,7 @@ import { ProductImage } from "./ProductImage";
 import { QtyInput } from "./QtyInput";
 import { useStore } from "./store/StoreProvider";
 import { useFlash } from "./useFlash";
+import { SHOW_3D } from "@/lib/features";
 import { WaLink } from "./WaLink";
 
 /** Ícono de mesa (lucide no tiene uno de mesa simple). */
@@ -23,7 +24,8 @@ export function ProductDetail({ p, category, settings, base }: { p: Product; cat
   const { list, addToList, toast } = useStore();
   const [img, setImg] = useState(0);
   const [media, setMedia] = useState<"foto" | "3d" | "mesa">("foto");
-  const model = mediaUrl(p.model_url);
+  // Visor 3D y «Ver en mesa» desactivados provisoriamente (ver src/lib/features.ts)
+  const model = SHOW_3D ? mediaUrl(p.model_url) : null;
   const [variant, setVariant] = useState(p.variants[0] ?? "");
   const [qty, setQty] = useState(1);
   const inList = list.find((i) => i.sku === p.sku && i.variant === variant);
