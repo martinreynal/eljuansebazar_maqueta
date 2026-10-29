@@ -75,6 +75,7 @@ export function ImagesTable({ products, categories }: { products: Product[]; cat
       .map((p) => (override[p.id] ? { ...p, images: [override[p.id], ...p.images.slice(1)] } : p))
       .filter((p) => {
         if (!cat) return true;
+        if (cat === "nuevas") return !!p.staged;
         if (cat.startsWith("g:")) { const c = realCats.find((x) => x.id === p.category_id); return !!c && groupOf(c) === cat.slice(2); }
         return p.category_id === cat;
       })
@@ -169,6 +170,7 @@ export function ImagesTable({ products, categories }: { products: Product[]; cat
         <div className="search" style={{ display: "flex", maxWidth: 380, flex: "1 1 240px" }}><Search aria-hidden /><input type="search" placeholder="Buscar por nombre o SKU" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar productos" /></div>
         <select className="input" style={{ width: "auto", minWidth: 220, height: 42 }} value={cat} onChange={(e) => setCat(e.target.value)} aria-label="Ver por categoría">
           <option value="">Todas las categorías</option>
+          <option value="nuevas">Nuevas incorporaciones ({products.filter((p) => p.staged && !p.archived).length})</option>
           {GROUPS.map((g) => (
             <optgroup key={g.key} label={g.name}>
               <option value={`g:${g.key}`}>Todo {g.name.toLowerCase()}</option>
@@ -190,7 +192,7 @@ export function ImagesTable({ products, categories }: { products: Product[]; cat
           <tbody>
             {rows.map((p) => (
               <tr key={p.id} className={p.visible ? "" : "muted"}>
-                <td><div className="pt"><span className="t"><ProductImage p={p} view={0} label={false} sizes="42px" /></span><span>{p.name}{!cat || cat.startsWith("g:") ? <small className="hint" style={{ display: "block" }}>{catName.get(p.category_id ?? "") ?? "Sin categoría"}</small> : null}</span></div></td>
+                <td><div className="pt"><span className="t"><ProductImage p={p} view={0} label={false} sizes="42px" /></span><span>{p.name}{!cat || cat === "nuevas" || cat.startsWith("g:") ? <small className="hint" style={{ display: "block" }}>{catName.get(p.category_id ?? "") ?? "Sin categoría"}</small> : null}</span></div></td>
                 <td className="mono">{p.sku}</td>
                 <td><ScoreBadge path={p.images[0]} /></td>
                 <td>

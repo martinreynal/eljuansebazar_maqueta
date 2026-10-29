@@ -99,6 +99,7 @@ const Flags = z.object({
   availability: z.enum(["disponible", "consultar", "sin_stock", "discontinuado"]).optional(),
   stock: z.number().int().nonnegative().nullable().optional(),
   category_id: z.string().uuid().nullable().optional(),
+  staged: z.boolean().optional(),
 });
 
 export async function updateProductFlags(id: string, patch: z.input<typeof Flags>): Promise<Result> {
@@ -108,6 +109,27 @@ export async function updateProductFlags(id: string, patch: z.input<typeof Flags
     const sb = await requireAdmin();
     const { error } = await sb.from("products").update(parsed.data).eq("id", id);
     if (error) return fail(error);
+    refresh();
+    return { ok: true };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+/** Nuevas incorporaciones: aprueba (publica) o descarta (archiva) varios productos a la vez. */
+export async function reviewNewProducts(input: { approve: { id: string; category_id: string }[]; discard: string[] }): Promise<Result> {
+  const uuid = z.string().uuid();
+  if (![...input.approve.map((a) => a.id), ...input.approve.map((a) => a.category_id), ...input.discard].every((x) => uuid.safeParse(x).success)) return { ok: false, error: "Datos inválidos." };
+  try {
+    const sb = await requireAdmin();
+    for (const a of input.approve) {
+      const { error } = await sb.from("products").update({ staged: false, visible: true, archived: false, category_id: a.category_id }).eq("id", a.id);
+      if (error) return fail(error);
+    }
+    if (input.discard.length) {
+      const { error } = await sb.from("products").update({ staged: false, visible: false, archived: true }).in("id", input.discard);
+      if (error) return fail(error);
+    }
     refresh();
     return { ok: true };
   } catch (e) {

@@ -2066,3 +2066,6 @@ html,body{overflow-x:clip}
 .wa-banner .step-link{display:inline-flex;align-items:center;gap:6px;background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(244,239,231,.4);text-underline-offset:4px;transition:text-decoration-color .2s,color .2s}
 .wa-banner .step-link:hover{color:var(--ivory);text-decoration-color:var(--ivory)}
 .wa-banner .step-link .lucide{width:18px;height:18px}
+/* Panel · Nuevas incorporaciones */
+.np-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.tbl .pt .t img{object-fit:contain!important;background:#fff}

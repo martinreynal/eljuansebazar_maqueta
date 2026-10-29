@@ -26,6 +26,8 @@ export type Product = {
   images: string[];
   /** Modelo 3D opcional (.glb/.gltf): ruta en /public/modelos o en el bucket media. */
   model_url: string | null;
+  /** Nueva incorporación pendiente de aprobación (no se muestra en la tienda). */
+  staged?: boolean;
   placeholder: Placeholder | null;
   created_at: string;
 };
