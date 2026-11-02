@@ -2071,3 +2071,9 @@ html,body{overflow-x:clip}
 .tbl .pt .t img{object-fit:contain!important;background:#fff}
 /* Sin "by Argenprom": el pie vuelve a dejar lugar para la barra inferior del celular */
 @media (max-width:860px){.ftr{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}}
+/* Panel · sagg.io */
+.sg-hud{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:10px;font-size:14px;color:var(--ink-2)}
+.sg-hud b{color:var(--forest);font-size:18px}
+.sg-combo{background:var(--terra);color:var(--ivory);padding:3px 10px;border-radius:999px;font-weight:600}
+.sg-msg{flex:1;color:var(--muted)}
+.sg-canvas{display:block;width:100%;max-width:960px;aspect-ratio:16/9;height:auto;border-radius:14px;border:1px solid var(--line);touch-action:none;cursor:grab;background:var(--ivory)}

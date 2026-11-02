@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Boxes, ChartColumn, FolderTree, ImageIcon, LogOut, Package, Palette, Settings, Sparkles, Store } from "lucide-react";
+import { Boxes, ChartColumn, FolderTree, ImageIcon, LogOut, Package, Palette, Gamepad2, Settings, Sparkles, Store } from "lucide-react";
 
 const TABS = [
   ["/admin/productos", Package, "Productos"],
@@ -12,6 +12,7 @@ const TABS = [
   ["/admin/diseno", Palette, "Diseño y textos"],
   ["/admin/configuracion", Settings, "Configuración"],
   ["/admin/estadisticas", ChartColumn, "Estadísticas"],
+  ["/admin/saggio", Gamepad2, "sagg.io"],
 ] as const;
 
 export function AdminNav({ email, signOut }: { email: string; signOut: () => Promise<void> }) {
