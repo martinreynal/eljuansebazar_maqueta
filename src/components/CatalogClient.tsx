@@ -165,6 +165,13 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
         const saved = JSON.parse(sessionStorage.getItem(SCROLL_KEY(window.location.pathname + window.location.search)) ?? "null");
         if (saved) { setShown(Math.max(PAGE, saved.shown || PAGE)); setRestoreY(saved.y || 0); }
       } catch { /* sin almacenamiento disponible */ }
+    } else if (preset && categories.some((c) => c.id === preset && !c.is_offers)) {
+      // Entrando a una categoría (por ejemplo desde el menú): ir directo a los productos
+      const go = () => {
+        const el = document.querySelector(".fbar");
+        if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 96, behavior: "smooth" });
+      };
+      requestAnimationFrame(() => setTimeout(go, 120));
     }
     mounted.current = true;
   }, []);
