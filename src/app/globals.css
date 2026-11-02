@@ -2069,3 +2069,5 @@ html,body{overflow-x:clip}
 /* Panel · Nuevas incorporaciones */
 .np-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
 .tbl .pt .t img{object-fit:contain!important;background:#fff}
+/* Sin "by Argenprom": el pie vuelve a dejar lugar para la barra inferior del celular */
+@media (max-width:860px){.ftr{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}}

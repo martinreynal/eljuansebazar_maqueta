@@ -46,11 +46,6 @@ export function Footer({ settings, categories }: { settings: Settings; categorie
           <span>No se realizan ventas en línea. Precios y disponibilidad se confirman por WhatsApp.</span>
         </div>
       </div>
-      <a className="by-ap" href="https://www.argenprom.com.ar/" target="_blank" rel="noopener noreferrer" aria-label="by Argenprom (abre argenprom.com.ar en una pestaña nueva)">
-        <span>by</span>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/argenprom.png" alt="Argenprom · Fidelización digital" width={600} height={166} loading="lazy" decoding="async" />
-      </a>
     </footer>
   );
 }

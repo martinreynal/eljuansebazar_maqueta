@@ -121,6 +121,8 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
     return defCats;
   });
   // Grupo visible en el carrusel (Bazar / Mobiliario / todo)
+  // true cuando el usuario eligió subcategorías a mano (aunque sean todas las del grupo)
+  const [explicit, setExplicit] = useState(() => !!preset || urlSlugs.length > 0);
   const [railGroup, setRailGroup] = useState<CategoryGroup | "todo">(() => urlGroup ?? (urlSlugs.length ? groupFromCats(cats) : defGroup));
   const [avail, setAvail] = useState<Availability[]>([]);
   const [types, setTypes] = useState<string[]>([]);
@@ -257,21 +259,26 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
   const extraOpts: [string, number][] = ([...(SHOW_3D ? [["Con vista 3D", pool.filter((p) => p.model_url).length]] : []), ["Ofertas", pool.filter((p) => p.tag === "oferta").length]] as [string, number][]).filter(([, n]) => n > 0);
   const catTiles = categories.filter((c) => !c.is_offers && (railGroup === "todo" || groupOf(c) === railGroup) && products.some((p) => inCategory(p, c)));
   const pickGroup = (g: CategoryGroup | "todo") => {
-    setRailGroup(g); setCats(g === "todo" ? [] : idsOf(g)); railRef.current?.scrollTo({ left: 0 });
+    setRailGroup(g); setCats(g === "todo" ? [] : idsOf(g)); setExplicit(false); railRef.current?.scrollTo({ left: 0 });
     // Sin grupo elegido los filtros quedan ocultos: se limpian para que no sigan aplicándose
     if (g === "todo") { setAvail([]); setTypes([]); setMats([]); setColors([]); setExtra([]); setMin(""); setMax(""); }
   };
   // Filtros visibles solo con un grupo elegido (o en búsquedas y en Ofertas)
   // Productos y filtros solo con una subcategoría elegida (o en búsquedas, Ofertas y páginas de subcategoría)
   const fullGroup = GROUPS.find((g) => { const ids = idsOf(g.key); return ids.length > 0 && ids.length === cats.length && ids.every((i) => cats.includes(i)); });
-  const subPicked = cats.length > 0 && !fullGroup;
+  const subPicked = cats.length > 0 && (explicit || !fullGroup);
   const showFilters = subPicked || !!q || !!preset;
   const pickCat = (id: string) => {
-    setCats((v) => (v.length === 1 && v[0] === id ? (railGroup === "todo" ? [] : idsOf(railGroup)) : [id]));
+    // Selección múltiple: cada toque suma o quita la subcategoría
+    const base = subPicked ? cats : [];
+    const adding = !base.includes(id);
+    const next = adding ? [...base, id] : base.filter((x) => x !== id);
+    if (next.length) { setCats(next); setExplicit(true); }
+    else { setCats(railGroup === "todo" ? [] : idsOf(railGroup)); setExplicit(false); }
     const c = categories.find((x) => x.id === id);
-    if (c && !c.is_offers) track("category_view", { category_id: c.id });
-    // Al elegir una subcategoría, bajar suavemente hasta los productos
-    if (!(cats.length === 1 && cats[0] === id)) {
+    if (adding && c && !c.is_offers) track("category_view", { category_id: c.id });
+    // Al elegir la primera subcategoría, bajar suavemente hasta los productos
+    if (adding && base.length === 0) {
       setTimeout(() => {
         const el = document.querySelector(".fbar");
         if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 96, behavior: "smooth" });
@@ -281,7 +288,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
 
   const chips: { label: string; clear: () => void }[] = [
     ...(q ? [{ label: `“${q}”`, clear: () => setQ("") }] : []),
-    ...(fullGroup ? [{ label: fullGroup.name, clear: () => pickGroup("todo") }] : cats.map((id) => ({ label: categories.find((c) => c.id === id)?.name ?? id, clear: () => setCats((c) => c.filter((x) => x !== id)) }))),
+    ...(fullGroup && !explicit ? [{ label: fullGroup.name, clear: () => pickGroup("todo") }] : cats.map((id) => ({ label: categories.find((c) => c.id === id)?.name ?? id, clear: () => pickCat(id) }))),
     ...avail.map((a) => ({ label: AVAILABILITY[a], clear: () => setAvail((v) => v.filter((x) => x !== a)) })),
     ...types.map((t) => ({ label: t, clear: () => setTypes((v) => v.filter((x) => x !== t)) })),
     ...mats.map((t) => ({ label: t, clear: () => setMats((v) => v.filter((x) => x !== t)) })),
@@ -290,7 +297,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
     ...(min ? [{ label: `Desde ${money(+min.replace(/\D/g, "") || 0)}`, clear: () => setMin("") }] : []),
     ...(max ? [{ label: `Hasta ${money(+max.replace(/\D/g, "") || 0)}`, clear: () => setMax("") }] : []),
   ];
-  const clearAll = () => { setCats([]); setRailGroup("todo"); setAvail([]); setTypes([]); setMats([]); setColors([]); setExtra([]); setMin(""); setMax(""); if (q) setQ(""); };
+  const clearAll = () => { setCats([]); setExplicit(false); setRailGroup("todo"); setAvail([]); setTypes([]); setMats([]); setColors([]); setExtra([]); setMin(""); setMax(""); if (q) setQ(""); };
   const more = results.length > shown;
   // Carga automática al llegar al final (el botón queda como respaldo)
   useEffect(() => {
@@ -333,12 +340,12 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
         })}
       </div>
       {railGroup !== "todo" && <div className="crail">
-        <div className="crail-track" ref={railRef} role="tablist" aria-label="Categorías" style={{ ["--n" as string]: catTiles.length }}>
+        <div className="crail-track" ref={railRef} role="group" aria-label="Categorías (podés elegir varias)" style={{ ["--n" as string]: catTiles.length }}>
           {catTiles.map((c) => {
-            const on = !fullGroup && cats.includes(c.id);
+            const on = subPicked && cats.includes(c.id);
             const img = CATEGORY_IMG.has(c.slug) ? `/categorias/${COVER_FILE[c.slug] ?? c.slug}.jpg` : null;
             return (
-              <button key={c.id} type="button" role="tab" aria-selected={on} className={`crail-tile ${on ? "on" : ""}`} onClick={() => pickCat(c.id)}>
+              <button key={c.id} type="button" aria-pressed={on} className={`crail-tile ${on ? "on" : ""}`} onClick={() => pickCat(c.id)}>
                 <span className="crail-ph">{img && <img src={img} alt="" loading="lazy" decoding="async" />}</span>
                 <span className="crail-n">{c.name}</span>
               </button>
