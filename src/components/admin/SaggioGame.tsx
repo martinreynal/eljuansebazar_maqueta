@@ -8,7 +8,7 @@ type Body = {
   x: number; y: number; vx: number; vy: number; a: number; va: number; w: number; h: number;
   im: HTMLImageElement; name: string; kind: Kind; golden: boolean; fragile: boolean; boss: boolean;
   done: boolean; scored: boolean; rest: number; stacked: boolean; rel: number; layer: number;
-  hitMozo: boolean; broken: boolean; armado: boolean; power: number;
+  hitMozo: boolean; broken: boolean; armado: boolean; power: number; fade?: number;
 };
 type Fx = { x: number; y: number; vx: number; vy: number; life: number; r: number; color: string };
 type Mode = "normal" | "diario";
@@ -242,7 +242,7 @@ export function SaggioGame({ pieces, ranking: initialRanking }: { pieces: Piece[
     // ---------- dibujo ----------
     const drawPiece = (b: Body) => {
       if (b.broken) return;
-      ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.a);
+      ctx.save(); if (b.fade !== undefined) ctx.globalAlpha = Math.max(0, b.fade / 0.6); ctx.translate(b.x, b.y); ctx.rotate(b.a);
       ctx.fillStyle = b.golden ? "#E8C468" : "#fff"; ctx.beginPath(); ctx.roundRect(-b.w / 2 - 5, -b.h / 2 - 5, b.w + 10, b.h + 10, 10); ctx.fill();
       ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.roundRect(-b.w / 2 - 1, -b.h / 2 - 1, b.w + 2, b.h + 2, 8); ctx.fill();
       if (b.im.complete && b.im.naturalWidth) { const r = Math.min(b.w / b.im.naturalWidth, b.h / b.im.naturalHeight); ctx.drawImage(b.im, (-b.im.naturalWidth * r) / 2, (-b.im.naturalHeight * r) / 2, b.im.naturalWidth * r, b.im.naturalHeight * r); }
@@ -355,14 +355,16 @@ export function SaggioGame({ pieces, ranking: initialRanking }: { pieces: Piece[
                   if (magnet > 0 && b.kind === "silla" && b.layer > 1) { magnet--; sync("Silla imán usada"); }
                   checkArmado(b);
                   if (b.layer >= 3 && b.layer % 3 === 0) { addScore(300); pop(b.x, b.y - 80, "¡Torre de 3! +300", "#C96F4A", 1.8); sJingle(3); shake = 6; sync("¡Torre de 3 piezas!"); }
-                } else miss(b, "Afuera… probá con más o menos fuerza");
+                } else { b.fade = 0.6; burst(b.x, GROUND, 8, "#B9AD98"); miss(b, "Afuera… probá con más o menos fuerza"); }
               }
             }
           }
           if (b.x > W + 120 || b.x < -120) { b.done = true; miss(b, "Se fue del salón"); }
         }
         for (const s of stacked()) if (s.y - s.h / 2 < (lv.ceiling ?? 40)) { s.stacked = false; s.done = false; s.vx = target.dir * 120; s.vy = -100; s.va = 4; }
-        flying = flying.filter((b) => b.stacked || !(b.done && (b.broken || b.x > W + 100 || b.x < -100))).slice(-24);
+        // las piezas que quedaron en el piso se desvanecen y se eliminan
+        for (const b of flying) if (b.fade !== undefined) b.fade -= dt;
+        flying = flying.filter((b) => b.stacked || !(b.done && (b.broken || (b.fade !== undefined && b.fade <= 0) || b.x > W + 100 || b.x < -100))).slice(-24);
       }
       shake *= 0.86; boxShake = Math.max(0, boxShake - dt);
       hudTick += dt; if (hudTick > 0.25 && phase === "play") { hudTick = 0; sync(); }
