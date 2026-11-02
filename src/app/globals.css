@@ -2077,3 +2077,4 @@ html,body{overflow-x:clip}
 .sg-combo{background:var(--terra);color:var(--ivory);padding:3px 10px;border-radius:999px;font-weight:600}
 .sg-msg{flex:1;color:var(--muted)}
 .sg-canvas{display:block;width:100%;max-width:960px;aspect-ratio:16/9;height:auto;border-radius:14px;border:1px solid var(--line);touch-action:none;cursor:grab;background:var(--ivory)}
+.sg-kind{border:1px solid var(--line);background:var(--surface);padding:3px 10px;border-radius:999px;font-size:13px;color:var(--forest)}
