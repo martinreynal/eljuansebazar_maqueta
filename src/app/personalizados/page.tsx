@@ -18,7 +18,7 @@ const BRAND_WORKS: { title: string; sku: string; tech: string; img: string; mock
   { title: "Tazas de cerámica", sku: "CER-07", tech: "Sublimación o serigrafía", img: "/portada/marca-taza-limpia.jpg", mock: { x: 45, y: 50, w: 26, rot: 0, tone: "dark" } },
   { title: "Bandejas de bambú", sku: "BAM-01", tech: "Grabado láser", img: "/portada/marca-bandeja-limpia.jpg", mock: { x: 48.3, y: 50, w: 27, rot: 14, tone: "burnt" } },
   { title: "Vasos de vidrio", sku: "CRI-14", tech: "Serigrafía", img: "/portada/marca-vaso-limpia.jpg", mock: { x: 46.1, y: 50, w: 25, rot: 0, tone: "white" } },
-  { title: "Cuchillos de asado", sku: "CUB-40", tech: "Grabado láser en la hoja", img: "/portada/marca-cuchillo-limpia.jpg", mock: { x: 41.6, y: 50, w: 19, rot: -24, tone: "steel" } },
+  { title: "Cuchillos de asado", sku: "CUB-40", tech: "Grabado láser en la hoja", img: "/portada/marca-cuchillo-limpia.jpg", mock: { x: 43.5, y: 55.5, w: 15, rot: -29, tone: "steel" } },
 ];
 
 export default async function CustomPage() {
