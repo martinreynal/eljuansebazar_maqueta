@@ -1,3 +1,5 @@
+import { notFound } from "next/navigation";
+import { SHOW_GAME } from "@/lib/features";
 import { SaggioGame } from "@/components/admin/SaggioGame";
 import { adminData } from "@/lib/admin-data";
 import { isLocalImage, mediaUrl, miniImage } from "@/lib/env";
@@ -11,6 +13,7 @@ export const dynamic = "force-dynamic";
 
 /** Jueguito interno del panel: revolear sillas y mesas del catálogo. */
 export default async function SaggioAdmin() {
+  if (!SHOW_GAME) notFound(); // oculto provisoriamente (src/lib/features.ts)
   const { products, categories } = await adminData();
   const furniture = new Set(categories.filter((c) => ["sillas", "mesas", "banquetas", "sofas-y-sillones", "boxes-y-bancos", "exterior", "exterior-lounge", "sets"].includes(c.slug)).map((c) => c.id));
   const pieces = products
