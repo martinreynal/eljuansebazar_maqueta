@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CloudUpload, Droplet, FilePen, Layers, Package, Tag, Zap } from "lucide-react";
 import { WaLink } from "@/components/WaLink";
+import { BrandMock, type MockStyle } from "@/components/BrandMock";
 import { getStore } from "@/lib/data";
 import { msgCustom, waLink } from "@/lib/format";
 
@@ -13,11 +14,11 @@ export const metadata: Metadata = {
   alternates: { canonical: "/personalizados" },
 };
 
-const BRAND_WORKS = [
-  { title: "Tazas de cerámica", sku: "CER-07", tech: "Sublimación o serigrafía", img: "/portada/marca-taza.jpg" },
-  { title: "Bandejas de bambú", sku: "BAM-01", tech: "Grabado láser", img: "/portada/marca-bandeja.jpg" },
-  { title: "Vasos de vidrio", sku: "CRI-14", tech: "Serigrafía", img: "/portada/marca-vaso.jpg" },
-  { title: "Cuchillos de asado", sku: "CUB-40", tech: "Grabado láser en la hoja", img: "/portada/marca-cuchillo.jpg" },
+const BRAND_WORKS: { title: string; sku: string; tech: string; img: string; mock: MockStyle }[] = [
+  { title: "Tazas de cerámica", sku: "CER-07", tech: "Sublimación o serigrafía", img: "/portada/marca-taza-limpia.jpg", mock: { x: 45, y: 50, w: 26, rot: 0, tone: "dark" } },
+  { title: "Bandejas de bambú", sku: "BAM-01", tech: "Grabado láser", img: "/portada/marca-bandeja-limpia.jpg", mock: { x: 48.3, y: 50, w: 27, rot: 14, tone: "burnt" } },
+  { title: "Vasos de vidrio", sku: "CRI-14", tech: "Serigrafía", img: "/portada/marca-vaso-limpia.jpg", mock: { x: 46.1, y: 50, w: 25, rot: 0, tone: "white" } },
+  { title: "Cuchillos de asado", sku: "CUB-40", tech: "Grabado láser en la hoja", img: "/portada/marca-cuchillo-limpia.jpg", mock: { x: 41.6, y: 50, w: 19, rot: -24, tone: "steel" } },
 ];
 
 export default async function CustomPage() {
@@ -36,11 +37,11 @@ export default async function CustomPage() {
             <WaLink href={waLink(settings.whatsapp, msgCustom())} channel="custom" className="btn btn-cta btn-lg bs-cta">Pedir presupuesto con mi logo<ArrowRight /></WaLink>
           </div>
           <div className="bs-grid">
-            {BRAND_WORKS.map((w) => {
+            {BRAND_WORKS.map((w, i) => {
               const p = products.find((x) => x.sku === w.sku);
               const body = (
                 <>
-                  <span className="bs-img"><Image src={w.img} alt={`${w.title} personalizados con logo`} fill sizes="(max-width: 860px) 50vw, 24vw" /></span>
+                  <BrandMock img={w.img} alt={`${w.title} personalizados con logo`} mock={w.mock} offset={i * 4} />
                   <span className="bs-meta"><b>{w.title}</b><small className="mono">{w.sku}</small></span>
                   <span className="bs-pill">{w.tech}</span>
                 </>
