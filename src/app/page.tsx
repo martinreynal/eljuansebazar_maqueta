@@ -23,6 +23,8 @@ const HERO_GROUPS = [
 ];
 /** Carrusel de productos destacados (fotos en public/destacados, 2048×768). side = lado del texto; fx = encuadre en celular. */
 const FEATURED: { sku: string; eyebrow: string; line: string; img: string; alt: string; side: "left" | "right"; fx: number }[] = [
+  { sku: "SIL-193", eyebrow: "Silla", line: "Tapizado verde petróleo y patas negras redondeadas: suave, cómoda y con presencia.", img: "/destacados/silla-bergeggi.jpg", alt: "Silla Bergeggi tapizada en verde petróleo con patas negras", side: "left", fx: 64 },
+  { sku: "SIL-232", eyebrow: "Silla", line: "Madera cálida sobre estructura de acero negro: resistente para el ritmo del salón.", img: "/destacados/silla-canelli.jpg", alt: "Silla Canelli con asiento y respaldo de madera y estructura negra", side: "left", fx: 70 },
   { sku: "MES-010", eyebrow: "Mesa", line: "Madera cálida y doble base de acero para el día a día del salón.", img: "/destacados/mesa-lajatico.jpg", alt: "Mesa Lajatico con tapa de madera y doble pie negro", side: "right", fx: 54 },
 ];
 
