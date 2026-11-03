@@ -7,6 +7,7 @@ import { AVAILABILITY, inCategory, money, priceShown, searchable, waLink } from 
 /* eslint-disable @next/next/no-img-element */
 import { track } from "@/lib/track";
 import { SHOW_3D } from "@/lib/features";
+import { mediaUrl } from "@/lib/env";
 import { GROUPS, groupByKey, groupHref, groupOf } from "@/lib/groups";
 import type { Availability, Category, CategoryGroup, Product, Settings } from "@/lib/types";
 import { ProductGrid } from "./ProductCard";
@@ -343,7 +344,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
         <div className="crail-track" ref={railRef} role="group" aria-label="Categorías (podés elegir varias)" style={{ ["--n" as string]: catTiles.length }}>
           {catTiles.map((c) => {
             const on = subPicked && cats.includes(c.id);
-            const img = CATEGORY_IMG.has(c.slug) ? `/categorias/${COVER_FILE[c.slug] ?? c.slug}.jpg` : null;
+            const img = CATEGORY_IMG.has(c.slug) ? `/categorias/${COVER_FILE[c.slug] ?? c.slug}.jpg` : mediaUrl(c.image_path) ?? mediaUrl(products.find((p) => inCategory(p, c))?.images[0]);
             return (
               <button key={c.id} type="button" aria-pressed={on} className={`crail-tile ${on ? "on" : ""}`} onClick={() => pickCat(c.id)}>
                 <span className="crail-ph">{img && <img src={img} alt="" loading="lazy" decoding="async" />}</span>
