@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Boxes, ChartColumn, FolderTree, ImageIcon, LogOut, Package, Palette, Gamepad2, Settings, Sparkles, Store } from "lucide-react";
+import { Boxes, ChartColumn, FolderTree, ImageIcon, LogOut, Package, Palette, Settings, Sparkles, Store } from "lucide-react";
 
 const TABS = [
   ["/admin/productos", Package, "Productos"],
@@ -12,7 +12,7 @@ const TABS = [
   ["/admin/diseno", Palette, "Diseño y textos"],
   ["/admin/configuracion", Settings, "Configuración"],
   ["/admin/estadisticas", ChartColumn, "Estadísticas"],
-  ["/admin/saggio", Gamepad2, "sagg.io"],
+  ["/admin/saggio", null, "sagg.io"],
 ] as const;
 
 export function AdminNav({ email, signOut }: { email: string; signOut: () => Promise<void> }) {
@@ -20,7 +20,7 @@ export function AdminNav({ email, signOut }: { email: string; signOut: () => Pro
   return (
     <nav className="adm-nav" aria-label="Módulos del panel">
       {TABS.map(([h, I, t]) => (
-        <Link key={h} href={h} className="adm-link" aria-current={pathname.startsWith(h) ? "true" : undefined}><I />{t}</Link>
+        <Link key={h} href={h} className="adm-link" aria-current={pathname.startsWith(h) ? "true" : undefined}>{I ? <I /> : <span className="adm-noicon" aria-hidden />}{t}</Link>
       ))}
       <div className="sep" />
       <Link href="/" target="_blank" className="adm-link"><Store />Ver tienda</Link>

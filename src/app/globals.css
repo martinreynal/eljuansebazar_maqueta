@@ -2110,3 +2110,4 @@ html,body{overflow-x:clip}
 .sg-rank li b{float:right;color:var(--forest)}
 @media (max-width:1100px){.sg-wrap{grid-template-columns:1fr}}
 .sg-choose{top:12px;bottom:auto}
+.adm-noicon{display:inline-block;width:18px;flex:none}

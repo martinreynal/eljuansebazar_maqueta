@@ -15,7 +15,7 @@ type Mode = "normal" | "diario";
 type Phase = "menu" | "play" | "shop" | "over";
 type Level = { name: string; goal: number; wind: number; mozo?: boolean; fan?: boolean; column?: boolean; ceiling?: number; onlyBanq?: boolean; orders?: boolean; vip?: boolean; boss?: boolean; tip: string };
 
-const W = 960, H = 540, GROUND = H - 46, SLING = { x: 150, y: GROUND - 120 }, G = 900, POWER = 7.2, CAPACITY = 6, SHOT_TIME = 5, BASE_THROWS = 8, COST = 150;
+const W = 960, H = 540, GROUND = H - 46, SLING = { x: 150, y: GROUND - 150 }, G = 900, POWER = 7.2, CAPACITY = 6, SHOT_TIME = 5, BASE_THROWS = 8, COST = 150;
 const PHYS: Record<Kind, { power: number; bounce: number; spin: number; w: number; h: number; label: string; order: string }> = {
   silla: { power: 1, bounce: 0.4, spin: 1, w: 74, h: 74, label: "Silla", order: "silla" },
   mesa: { power: 0.86, bounce: 0.18, spin: 0.45, w: 92, h: 70, label: "Mesa · pesada", order: "mesa" },
