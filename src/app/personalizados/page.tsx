@@ -14,15 +14,15 @@ export const metadata: Metadata = {
   alternates: { canonical: "/personalizados" },
 };
 
-const BRAND_WORKS: { title: string; sku: string; tech: string; img: string; mock: MockStyle }[] = [
-  { title: "Tazas de cerámica", sku: "CER-07", tech: "Sublimación o serigrafía", img: "/portada/marca-taza-limpia.jpg", mock: { x: 45, y: 50, w: 26, rot: 0, tone: "dark" } },
-  { title: "Bandejas de bambú", sku: "BAM-01", tech: "Grabado láser", img: "/portada/marca-bandeja-limpia.jpg", mock: { x: 48.3, y: 50, w: 27, rot: 14, tone: "burnt" } },
-  { title: "Vasos de vidrio", sku: "CRI-14", tech: "Serigrafía", img: "/portada/marca-vaso-limpia.jpg", mock: { x: 46.1, y: 50, w: 25, rot: 0, tone: "white" } },
-  { title: "Cuchillos de asado", sku: "CUB-40", tech: "Grabado láser en la hoja", img: "/portada/marca-cuchillo-limpia.jpg", mock: { x: 43.5, y: 55.5, w: 15, rot: -29, tone: "steel" } },
+const BRAND_WORKS: { title: string; sku: string; cat: string; tech: string; img: string; mock: MockStyle }[] = [
+  { title: "Tazas de cerámica", sku: "CER-07", cat: "cafe", tech: "Sublimación o serigrafía", img: "/portada/marca-taza-limpia.jpg", mock: { x: 45, y: 50, w: 26, rot: 0, tone: "dark" } },
+  { title: "Bandejas de bambú", sku: "BAM-01", cat: "platos-y-bowls", tech: "Grabado láser", img: "/portada/marca-bandeja-limpia.jpg", mock: { x: 48.3, y: 50, w: 27, rot: 14, tone: "burnt" } },
+  { title: "Vasos de vidrio", sku: "CRI-14", cat: "cristaleria", tech: "Serigrafía", img: "/portada/marca-vaso-limpia.jpg", mock: { x: 46.1, y: 50, w: 25, rot: 0, tone: "white" } },
+  { title: "Cuchillos de asado", sku: "CUB-40", cat: "cubiertos", tech: "Grabado láser en la hoja", img: "/portada/marca-cuchillo-limpia.jpg", mock: { x: 43.5, y: 55.5, w: 15, rot: -29, tone: "steel" } },
 ];
 
 export default async function CustomPage() {
-  const { settings, products, categories } = await getStore();
+  const { settings, categories } = await getStore();
   return (
     <div className="wrap">
       <section className="sec" id="personalizados" aria-labelledby="h-custom">
@@ -38,8 +38,8 @@ export default async function CustomPage() {
           </div>
           <div className="bs-grid">
             {BRAND_WORKS.map((w, i) => {
-              const p = products.find((x) => x.sku === w.sku);
-              const c = p ? categories.find((x) => x.id === p.category_id) : undefined;
+              // Cada tarjeta lleva a su categoría (fija), aunque el producto de ejemplo cambie o se dé de baja
+              const c = categories.find((x) => x.slug === w.cat);
               const body = (
                 <>
                   <BrandMock img={w.img} alt={`${w.title} personalizados con logo`} mock={w.mock} offset={i * 4} />
