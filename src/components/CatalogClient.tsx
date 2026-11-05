@@ -30,8 +30,12 @@ const typeOf = (p: Product) => { const n = norm(p.name); return TYPES.find(([, r
 const MAT_WORDS: [string, RegExp][] = [
   ["Gres", /\bgres\b/], ["Porcelana", /porcelana/], ["Cerámica", /ceramic/], ["Vidrio", /vidrio|cristal/], ["Acero inoxidable", /acero/],
   ["Madera", /madera|nogal|roble|teca|olivo/], ["Bambú", /bambu/], ["Tapizado", /tapizad|capitone|terciopelo|acanalad/], ["Cuero", /cuero/],
-  ["Rattan", /rattan|tejid|cuerda/], ["Aluminio", /aluminio/], ["Mármol", /marmol/], ["Hierro", /hierro/],
+  ["Rattan y esterilla", /rat+an|tejid|cuerda|esterilla|mimbre/], ["Aluminio", /aluminio/], ["Mármol", /marmol/], ["Hierro", /hierro|fundicion/],
+  ["Metal", /\bmetal|tolix/], ["Plástico", /polipropileno|plastic/],
 ];
+/** Material principal para ordenar: lo tapizado y lo tejido mandan sobre la estructura (ej.: «Tapizada · patas de metal» → Tapizado). */
+const MAT_ORDER = ["Tapizado", "Cuero", "Rattan y esterilla", "Plástico", "Mármol", "Madera", "Hierro", "Aluminio", "Metal", "Acero inoxidable", "Gres", "Porcelana", "Cerámica", "Vidrio", "Bambú"];
+const matRank = (mats: string[]) => { const r = mats.map((m) => MAT_ORDER.indexOf(m)).filter((i) => i >= 0); return r.length ? Math.min(...r) : MAT_ORDER.length; };
 const matsOf = (p: Product) => { const t = norm(`${p.materials} ${p.name} ${p.description.split(".").slice(0, 2).join(" ")}`); return MAT_WORDS.filter(([, r]) => r.test(t)).map(([m]) => m); };
 
 /** Color o tono, según el nombre y la descripción. */
@@ -131,7 +135,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
   const railRef = useRef<HTMLDivElement>(null);
   const [min, setMin] = useState("");
   const [max, setMax] = useState("");
-  const [sort, setSort] = useState("novedades");
+  const [sort, setSort] = useState("material");
   const ctx = { settings, base, categories };
 
   useEffect(() => {
@@ -233,6 +237,9 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
       sort === "nombre" ? a.name.localeCompare(b.name, "es")
       : sort === "precio-asc" ? (a.price ?? 0) - (b.price ?? 0)
       : sort === "precio-desc" ? (b.price ?? 0) - (a.price ?? 0)
+      : sort === "material"
+        // Por material (tapizado, tejido, madera, metal…); dentro de cada material, las tapas primero y luego lo más nuevo
+        ? matRank(meta.get(a.id)?.mats ?? []) - matRank(meta.get(b.id)?.mats ?? []) || Number(/^tapa\b/i.test(b.name)) - Number(/^tapa\b/i.test(a.name)) || b.created_at.localeCompare(a.created_at)
       : b.created_at.localeCompare(a.created_at);
     r.sort(cmp);
     const i = r.findIndex((p) => p.sku === exact);
@@ -381,6 +388,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
             <ArrowDownUp aria-hidden />
             <span className="only-d">Ordenar por:</span>
             <select aria-label="Ordenar por" value={sort} onChange={(e) => setSort(e.target.value)}>
+              <option value="material">Material</option>
               <option value="novedades">Novedades</option>
               <option value="nombre">Nombre A–Z</option>
               {settings.show_prices && <option value="precio-asc">Menor precio</option>}
