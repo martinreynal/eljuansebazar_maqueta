@@ -32,7 +32,25 @@ function zodFail(e: z.ZodError): Result<never> {
   return { ok: false, error: i?.message ?? "Datos inválidos", field: i?.path?.[0]?.toString() };
 }
 
-const media = (sb: Awaited<ReturnType<typeof requireAdmin>>) => sb.storage.from("media");
+type Sb = Awaited<ReturnType<typeof requireAdmin>>;
+const media = (sb: Sb) => sb.storage.from("media");
+
+/** Historial (panel · Textos): anota un cambio hecho desde el panel. Si falla, no frena la acción. */
+async function logChange(sb: Sb, area: string, title: string, detail = "", ref = "") {
+  try {
+    const { data: { user } } = await sb.auth.getUser();
+    await sb.from("change_log").insert({ source: "panel", author: user?.email ?? "", area, title: title.slice(0, 300), detail: detail.slice(0, 2000), ref: ref.slice(0, 200) });
+  } catch { /* el historial es secundario */ }
+}
+async function productLabel(sb: Sb, id: string): Promise<{ name: string; sku: string }> {
+  const { data } = await sb.from("products").select("name, sku").eq("id", id).maybeSingle();
+  return { name: (data?.name as string) ?? "Producto", sku: (data?.sku as string) ?? "" };
+}
+async function categoryName(sb: Sb, id: string | null | undefined): Promise<string> {
+  if (!id) return "sin categoría";
+  const { data } = await sb.from("categories").select("name").eq("id", id).maybeSingle();
+  return (data?.name as string) ?? "otra categoría";
+}
 /** Solo se borran del almacenamiento las fotos subidas desde el panel (no las del catálogo incluido en la web). */
 const uploaded = (paths: string[]) => paths.filter((p) => !p.startsWith("/"));
 
@@ -85,6 +103,7 @@ export async function saveProduct(input: ProductInputT): Promise<Result<{ id: st
       : await sb.from("products").insert(row).select("id").single();
     if (res.error) return fail(res.error);
     if (uploaded(removed).length) await media(sb).remove(uploaded(removed));
+    await logChange(sb, "Productos", id ? `Producto editado: ${v.name}` : `Producto nuevo: ${v.name}`, `Categoría: ${await categoryName(sb, v.category_id)} · ${v.images.length} foto${v.images.length === 1 ? "" : "s"} · ${v.visible ? "visible" : "oculto"}`, v.sku);
     refresh();
     return { ok: true, data: { id: res.data!.id as string, slug } };
   } catch (e) {
@@ -109,6 +128,15 @@ export async function updateProductFlags(id: string, patch: z.input<typeof Flags
     const sb = await requireAdmin();
     const { error } = await sb.from("products").update(parsed.data).eq("id", id);
     if (error) return fail(error);
+    const d = parsed.data, pl = await productLabel(sb, id), parts: string[] = [];
+    if (d.visible !== undefined) parts.push(d.visible ? "ahora visible" : "ahora oculto");
+    if (d.featured !== undefined) parts.push(d.featured ? "marcado como destacado" : "sin destacar");
+    if (d.archived !== undefined) parts.push(d.archived ? "archivado" : "recuperado del archivo");
+    if (d.availability !== undefined) parts.push(`disponibilidad: ${d.availability.replace("_", " ")}`);
+    if (d.stock !== undefined) parts.push(`stock: ${d.stock ?? "sin dato"}`);
+    if (d.category_id !== undefined) parts.push(`movido a ${await categoryName(sb, d.category_id)}`);
+    if (d.staged !== undefined) parts.push(d.staged ? "vuelve a Nuevas incorporaciones" : "sale de Nuevas incorporaciones");
+    await logChange(sb, d.category_id !== undefined ? "Categorías" : "Productos", `${pl.name}: ${parts.join(", ") || "cambio rápido"}`, "", pl.sku);
     refresh();
     return { ok: true };
   } catch (e) {
@@ -130,6 +158,8 @@ export async function reviewNewProducts(input: { approve: { id: string; category
       const { error } = await sb.from("products").update({ staged: false, visible: false, archived: true }).in("id", input.discard);
       if (error) return fail(error);
     }
+    const n = input.approve.length, m = input.discard.length;
+    await logChange(sb, "Productos", `Nuevas incorporaciones: ${n} aprobado${n === 1 ? "" : "s"}${m ? ` y ${m} descartado${m === 1 ? "" : "s"}` : ""}`);
     refresh();
     return { ok: true };
   } catch (e) {
@@ -142,8 +172,10 @@ export async function deleteProduct(id: string): Promise<Result> {
   try {
     const sb = await requireAdmin();
     const { data } = await sb.from("products").select("images").eq("id", id).single();
+    const pl = await productLabel(sb, id);
     const { error } = await sb.from("products").delete().eq("id", id);
     if (error) return fail(error);
+    await logChange(sb, "Productos", `Producto eliminado definitivamente: ${pl.name}`, "", pl.sku);
     const imgs = uploaded((data?.images as string[]) ?? []);
     if (imgs.length) await media(sb).remove(imgs);
     refresh();
@@ -176,12 +208,15 @@ export async function saveCategory(input: z.input<typeof CategoryInput>): Promis
       const { error } = await sb.from("categories").update(patch).eq("id", id);
       if (error) return fail(error);
       if (prev?.image_path && prev.image_path !== v.image_path) await media(sb).remove([prev.image_path]);
+      const what = [prev?.name !== v.name ? `nombre: ${prev?.name} → ${v.name}` : "", prev?.image_path !== v.image_path ? "foto de portada nueva" : "", `${v.active ? "activa" : "desactivada"}`].filter(Boolean).join(" · ");
+      await logChange(sb, "Categorías", `Categoría editada: ${v.name}`, what);
       refresh();
       return { ok: true, data: { id } };
     }
     const { count } = await sb.from("categories").select("id", { count: "exact", head: true });
     const { data, error } = await sb.from("categories").insert({ ...v, slug: slugify(v.name), position: count ?? 0 }).select("id").single();
     if (error) return fail(error);
+    await logChange(sb, "Categorías", `Categoría nueva: ${v.name}`);
     refresh();
     return { ok: true, data: { id: data.id as string } };
   } catch (e) {
@@ -196,6 +231,7 @@ export async function reorderCategories(ids: string[]): Promise<Result> {
       const { error } = await sb.from("categories").update({ position: i }).eq("id", id);
       if (error) return fail(error);
     }
+    await logChange(sb, "Categorías", "Se cambió el orden de las categorías");
     refresh();
     return { ok: true };
   } catch (e) {
@@ -210,8 +246,10 @@ export async function deleteCategory(id: string): Promise<Result> {
     if (count) return { ok: false, error: `La categoría tiene ${count} producto${count === 1 ? "" : "s"}. Movelos a otra categoría antes de eliminarla.` };
     const { data } = await sb.from("categories").select("image_path, is_offers").eq("id", id).single();
     if (data?.is_offers) return { ok: false, error: "La categoría de ofertas no se puede eliminar. Podés desactivarla." };
+    const cname = await categoryName(sb, id);
     const { error } = await sb.from("categories").delete().eq("id", id);
     if (error) return fail(error);
+    await logChange(sb, "Categorías", `Categoría eliminada: ${cname}`);
     if (data?.image_path) await media(sb).remove([data.image_path]);
     refresh();
     return { ok: true };
@@ -245,6 +283,7 @@ export async function saveDesign(input: z.input<typeof DesignInput>): Promise<Re
     const sb = await requireAdmin();
     const { error } = await sb.from("settings").update({ design: parsed.data }).eq("id", 1);
     if (error) return fail(error);
+    await logChange(sb, "Diseño", "Se guardaron los textos de Diseño y textos (portada, promoción, WhatsApp y personalizados)");
     refresh();
     return { ok: true };
   } catch (e) {
@@ -274,6 +313,7 @@ export async function saveFaqs(input: z.input<typeof FaqList>): Promise<Result> 
         : await sb.from("faqs").insert({ question: f.question, answer: f.answer, position: i });
       if (r.error) return fail(r.error);
     }
+    await logChange(sb, "Nosotros", `Se guardaron las preguntas frecuentes (${parsed.data.length})`);
     refresh();
     return { ok: true };
   } catch (e) {
@@ -309,6 +349,7 @@ export async function saveCustomWorks(input: z.input<typeof WorkList>): Promise<
       if (r.error) return fail(r.error);
     }
     if (orphan.length) await media(sb).remove(orphan);
+    await logChange(sb, "Personalizados", `Se guardaron los trabajos de personalizados (${parsed.data.length})`);
     refresh();
     return { ok: true };
   } catch (e) {
@@ -336,6 +377,7 @@ export async function saveSettings(input: z.input<typeof SettingsInput>): Promis
     const sb = await requireAdmin();
     const { error } = await sb.from("settings").update({ ...parsed.data, site_url: parsed.data.site_url.replace(/\/$/, "") }).eq("id", 1);
     if (error) return fail(error);
+    await logChange(sb, "Configuración", "Se guardó la configuración general", `WhatsApp, horarios, redes y dirección del sitio`);
     refresh();
     return { ok: true };
   } catch (e) {
@@ -421,6 +463,7 @@ export async function setMainImage(productId: string, path: string): Promise<Res
     if (images.length) images[0] = path; else images.push(path);
     const up = await sb.from("products").update({ images }).eq("id", productId);
     if (up.error) return fail(up.error);
+    { const pl = await productLabel(sb, productId); await logChange(sb, "Imágenes", `Foto principal cambiada: ${pl.name}`, "", pl.sku); }
     refresh();
     return { ok: true, data: { previous } };
   } catch (e) {
@@ -436,8 +479,46 @@ export async function setProductImages(productId: string, images: string[]): Pro
     const sb = await requireAdmin();
     const up = await sb.from("products").update({ images: [...new Set(images)] }).eq("id", productId);
     if (up.error) return fail(up.error);
+    { const pl = await productLabel(sb, productId); await logChange(sb, "Imágenes", `Fotos actualizadas: ${pl.name} (${images.length})`, "", pl.sku); }
     refresh();
     return { ok: true, data: null };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+// ---------------------------------------------------------------- historial (Textos)
+
+const Note = z.object({
+  area: z.string().trim().min(1).max(40),
+  title: z.string().trim().min(3, "Escribí al menos 3 letras.").max(300),
+  detail: z.string().trim().max(2000).default(""),
+  ref: z.string().trim().max(200).default(""),
+});
+
+/** Agrega una nota a mano en el historial de cambios. */
+export async function addChangeNote(input: z.input<typeof Note>): Promise<Result<{ id: number }>> {
+  const parsed = Note.safeParse(input);
+  if (!parsed.success) return zodFail(parsed.error);
+  try {
+    const sb = await requireAdmin();
+    const { data: { user } } = await sb.auth.getUser();
+    const { data, error } = await sb.from("change_log").insert({ ...parsed.data, source: "manual", author: user?.email ?? "" }).select("id").single();
+    if (error) return fail(error);
+    return { ok: true, data: { id: data.id as number } };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+/** Borra una entrada del historial (solo las notas cargadas a mano). */
+export async function deleteChangeNote(id: number): Promise<Result> {
+  if (!Number.isInteger(id) || id <= 0) return { ok: false, error: "Datos inválidos." };
+  try {
+    const sb = await requireAdmin();
+    const { error } = await sb.from("change_log").delete().eq("id", id).eq("source", "manual");
+    if (error) return fail(error);
+    return { ok: true };
   } catch (e) {
     return fail(e);
   }
