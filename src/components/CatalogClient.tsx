@@ -82,7 +82,6 @@ function FilterMenu({ label, options, value, onChange, more = false }: { label: 
 }
 
 type Props = { products: Product[]; categories: Category[]; settings: Settings; base: string; preset?: string; group?: CategoryGroup; title: string };
-const PAGE = 12;
 // Al volver atrás (popstate) el catálogo recupera cuántos productos mostraba y la posición de scroll
 let lastPop = 0;
 if (typeof window !== "undefined") window.addEventListener("popstate", () => { lastPop = Date.now(); });
@@ -134,9 +133,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
   const [min, setMin] = useState("");
   const [max, setMax] = useState("");
   const [sort, setSort] = useState("novedades");
-  const [shown, setShown] = useState(PAGE);
   const ctx = { settings, base, categories };
-  const sentinel = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (preset) {
@@ -145,7 +142,6 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
     }
   }, [preset, categories]);
   const mounted = useRef(false);
-  useEffect(() => { if (mounted.current) setShown(PAGE); }, [q, cats, avail, min, max, sort, types, mats, colors, extra]);
 
   // Grupo y categorías → URL (sin agregar entradas al historial)
   useEffect(() => {
@@ -160,13 +156,13 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [railGroup, cats]);
 
-  // Posición de scroll y cantidad de productos visibles, guardadas por URL
+  // Posición de scroll guardada por URL (se muestran todos los productos, sin «Cargar más»)
   const [restoreY, setRestoreY] = useState<number | null>(null);
   useEffect(() => {
     if (Date.now() - lastPop < 4000) {
       try {
         const saved = JSON.parse(sessionStorage.getItem(SCROLL_KEY(window.location.pathname + window.location.search)) ?? "null");
-        if (saved) { setShown(Math.max(PAGE, saved.shown || PAGE)); setRestoreY(saved.y || 0); }
+        if (saved) setRestoreY(saved.y || 0);
       } catch { /* sin almacenamiento disponible */ }
     } else if (preset && categories.some((c) => c.id === preset && !c.is_offers)) {
       // Entrando a una categoría (por ejemplo desde el menú): ir directo a los productos
@@ -189,13 +185,13 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
     const save = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
-        try { sessionStorage.setItem(SCROLL_KEY(window.location.pathname + window.location.search), JSON.stringify({ y: window.scrollY, shown })); } catch { /* ignorar */ }
+        try { sessionStorage.setItem(SCROLL_KEY(window.location.pathname + window.location.search), JSON.stringify({ y: window.scrollY })); } catch { /* ignorar */ }
       });
     };
     save();
     window.addEventListener("scroll", save, { passive: true });
     return () => { window.removeEventListener("scroll", save); cancelAnimationFrame(raf); };
-  }, [shown]);
+  }, []);
   // Datos derivados para los filtros (tipo, material, color)
   const meta = useMemo(() => new Map(products.map((p) => [p.id, { type: typeOf(p), mats: matsOf(p), colors: colorsOf(p) }])), [products]);
 
@@ -299,15 +295,6 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
     ...(max ? [{ label: `Hasta ${money(+max.replace(/\D/g, "") || 0)}`, clear: () => setMax("") }] : []),
   ];
   const clearAll = () => { setCats([]); setExplicit(false); setRailGroup("todo"); setAvail([]); setTypes([]); setMats([]); setColors([]); setExtra([]); setMin(""); setMax(""); if (q) setQ(""); };
-  const more = results.length > shown;
-  // Carga automática al llegar al final (el botón queda como respaldo)
-  useEffect(() => {
-    const el = sentinel.current;
-    if (!el || !more || typeof IntersectionObserver === "undefined") return;
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) setShown((s) => s + PAGE); }, { rootMargin: "600px 0px" });
-    io.observe(el);
-    return () => io.disconnect();
-  }, [more, shown]);
 
   const presetCat = preset ? categories.find((c) => c.id === preset) : undefined;
   const presetGroup = presetCat ? groupByKey(groupOf(presetCat) ?? "") : undefined;
@@ -403,7 +390,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
 
       {showFilters && <div className="cat-full">
           {results.length ? (
-            <ProductGrid products={results.slice(0, shown)} ctx={ctx} priorityFirst={4} />
+            <ProductGrid products={results} ctx={ctx} priorityFirst={4} />
           ) : (
             <div className="empty">
               <div className="ic"><SearchX /></div>
@@ -413,14 +400,6 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
                 <button className="btn btn-ghost" onClick={clearAll}>Quitar filtros</button>
                 <WaLink href={waLink(settings.whatsapp, q ? `Hola, ¿tienen ${q}?` : `Hola, quería hacer una consulta.`)} channel="general" className="btn btn-wa">Preguntar por WhatsApp</WaLink>
               </div>
-            </div>
-          )}
-          {more && <div ref={sentinel} aria-hidden />}
-          {more && (
-            <div className="load-more">
-              <span>Mostrando {shown} de {results.length}</span>
-              <div className="progress"><i style={{ width: `${(shown / results.length) * 100}%` }} /></div>
-              <button className="btn btn-ghost" onClick={() => setShown((s) => s + PAGE)}>Cargar más productos</button>
             </div>
           )}
       </div>}
