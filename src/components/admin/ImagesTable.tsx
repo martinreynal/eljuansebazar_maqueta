@@ -2,8 +2,8 @@
 /* eslint-disable @next/next/no-img-element */
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { ArrowRight, Check, ExternalLink, ImageUp, Loader2, ScanSearch, Search, Undo2, X } from "lucide-react";
-import { lensSearch, setMainImage, type LensMatch } from "@/app/admin/actions";
+import { ArrowRight, Check, ExternalLink, ImageUp, Images, Loader2, ScanSearch, Search, Undo2, X } from "lucide-react";
+import { lensSearch, setMainImage, setProductImages, type LensMatch } from "@/app/admin/actions";
 import { searchable } from "@/lib/format";
 import { mediaUrl } from "@/lib/env";
 import { knownScore, measureScore, preScore, type ImageScore } from "@/lib/image-score";
@@ -11,6 +11,7 @@ import { uploadImage } from "@/lib/upload";
 import { GROUPS, groupOf } from "@/lib/groups";
 import type { Category, Product } from "@/lib/types";
 import { ProductImage } from "../ProductImage";
+import { ImageUploader } from "./ImageUploader";
 
 type Sort = "peor" | "mejor" | "recientes";
 
@@ -67,11 +68,26 @@ export function ImagesTable({ products, categories }: { products: Product[]; cat
   const [, start] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; text: string; undo?: { id: string; path: string } } | null>(null);
   const [override, setOverride] = useState<Record<string, string>>({});
+  // Lista completa de fotos guardada desde el editor de fotos (pisa lo que vino del servidor hasta refrescar)
+  const [gallery, setGallery] = useState<Record<string, string[]>>({});
+  const [edit, setEdit] = useState<{ p: Product; images: string[]; saving: boolean; error?: string } | null>(null);
+  const saveGallery = async () => {
+    if (!edit) return;
+    setEdit({ ...edit, saving: true, error: undefined });
+    const r = await setProductImages(edit.p.id, edit.images);
+    if (!r.ok) { setEdit({ ...edit, saving: false, error: r.error }); return; }
+    setGallery((g) => ({ ...g, [edit.p.id]: edit.images }));
+    setOverride((o) => { const n = { ...o }; delete n[edit.p.id]; return n; });
+    setMsg({ ok: true, text: `Se guardaron ${edit.images.length} foto${edit.images.length === 1 ? "" : "s"} de “${edit.p.name}”.` });
+    setEdit(null);
+    router.refresh();
+  };
 
   const rows = useMemo(() => {
     const w = searchable(q).split(" ").filter(Boolean);
     const list = products
       .filter((p) => !p.archived)
+      .map((p) => (gallery[p.id] ? { ...p, images: gallery[p.id] } : p))
       .map((p) => (override[p.id] ? { ...p, images: [override[p.id], ...p.images.slice(1)] } : p))
       .filter((p) => {
         if (!cat) return true;
@@ -83,7 +99,7 @@ export function ImagesTable({ products, categories }: { products: Product[]; cat
     if (sort === "recientes") return list;
     const sc = (p: Product) => (p.images[0] ? preScore(p.images[0])?.[2] ?? 5.5 : 0);
     return [...list].sort((a, b) => (sort === "peor" ? sc(a) - sc(b) : sc(b) - sc(a)));
-  }, [products, q, sort, override, cat, realCats]);
+  }, [products, q, sort, override, gallery, cat, realCats]);
 
   const search = (p: Product) => {
     const lensUrl = lensLink(p.images[0]);
@@ -188,12 +204,19 @@ export function ImagesTable({ products, categories }: { products: Product[]; cat
       <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => onFile(e.target.files?.[0])} />
       <div className="tbl-wrap">
         <table className="tbl">
-          <thead><tr><th>Producto</th><th>SKU</th><th>Definición</th><th>Búsqueda en Lens</th><th>Cambiar imagen</th></tr></thead>
+          <thead><tr><th>Producto</th><th>SKU</th><th>Fotos</th><th>Definición</th><th>Búsqueda en Lens</th><th>Cambiar imagen</th></tr></thead>
           <tbody>
             {rows.map((p) => (
               <tr key={p.id} className={p.visible ? "" : "muted"}>
                 <td><div className="pt"><span className="t"><ProductImage p={p} view={0} label={false} sizes="42px" /></span><span>{p.name}{!cat || cat === "nuevas" || cat.startsWith("g:") ? <small className="hint" style={{ display: "block" }}>{catName.get(p.category_id ?? "") ?? "Sin categoría"}</small> : null}</span></div></td>
                 <td className="mono">{p.sku}</td>
+                <td>
+                  <button type="button" className="img-strip" onClick={() => setEdit({ p, images: [...p.images], saving: false })} title="Ver y agregar fotos" aria-label={`Ver y agregar fotos de ${p.name} (${p.images.length})`}>
+                    {p.images.slice(0, 3).map((_, i) => <span key={i}><ProductImage p={p} view={i} label={false} sizes="34px" /></span>)}
+                    {p.images.length > 3 && <em>+{p.images.length - 3}</em>}
+                    <b><Images />{p.images.length}</b>
+                  </button>
+                </td>
                 <td><ScoreBadge path={p.images[0]} /></td>
                 <td>
                   <button type="button" className="btn btn-ghost btn-sm lens-btn" disabled={!p.images.length || (cmp?.p.id === p.id && cmp.status === "buscando")} onClick={() => search(p)}>
@@ -207,10 +230,28 @@ export function ImagesTable({ products, categories }: { products: Product[]; cat
                 </td>
               </tr>
             ))}
-            {!rows.length && <tr><td colSpan={5} style={{ textAlign: "center", padding: 32, color: "var(--muted)" }}>No hay productos que coincidan con la búsqueda.</td></tr>}
+            {!rows.length && <tr><td colSpan={6} style={{ textAlign: "center", padding: 32, color: "var(--muted)" }}>No hay productos que coincidan con la búsqueda.</td></tr>}
           </tbody>
         </table>
       </div>
+
+      {edit && (
+        <div className="lens-bg" onMouseDown={(e) => { if (e.target === e.currentTarget && !edit.saving) setEdit(null); }}>
+          <div className="lens-modal gal-modal" role="dialog" aria-modal="true" aria-label={`Fotos de ${edit.p.name}`}>
+            <div className="lens-head">
+              <div><small className="mono">{edit.p.sku}</small><h3>{edit.p.name}</h3></div>
+              <button className="icon-btn" aria-label="Cerrar" disabled={edit.saving} onClick={() => setEdit(null)}><X /></button>
+            </div>
+            <p className="hint" style={{ margin: "0 0 12px" }}>La primera foto es la que se ve en el catálogo. Usá la flecha para cambiar el orden y la cruz para quitar una foto. Podés subir varias a la vez (hasta 10).</p>
+            <ImageUploader value={edit.images} onChange={(v) => setEdit({ ...edit, images: v })} folder="products" label={`Fotos (${edit.images.length})`} />
+            {edit.error && <div className="adm-msg bad" style={{ marginTop: 10 }}>{edit.error}</div>}
+            <div className="lens-actions">
+              <button className="btn btn-ghost" disabled={edit.saving} onClick={() => setEdit(null)}>Cancelar</button>
+              <button className="btn btn-dark" disabled={edit.saving || edit.images.join() === (rows.find((r) => r.id === edit.p.id)?.images ?? edit.p.images).join()} onClick={saveGallery}>{edit.saving ? <Loader2 className="spin" /> : <Check />}Guardar fotos</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {cmp && (
         <div className="lens-bg" onMouseDown={(e) => { if (e.target === e.currentTarget && !busy) setCmp(null); }}>

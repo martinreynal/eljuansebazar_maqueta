@@ -2120,3 +2120,15 @@ html,body{overflow-x:clip}
 .bs-logo.tone-burnt{color:#5a2c10;mix-blend-mode:multiply;opacity:.82}
 .bs-logo.tone-white{color:#ffffff;opacity:.86;filter:drop-shadow(0 0 1px rgba(0,0,0,.25))}
 .bs-logo.tone-steel{color:#3b3d40;mix-blend-mode:multiply;opacity:.62}
+
+/* Panel · Imágenes: tira de fotos por producto y editor de galería */
+.img-strip{display:inline-flex;align-items:center;gap:4px;padding:4px 8px 4px 4px;border:1px solid var(--line, #e3ddd3);border-radius:10px;background:var(--surface, #fff);cursor:pointer;font:inherit}
+.img-strip:hover{border-color:var(--primary, #1E4D3D)}
+.img-strip span{width:34px;height:34px;border-radius:6px;overflow:hidden;background:#fff;display:block;position:relative}
+.img-strip span img{width:100%;height:100%;object-fit:contain}
+.img-strip em{font-style:normal;font-size:11px;color:var(--muted)}
+.img-strip b{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:600;margin-left:4px}
+.img-strip b svg{width:14px;height:14px}
+.gal-modal{max-width:640px}
+.gal-modal .img-list div{width:110px;height:110px;background:#fff;border:1px solid var(--line, #e3ddd3)}
+.gal-modal .img-list img{object-fit:contain}

@@ -427,3 +427,18 @@ export async function setMainImage(productId: string, path: string): Promise<Res
     return fail(e);
   }
 }
+
+/** Reemplaza la lista completa de fotos de un producto (la primera es la principal). */
+export async function setProductImages(productId: string, images: string[]): Promise<Result<null>> {
+  const okPath = (x: string) => /^(\/catalogo\/[\w.-]+\.jpg|products\/[\w-]+\.(jpg|jpeg|png|webp))$/.test(x);
+  if (!z.string().uuid().safeParse(productId).success || !Array.isArray(images) || images.length > 10 || !images.every(okPath)) return { ok: false, error: "Datos inválidos." };
+  try {
+    const sb = await requireAdmin();
+    const up = await sb.from("products").update({ images: [...new Set(images)] }).eq("id", productId);
+    if (up.error) return fail(up.error);
+    refresh();
+    return { ok: true, data: null };
+  } catch (e) {
+    return fail(e);
+  }
+}
