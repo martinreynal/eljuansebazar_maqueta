@@ -2132,3 +2132,8 @@ html,body{overflow-x:clip}
 .gal-modal{max-width:640px}
 .gal-modal .img-list div{width:110px;height:110px;background:#fff;border:1px solid var(--line, #e3ddd3)}
 .gal-modal .img-list img{object-fit:contain}
+
+/* Nombre de los productos (tarjetas y ficha) en Inter */
+:root{--f-product:var(--font-inter), "Inter", system-ui, sans-serif}
+.pc .pc-name,.pc .pc-name a{font-family:var(--f-product);font-weight:600;letter-spacing:-.011em}
+.pdp .pinfo h1{font-family:var(--f-product);font-weight:600;letter-spacing:-.022em;line-height:1.18}

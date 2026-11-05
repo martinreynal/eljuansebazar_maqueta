@@ -19,6 +19,11 @@ const fraunces = localFont({
   display: "swap",
   src: [{ path: "../fonts/fraunces-latin-full-normal.woff2", weight: "100 900", style: "normal" }],
 });
+const inter = localFont({
+  variable: "--font-inter",
+  display: "swap",
+  src: [{ path: "../fonts/inter-latin-wght-normal.woff2", weight: "100 900", style: "normal" }],
+});
 const dmMono = localFont({
   variable: "--font-dm-mono",
   display: "swap",
@@ -53,7 +58,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const { settings, categories, products } = await getStore();
   const hasOffers = products.some((p) => p.tag === "oferta");
   return (
-    <html lang="es-AR" className={`${dmSans.variable} ${fraunces.variable} ${dmMono.variable}`}>
+    <html lang="es-AR" className={`${dmSans.variable} ${fraunces.variable} ${inter.variable} ${dmMono.variable}`}>
       <body>
         <StoreProvider>
           {settings.design.notice && <div className="demo-strip">{settings.design.notice}</div>}
