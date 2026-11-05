@@ -36,8 +36,16 @@ const MAT_WORDS: [string, RegExp][] = [
 /** Material principal para ordenar: lo tapizado y lo tejido mandan sobre la estructura (ej.: «Tapizada · patas de metal» → Tapizado). */
 const MAT_ORDER = ["Tapizado", "Cuero", "Rattan y esterilla", "Plástico", "Mármol", "Madera", "Hierro", "Aluminio", "Metal", "Acero inoxidable", "Gres", "Porcelana", "Cerámica", "Vidrio", "Bambú"];
 const matRank = (mats: string[]) => { const r = mats.map((m) => MAT_ORDER.indexOf(m)).filter((i) => i >= 0); return r.length ? Math.min(...r) : MAT_ORDER.length; };
-/** Tapas y bases de mesa («Tapa Camerino», «Base Vinci») van después de las mesas armadas. */
-const kindRank = (p: Product) => (/^tapa \S+$/i.test(p.name) ? 1 : /^base \S+$/i.test(p.name) ? 2 : 0);
+/**
+ * Orden por tipo dentro de una categoría:
+ * - Cristalería: primero los vasos sueltos y después los sets y líneas.
+ * - Mesas: primero las mesas armadas, después las tapas («Tapa Camerino») y al final las bases («Base Vinci»).
+ */
+const kindRank = (p: Product) => {
+  const n = norm(p.name);
+  if (/^(set|linea)\b/.test(n) && /vaso|copa|vidrio|cristal/.test(n)) return 1;
+  return /^tapa \S+$/.test(n) ? 1 : /^base \S+$/.test(n) ? 2 : 0;
+};
 const matsOf = (p: Product) => { const t = norm(`${p.materials} ${p.name} ${p.description.split(".").slice(0, 2).join(" ")}`); return MAT_WORDS.filter(([, r]) => r.test(t)).map(([m]) => m); };
 
 /** Color o tono, según el nombre y la descripción. */
@@ -240,7 +248,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
       : sort === "precio-asc" ? (a.price ?? 0) - (b.price ?? 0)
       : sort === "precio-desc" ? (b.price ?? 0) - (a.price ?? 0)
       : sort === "material"
-        // En Mesas: primero las mesas, después las tapas y al final las bases; en todo lo demás, por material (tapizado, tejido, madera, metal…) y lo más nuevo primero
+        // Primero por tipo (vasos sueltos antes que sets; mesas, tapas, bases) y después por material (tapizado, tejido, madera, metal…) y lo más nuevo primero
         ? kindRank(a) - kindRank(b) || matRank(meta.get(a.id)?.mats ?? []) - matRank(meta.get(b.id)?.mats ?? []) || b.created_at.localeCompare(a.created_at)
       : b.created_at.localeCompare(a.created_at);
     r.sort(cmp);
