@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SHOW_GAME } from "@/lib/features";
-import { Boxes, ChartColumn, FolderTree, History, ImageIcon, LogOut, Package, Palette, Settings, Sparkles, Store } from "lucide-react";
+import { Boxes, CaseSensitive, ChartColumn, FolderTree, ImageIcon, LogOut, Package, Palette, Settings, Sparkles, Store } from "lucide-react";
 
 const TABS = [
   ["/admin/productos", Package, "Productos"],
@@ -11,9 +11,9 @@ const TABS = [
   ["/admin/disponibilidad", Boxes, "Disponibilidad"],
   ["/admin/categorias", FolderTree, "Categorías"],
   ["/admin/diseno", Palette, "Diseño y textos"],
+  ["/admin/textos", CaseSensitive, "Textos"],
   ["/admin/configuracion", Settings, "Configuración"],
   ["/admin/estadisticas", ChartColumn, "Estadísticas"],
-  ["/admin/textos", History, "Textos"],
   ...(SHOW_GAME ? ([["/admin/saggio", null, "sagg.io"]] as const) : []),
 ] as const;
 
