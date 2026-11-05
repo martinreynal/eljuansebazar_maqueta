@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDownUp, ArrowRight, Check, ChevronDown, FileDown, Filter, Search, SearchX, X } from "lucide-react";
 import { AVAILABILITY, inCategory, money, priceShown, searchable, waLink } from "@/lib/format";
@@ -100,7 +100,6 @@ const CATEGORY_IMG = new Set(["vajilla-blanca", "gres", "vajilla-decorada", "pla
 
 export function CatalogClient({ products, categories, settings, base, preset, group, title }: Props) {
   const params = useSearchParams();
-  const router = useRouter();
   const pathname = usePathname();
   const q = params.get("q") ?? "";
   // ?cat=slug1,slug2 preselecciona categorías (accesos de la portada)
@@ -152,7 +151,9 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
     if (same(cats, defCats) || (railGroup !== "todo" && same(cats, idsOf(railGroup)))) sp.delete("cat");
     else sp.set("cat", categories.filter((c) => cats.includes(c.id)).map((c) => c.slug).join(","));
     const url = `${pathname}${sp.toString() ? `?${sp}` : ""}`;
-    if (url !== `${window.location.pathname}${window.location.search}`) router.replace(url, { scroll: false });
+    // replaceState (y no router.replace): cambia la dirección sin volver a pedir la página al servidor,
+    // que a veces mostraba el esqueleto de carga un instante y hacía saltar la página hacia arriba.
+    if (url !== `${window.location.pathname}${window.location.search}`) window.history.replaceState(null, "", url);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [railGroup, cats]);
 
@@ -198,7 +199,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
   const setQ = (v: string) => {
     const sp = new URLSearchParams(params.toString());
     if (v) sp.set("q", v); else sp.delete("q");
-    router.replace(`${pathname}${sp.toString() ? `?${sp}` : ""}`, { scroll: false });
+    window.history.replaceState(null, "", `${pathname}${sp.toString() ? `?${sp}` : ""}`);
   };
 
   const results = useMemo(() => {
@@ -278,7 +279,9 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
     if (adding && base.length === 0) {
       setTimeout(() => {
         const el = document.querySelector(".fbar");
-        if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 96, behavior: "smooth" });
+        // Solo hacia abajo: si los productos ya están a la vista o más arriba, no mover la página
+        const top = el ? el.getBoundingClientRect().top : 0;
+        if (el && top > 120) window.scrollTo({ top: top + window.scrollY - 96, behavior: "smooth" });
       }, 80);
     }
   };
