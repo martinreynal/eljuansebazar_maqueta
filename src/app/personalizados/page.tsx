@@ -22,7 +22,7 @@ const BRAND_WORKS: { title: string; sku: string; tech: string; img: string; mock
 ];
 
 export default async function CustomPage() {
-  const { settings, products } = await getStore();
+  const { settings, products, categories } = await getStore();
   return (
     <div className="wrap">
       <section className="sec" id="personalizados" aria-labelledby="h-custom">
@@ -39,14 +39,15 @@ export default async function CustomPage() {
           <div className="bs-grid">
             {BRAND_WORKS.map((w, i) => {
               const p = products.find((x) => x.sku === w.sku);
+              const c = p ? categories.find((x) => x.id === p.category_id) : undefined;
               const body = (
                 <>
                   <BrandMock img={w.img} alt={`${w.title} personalizados con logo`} mock={w.mock} offset={i * 4} />
-                  <span className="bs-meta"><b>{w.title}</b><small className="mono">{w.sku}</small></span>
+                  <span className="bs-meta"><b>{w.title}</b>{c && <small>Ver {c.name.toLowerCase()}</small>}</span>
                   <span className="bs-pill">{w.tech}</span>
                 </>
               );
-              return p ? <Link key={w.sku} className="bs-card" href={`/producto/${p.slug}`}>{body}</Link> : <div key={w.sku} className="bs-card">{body}</div>;
+              return c ? <Link key={w.sku} className="bs-card" href={`/categoria/${c.slug}`}>{body}</Link> : <div key={w.sku} className="bs-card">{body}</div>;
             })}
           </div>
         </div>
