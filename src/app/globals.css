@@ -2168,3 +2168,7 @@ html,body{overflow-x:clip}
 .cl-del{opacity:.5}
 .cl-item:hover .cl-del{opacity:1}
 @media (max-width:640px){.cl-item{grid-template-columns:40px minmax(0,1fr) auto}.cl-dot{display:none}}
+
+/* Mobiliario: 6 subcategorías de a 3 por fila */
+.crail-track.g-mobiliario{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:860px){.crail-track.g-mobiliario{grid-template-columns:repeat(2,minmax(0,1fr))}}

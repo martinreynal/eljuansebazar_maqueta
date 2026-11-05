@@ -36,6 +36,8 @@ const MAT_WORDS: [string, RegExp][] = [
 /** Material principal para ordenar: lo tapizado y lo tejido mandan sobre la estructura (ej.: «Tapizada · patas de metal» → Tapizado). */
 const MAT_ORDER = ["Tapizado", "Cuero", "Rattan y esterilla", "Plástico", "Mármol", "Madera", "Hierro", "Aluminio", "Metal", "Acero inoxidable", "Gres", "Porcelana", "Cerámica", "Vidrio", "Bambú"];
 const matRank = (mats: string[]) => { const r = mats.map((m) => MAT_ORDER.indexOf(m)).filter((i) => i >= 0); return r.length ? Math.min(...r) : MAT_ORDER.length; };
+/** Tapas y bases de mesa («Tapa Camerino», «Base Vinci») van después de las mesas armadas. */
+const kindRank = (p: Product) => (/^tapa \S+$/i.test(p.name) ? 1 : /^base \S+$/i.test(p.name) ? 2 : 0);
 const matsOf = (p: Product) => { const t = norm(`${p.materials} ${p.name} ${p.description.split(".").slice(0, 2).join(" ")}`); return MAT_WORDS.filter(([, r]) => r.test(t)).map(([m]) => m); };
 
 /** Color o tono, según el nombre y la descripción. */
@@ -238,8 +240,8 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
       : sort === "precio-asc" ? (a.price ?? 0) - (b.price ?? 0)
       : sort === "precio-desc" ? (b.price ?? 0) - (a.price ?? 0)
       : sort === "material"
-        // Por material (tapizado, tejido, madera, metal…); dentro de cada material, las tapas primero y luego lo más nuevo
-        ? matRank(meta.get(a.id)?.mats ?? []) - matRank(meta.get(b.id)?.mats ?? []) || Number(/^tapa\b/i.test(b.name)) - Number(/^tapa\b/i.test(a.name)) || b.created_at.localeCompare(a.created_at)
+        // En Mesas: primero las mesas, después las tapas y al final las bases; en todo lo demás, por material (tapizado, tejido, madera, metal…) y lo más nuevo primero
+        ? kindRank(a) - kindRank(b) || matRank(meta.get(a.id)?.mats ?? []) - matRank(meta.get(b.id)?.mats ?? []) || b.created_at.localeCompare(a.created_at)
       : b.created_at.localeCompare(a.created_at);
     r.sort(cmp);
     const i = r.findIndex((p) => p.sku === exact);
@@ -338,7 +340,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
         })}
       </div>
       {railGroup !== "todo" && <div className="crail">
-        <div className="crail-track" ref={railRef} role="group" aria-label="Categorías (podés elegir varias)" style={{ ["--n" as string]: catTiles.length }}>
+        <div className={`crail-track g-${railGroup}`} ref={railRef} role="group" aria-label="Categorías (podés elegir varias)" style={{ ["--n" as string]: catTiles.length }}>
           {catTiles.map((c) => {
             const on = subPicked && cats.includes(c.id);
             const img = CATEGORY_IMG.has(c.slug) ? `/categorias/${COVER_FILE[c.slug] ?? c.slug}.jpg` : mediaUrl(c.image_path) ?? mediaUrl(products.find((p) => inCategory(p, c))?.images[0]);
