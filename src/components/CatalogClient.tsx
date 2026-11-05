@@ -18,7 +18,7 @@ const norm = (t: string) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").t
 /** Tipo de producto, deducido del nombre. */
 const TYPES: [string, RegExp][] = [
   ["Vasos", /\bvasos?\b/], ["Copas", /\bcopas?\b/], ["Tazas y mugs", /\b(tazas?|mugs?|pocillos?)\b/],
-  ["Sillas", /^silla\b/], ["Sillones y sofás", /^(sillon|sofa)/], ["Banquetas", /^(banqueta|banquito)/], ["Mesas", /^mesa\b/],
+  ["Bases y tapas de mesa", /^(base|tapa) \S+$/], ["Sillas", /^silla\b/], ["Sillones y sofás", /^(sillon|sofa)/], ["Banquetas", /^(banqueta|banquito)/], ["Mesas", /^mesa\b/],
   ["Boxes y bancos", /^box\b/], ["Reposeras y camastros", /^(reposera|camastro|daybed)/],
   ["Cubiertos y cuchillos", /^(cubiertos|cuchillo|tenedor|cuchara|cucharita|trinche|pinza)/],
   ["Platos", /^(plato|platito)/], ["Bowls", /^(bowl|bol)\b/], ["Teteras", /^tetera/], ["Bandejas y bases", /^(bandeja|base)\b/],
