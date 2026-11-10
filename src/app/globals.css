@@ -2178,3 +2178,5 @@ html,body{overflow-x:clip}
 .media-fill.media-rot > img{object-fit:contain!important;inset:auto!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%) rotate(var(--rot))}
 .media-fill.media-rot-q > img{width:100cqh!important;height:100cqw!important}
 .main-img .media-fill.media-rot > img{padding:4%}
+/* Fotos giradas: al pasar el mouse mantienen el giro (solo el zoom suave, sin que la foto gire) */
+.pc:hover .pc-media .media-fill.media-rot > img,.card:hover .card-media .media-fill.media-rot > img{transform:translate(-50%,-50%) rotate(var(--rot)) scale(1.03)}
