@@ -12,8 +12,7 @@ import { GROUPS, groupByKey, groupHref, groupOf } from "@/lib/groups";
 import type { Availability, Category, CategoryGroup, Product, Settings } from "@/lib/types";
 import { ProductGrid } from "./ProductCard";
 import { WaLink } from "./WaLink";
-
-const norm = (t: string) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+import { defaultCompare, matsOf, norm } from "@/lib/product-order";
 
 /** Tipo de producto, deducido del nombre. */
 const TYPES: [string, RegExp][] = [
@@ -25,28 +24,6 @@ const TYPES: [string, RegExp][] = [
   ["Palitos", /^(palitos|apoya)/], ["Sets de vajilla", /^(set|vajilla|coleccion|linea|gres)\b/],
 ];
 const typeOf = (p: Product) => { const n = norm(p.name); return TYPES.find(([, r]) => r.test(n))?.[0] ?? "Otros"; };
-
-/** Materiales: los cargados en el producto más los que nombra la descripción. */
-const MAT_WORDS: [string, RegExp][] = [
-  ["Gres", /\bgres\b/], ["Porcelana", /porcelana/], ["Cerámica", /ceramic/], ["Vidrio", /vidrio|cristal/], ["Acero inoxidable", /acero/],
-  ["Madera", /madera|nogal|roble|teca|olivo/], ["Bambú", /bambu/], ["Tapizado", /tapizad|capitone|terciopelo|acanalad/], ["Cuero", /cuero/],
-  ["Rattan y esterilla", /rat+an|tejid|cuerda|esterilla|mimbre/], ["Aluminio", /aluminio/], ["Mármol", /marmol/], ["Hierro", /hierro|fundicion/],
-  ["Metal", /\bmetal|tolix/], ["Plástico", /polipropileno|plastic/],
-];
-/** Material principal para ordenar: lo tapizado y lo tejido mandan sobre la estructura (ej.: «Tapizada · patas de metal» → Tapizado). */
-const MAT_ORDER = ["Tapizado", "Cuero", "Rattan y esterilla", "Plástico", "Mármol", "Madera", "Hierro", "Aluminio", "Metal", "Acero inoxidable", "Gres", "Porcelana", "Cerámica", "Vidrio", "Bambú"];
-const matRank = (mats: string[]) => { const r = mats.map((m) => MAT_ORDER.indexOf(m)).filter((i) => i >= 0); return r.length ? Math.min(...r) : MAT_ORDER.length; };
-/**
- * Orden por tipo dentro de una categoría:
- * - Cristalería: primero los vasos sueltos y después los sets y líneas.
- * - Mesas: primero las mesas armadas, después las tapas («Tapa Camerino») y al final las bases («Base Vinci»).
- */
-const kindRank = (p: Product) => {
-  const n = norm(p.name);
-  if (/^(set|linea)\b/.test(n) && /vaso|copa|vidrio|cristal/.test(n)) return 1;
-  return /^tapa \S+$/.test(n) ? 1 : /^base \S+$/.test(n) ? 2 : 0;
-};
-const matsOf = (p: Product) => { const t = norm(`${p.materials} ${p.name} ${p.description.split(".").slice(0, 2).join(" ")}`); return MAT_WORDS.filter(([, r]) => r.test(t)).map(([m]) => m); };
 
 /** Color o tono, según el nombre y la descripción. */
 const COLORS: [string, RegExp][] = [
@@ -248,8 +225,8 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
       : sort === "precio-asc" ? (a.price ?? 0) - (b.price ?? 0)
       : sort === "precio-desc" ? (b.price ?? 0) - (a.price ?? 0)
       : sort === "material"
-        // Primero por tipo (vasos sueltos antes que sets; mesas, tapas, bases) y después por material (tapizado, tejido, madera, metal…) y lo más nuevo primero
-        ? kindRank(a) - kindRank(b) || matRank(meta.get(a.id)?.mats ?? []) - matRank(meta.get(b.id)?.mats ?? []) || b.created_at.localeCompare(a.created_at)
+        // Orden manual del panel (Orden de visualización) y, para el resto, por tipo, material y lo más nuevo primero
+        ? defaultCompare(a, b, (p) => meta.get(p.id)?.mats ?? [])
       : b.created_at.localeCompare(a.created_at);
     r.sort(cmp);
     const i = r.findIndex((p) => p.sku === exact);
@@ -411,7 +388,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
 
       {showFilters && <div className="cat-full">
           {results.length ? (
-            <ProductGrid products={results} ctx={ctx} priorityFirst={4} />
+            <ProductGrid products={results} ctx={ctx} priorityFirst={4} cols={cats.length === 1 ? categories.find((c) => c.id === cats[0])?.grid_cols : null} />
           ) : (
             <div className="empty">
               <div className="ic"><SearchX /></div>

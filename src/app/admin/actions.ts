@@ -523,3 +523,49 @@ export async function deleteChangeNote(id: number): Promise<Result> {
     return fail(e);
   }
 }
+
+// ---------------------------------------------------------------- orden de visualización
+
+const DisplayOrder = z.object({
+  categoryId: z.string().uuid(),
+  ids: z.array(z.string().uuid()).max(1000),
+  cols: z.number().int().min(3).max(6),
+});
+
+/** Guarda el orden manual de los productos de una categoría (1, 2, 3…) y cuántos se ven por fila. */
+export async function saveDisplayOrder(input: z.input<typeof DisplayOrder>): Promise<Result> {
+  const parsed = DisplayOrder.safeParse(input);
+  if (!parsed.success) return zodFail(parsed.error);
+  const { categoryId, ids, cols } = parsed.data;
+  try {
+    const sb = await requireAdmin();
+    for (let i = 0; i < ids.length; i += 25) {
+      const res = await Promise.all(ids.slice(i, i + 25).map((id, k) => sb.from("products").update({ sort_order: i + k + 1 }).eq("id", id).eq("category_id", categoryId)));
+      const bad = res.find((r) => r.error);
+      if (bad?.error) return fail(bad.error);
+    }
+    const up = await sb.from("categories").update({ grid_cols: cols }).eq("id", categoryId);
+    if (up.error) return fail(up.error);
+    await logChange(sb, "Catálogo", `Orden de visualización guardado: ${await categoryName(sb, categoryId)}`, `${ids.length} productos · ${cols} por fila`);
+    refresh();
+    return { ok: true };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+/** Vuelve al orden automático (por tipo y material) en una categoría. */
+export async function resetDisplayOrder(categoryId: string): Promise<Result> {
+  if (!z.string().uuid().safeParse(categoryId).success) return { ok: false, error: "Datos inválidos." };
+  try {
+    const sb = await requireAdmin();
+    const { error } = await sb.from("products").update({ sort_order: null }).eq("category_id", categoryId);
+    if (error) return fail(error);
+    await sb.from("categories").update({ grid_cols: null }).eq("id", categoryId);
+    await logChange(sb, "Catálogo", `Orden de visualización: ${await categoryName(sb, categoryId)} vuelve al orden automático`);
+    refresh();
+    return { ok: true };
+  } catch (e) {
+    return fail(e);
+  }
+}

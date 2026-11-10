@@ -59,9 +59,9 @@ export function ProductCard({ p, ctx, priority = false }: { p: Product; ctx: Car
   );
 }
 
-export function ProductGrid({ products, ctx, priorityFirst = 0, rail = false }: { products: Product[]; ctx: CardCtx; priorityFirst?: number; rail?: boolean }) {
+export function ProductGrid({ products, ctx, priorityFirst = 0, rail = false, cols }: { products: Product[]; ctx: CardCtx; priorityFirst?: number; rail?: boolean; cols?: number | null }) {
   return (
-    <div className={rail ? "grid rail" : "grid"}>
+    <div className={rail ? "grid rail" : cols ? "grid grid-cols" : "grid"} style={cols ? ({ ["--cols" as string]: cols } as React.CSSProperties) : undefined}>
       {products.map((p, i) => (
         <ProductCard key={p.id} p={p} ctx={ctx} priority={i < priorityFirst} />
       ))}

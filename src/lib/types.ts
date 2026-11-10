@@ -28,6 +28,8 @@ export type Product = {
   model_url: string | null;
   /** Nueva incorporación pendiente de aprobación (no se muestra en la tienda). */
   staged?: boolean;
+  /** Posición manual dentro de su categoría (panel · Orden de visualización); vacío = orden automático. */
+  sort_order?: number | null;
   placeholder: Placeholder | null;
   created_at: string;
 };
@@ -42,6 +44,8 @@ export type Category = {
   is_offers: boolean;
   /** Grupo al que pertenece (Bazar o Mobiliario). */
   grupo?: CategoryGroup | null;
+  /** Productos por fila en el catálogo (3 a 6); vacío = el predeterminado. */
+  grid_cols?: number | null;
 };
 export type CategoryGroup = "bazar" | "mobiliario";
 

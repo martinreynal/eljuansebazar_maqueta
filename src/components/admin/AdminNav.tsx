@@ -2,11 +2,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SHOW_GAME } from "@/lib/features";
-import { Boxes, CaseSensitive, ChartColumn, FolderTree, ImageIcon, LogOut, Package, Palette, Settings, Sparkles, Store } from "lucide-react";
+import { ArrowDownUp, Boxes, CaseSensitive, ChartColumn, FolderTree, ImageIcon, LogOut, Package, Palette, Settings, Sparkles, Store } from "lucide-react";
 
 const TABS = [
   ["/admin/productos", Package, "Productos"],
   ["/admin/nuevas", Sparkles, "Nuevas incorporaciones"],
+  ["/admin/orden", ArrowDownUp, "Orden de visualización"],
   ["/admin/imagenes", ImageIcon, "Imágenes"],
   ["/admin/disponibilidad", Boxes, "Disponibilidad"],
   ["/admin/categorias", FolderTree, "Categorías"],
