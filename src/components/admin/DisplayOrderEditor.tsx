@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useMemo, useRef, useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { ArrowLeft, ArrowRight, Check, ExternalLink, GripVertical, Loader2, RotateCcw, Save } from "lucide-react";
 import { resetDisplayOrder, saveDisplayOrder } from "@/app/admin/actions";
 import { GROUPS, groupOf } from "@/lib/groups";
@@ -26,7 +26,7 @@ export function DisplayOrderEditor({ categories, products, settings, base }: { c
   const [drag, setDrag] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [pending, start] = useTransition();
-  const lastOver = useRef<string | null>(null);
+  const [over, setOver] = useState<string | null>(null);
 
   const byId = useMemo(() => new Map(products.map((p) => [p.id, p])), [products]);
   const ctx = useMemo(() => ({ settings, base, categories }), [settings, base, categories]);
@@ -42,12 +42,16 @@ export function DisplayOrderEditor({ categories, products, settings, base }: { c
     setOrder((o) => { const n = [...o]; const [x] = n.splice(from, 1); n.splice(to, 0, x); return n; });
     setDirty(true); setMsg(null);
   };
+  /** Intercambia dos productos: cada uno toma la posición del otro y el resto no se mueve. */
+  const swap = (a: string, b: string) => {
+    if (a === b) return;
+    setOrder((o) => { const n = [...o]; const i = n.indexOf(a), j = n.indexOf(b); if (i < 0 || j < 0) return o; [n[i], n[j]] = [n[j], n[i]]; return n; });
+    setDirty(true); setMsg(null);
+  };
   const onOver = (e: React.DragEvent, id: string) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
-    if (!drag || id === drag || lastOver.current === id) return;
-    lastOver.current = id;
-    move(order.indexOf(drag), order.indexOf(id));
+    if (drag && id !== drag && over !== id) setOver(id);
   };
   const save = () =>
     start(async () => {
@@ -74,7 +78,7 @@ export function DisplayOrderEditor({ categories, products, settings, base }: { c
       <div className="adm-h">
         <div>
           <h2>Orden de visualización</h2>
-          <p>Arrastrá los productos para ordenarlos como se van a ver en el catálogo. El número indica su posición.</p>
+          <p>Arrastrá un producto sobre otro para intercambiar sus lugares. El número indica su posición en el catálogo.</p>
         </div>
         {cat && <a className="btn btn-ghost btn-sm" href={`/categoria/${cat.slug}`} target="_blank" rel="noreferrer"><ExternalLink />Ver en la web</a>}
       </div>
@@ -111,12 +115,13 @@ export function DisplayOrderEditor({ categories, products, settings, base }: { c
           return (
             <div
               key={id}
-              className={`ord-item${drag === id ? " dragging" : ""}`}
+              className={`ord-item${drag === id ? " dragging" : ""}${over === id && drag && drag !== id ? " target" : ""}`}
               draggable
-              onDragStart={(e) => { setDrag(id); lastOver.current = null; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", id); }}
+              onDragStart={(e) => { setDrag(id); setOver(null); e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", id); }}
               onDragOver={(e) => onOver(e, id)}
-              onDrop={(e) => { e.preventDefault(); setDrag(null); }}
-              onDragEnd={() => setDrag(null)}
+              onDragLeave={() => { if (over === id) setOver(null); }}
+              onDrop={(e) => { e.preventDefault(); if (drag) swap(drag, id); setDrag(null); setOver(null); }}
+              onDragEnd={() => { setDrag(null); setOver(null); }}
             >
               <span className="ord-num" aria-label={`Posición ${i + 1}`}>{i + 1}</span>
               <span className="ord-grip" aria-hidden><GripVertical /></span>

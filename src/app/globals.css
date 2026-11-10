@@ -2210,3 +2210,5 @@ html,body{overflow-x:clip}
 @media (max-width:860px){.ord-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.ord-move{opacity:1}.ord-actions{margin-left:0}}
 .ord-num{z-index:5}
 .ord-card .pc-tag{left:50px!important}
+.ord-item.target{box-shadow:0 0 0 3px var(--terracotta, #C96F4A);transform:scale(1.02)}
+.ord-item.target .ord-num{background:var(--terracotta, #C96F4A)}
