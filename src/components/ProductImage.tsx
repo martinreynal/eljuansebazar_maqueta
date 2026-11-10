@@ -1,15 +1,24 @@
 import Image from "next/image";
 import { isLocalImage, mediaUrl, miniImage } from "@/lib/env";
+import { rotationOf } from "@/lib/rotation";
 import type { Product } from "@/lib/types";
 import { Art } from "./Art";
 
 /** Foto del producto (si se cargó) o dibujo ilustrativo. */
 export function ProductImage({
   p, view = 0, label = true, sizes = "(max-width: 720px) 50vw, 25vw", priority = false, full = false, hiRes = false,
-}: { p: Pick<Product, "images" | "placeholder" | "name">; view?: number; label?: boolean; sizes?: string; priority?: boolean; full?: boolean; hiRes?: boolean }) {
+}: { p: Pick<Product, "images" | "placeholder" | "name"> & { sku?: string }; view?: number; label?: boolean; sizes?: string; priority?: boolean; full?: boolean; hiRes?: boolean }) {
   const raw = p.images.length ? p.images[Math.min(view, p.images.length - 1)] : null;
   const local = raw ? isLocalImage(raw) : false;
   const src = raw ? (local && !full && !hiRes ? miniImage(raw) : mediaUrl(raw)) : null;
+  const rot = rotationOf(p.sku);
+  // Fotos giradas (ej.: cuchillos apuntando hacia arriba): se rota la imagen dentro de su cuadro, sin recortarla
+  if (src && rot)
+    return (
+      <span className={`media-fill media-rot${Math.abs(rot) === 90 ? " media-rot-q" : ""}`} style={{ ["--rot" as string]: `${rot}deg` }}>
+        <Image src={src} alt={p.name} fill sizes={sizes} priority={priority} unoptimized={local} />
+      </span>
+    );
   // Ficha de producto con foto del catálogo: se muestra a su tamaño real como máximo (sin estirarla), para que no se vea borrosa
   if (src && local && full)
     return (

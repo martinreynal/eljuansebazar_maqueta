@@ -2172,3 +2172,9 @@ html,body{overflow-x:clip}
 /* Mobiliario: 6 subcategorías de a 3 por fila */
 .crail-track.g-mobiliario{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media (max-width:860px){.crail-track.g-mobiliario{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Fotos giradas por producto (lib/rotation.ts): la imagen gira dentro de su cuadro sin recortarse */
+.media-fill.media-rot{display:block;container-type:size;overflow:hidden}
+.media-fill.media-rot > img{object-fit:contain!important;inset:auto!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%) rotate(var(--rot))}
+.media-fill.media-rot-q > img{width:100cqh!important;height:100cqw!important}
+.main-img .media-fill.media-rot > img{padding:4%}
