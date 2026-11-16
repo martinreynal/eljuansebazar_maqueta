@@ -14,7 +14,7 @@ import { ProductGrid } from "./ProductCard";
 import { WaLink } from "./WaLink";
 import { defaultCompare, matsOf, norm } from "@/lib/product-order";
 import { buildIndex, matches, relevance, skuQuery } from "@/lib/product-search";
-import { CHAIR_KEYS, CHAIR_TYPES, CHAIRS_SLUG, chairTypesOf, isChair, type ChairType } from "@/lib/chair-types";
+import { SUBNAVS } from "@/lib/subnav";
 
 /** Tipo de producto, deducido del nombre. */
 const TYPES: [string, RegExp][] = [
@@ -88,8 +88,8 @@ const AV_FILTERS: Availability[] = ["disponible", "consultar", "sin_stock"];
 
 /** Categorías con foto preparada (public/categorias). */
 /** Archivo de portada cuando difiere del slug (versiones nuevas). */
-const COVER_FILE: Record<string, string> = { sets: "sets-3", cafe: "cafe-2" };
-const CATEGORY_IMG = new Set(["vajilla-blanca", "vajilla-decorada", "platos-y-bowls", "vajilla-oriental", "cubiertos", "cristaleria", "cafe", "sofas-y-sillones", "banquetas", "boxes-y-bancos", "mesas", "sets"]);
+const COVER_FILE: Record<string, string> = { sets: "sets-3", cafe: "cafe-2", vajilla: "vajilla-blanca", "bandejas-y-servicio": "platos-y-bowls" };
+const CATEGORY_IMG = new Set(["vajilla", "bandejas-y-servicio", "vajilla-blanca", "vajilla-decorada", "platos-y-bowls", "vajilla-oriental", "cubiertos", "cristaleria", "cafe", "sofas-y-sillones", "banquetas", "boxes-y-bancos", "mesas", "sets"]);
 
 export function CatalogClient({ products, categories, settings, base, preset, group, title }: Props) {
   const params = useSearchParams();
@@ -125,13 +125,14 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
   const [min, setMin] = useState("");
   const [max, setMax] = useState("");
   const [sort, setSort] = useState("material");
-  // Sección Sillas: tipo de silla elegido en la navegación visual (?tipo=), combinable con el resto de los filtros
-  const [chairType, setChairType] = useState<ChairType | null>(() => { const t = params.get("tipo"); return t && (CHAIR_KEYS as string[]).includes(t) ? (t as ChairType) : null; });
+  // Navegación por tipo (Sillas, Vajilla): tarjetas con foto cuando esa categoría es la única elegida (?tipo=), combinable con los filtros
   const catSlug = useMemo(() => { const m = new Map(categories.map((c) => [c.id, c.slug])); return (p: Product) => m.get(p.category_id ?? ""); }, [categories]);
-  const chairsCat = categories.find((c) => c.slug === CHAIRS_SLUG);
-  const chairMode = !!chairsCat && cats.length === 1 && cats[0] === chairsCat.id;
-  const chairTypes = useMemo(() => new Map(products.map((p) => [p.id, isChair(p, catSlug(p)) ? chairTypesOf(p, catSlug(p)) : null])), [products, catSlug]);
-  const activeChair = chairMode ? chairType : null;
+  const subCat = cats.length === 1 ? categories.find((c) => c.id === cats[0] && SUBNAVS[c.slug]) : undefined;
+  const subNav = subCat ? SUBNAVS[subCat.slug] : null;
+  const chairMode = !!subNav;
+  const [chairType, setChairType] = useState<string | null>(() => params.get("tipo"));
+  const chairTypes = useMemo(() => new Map(products.map((p) => [p.id, subNav && subNav.member(p, catSlug(p)) ? subNav.typesOf(p, catSlug(p)) : null])), [products, catSlug, subNav]);
+  const activeChair = subNav && chairType && subNav.types.some((t) => t.key === chairType) ? chairType : null;
   const ctx = { settings, base, categories };
 
   useEffect(() => {
@@ -305,7 +306,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
   const chips: { label: string; clear: () => void }[] = [
     ...(q ? [{ label: `“${q}”`, clear: () => setQ("") }] : []),
     ...(fullGroup && !explicit ? [{ label: fullGroup.name, clear: () => pickGroup("todo") }] : cats.map((id) => ({ label: categories.find((c) => c.id === id)?.name ?? id, clear: () => pickCat(id) }))),
-    ...(activeChair ? [{ label: CHAIR_TYPES.find((t) => t.key === activeChair)!.label, clear: () => setChairType(null) }] : []),
+    ...(activeChair && subNav ? [{ label: subNav.types.find((t) => t.key === activeChair)!.label, clear: () => setChairType(null) }] : []),
     ...avail.map((a) => ({ label: AVAILABILITY[a], clear: () => setAvail((v) => v.filter((x) => x !== a)) })),
     ...types.map((t) => ({ label: t, clear: () => setTypes((v) => v.filter((x) => x !== t)) })),
     ...mats.map((t) => ({ label: t, clear: () => setMats((v) => v.filter((x) => x !== t)) })),
@@ -316,6 +317,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
   ];
   const clearAll = () => { setCats([]); setExplicit(false); setRailGroup("todo"); setAvail([]); setTypes([]); setMats([]); setColors([]); setExtra([]); setMin(""); setMax(""); setChairType(null); if (q) setQ(""); };
 
+  const catCover = (c: Category) => (CATEGORY_IMG.has(c.slug) ? `/categorias/${COVER_FILE[c.slug] ?? c.slug}.jpg` : mediaUrl(c.image_path) ?? mediaUrl(products.find((p) => inCategory(p, c))?.images[0]));
   const presetCat = preset ? categories.find((c) => c.id === preset) : undefined;
   const presetGroup = presetCat ? groupByKey(groupOf(presetCat) ?? "") : undefined;
   const crumbs = preset
@@ -351,7 +353,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
         <div className={`crail-track g-${railGroup}`} ref={railRef} role="group" aria-label="Categorías (podés elegir varias)" style={{ ["--n" as string]: catTiles.length }}>
           {catTiles.map((c) => {
             const on = subPicked && cats.includes(c.id);
-            const img = CATEGORY_IMG.has(c.slug) ? `/categorias/${COVER_FILE[c.slug] ?? c.slug}.jpg` : mediaUrl(c.image_path) ?? mediaUrl(products.find((p) => inCategory(p, c))?.images[0]);
+            const img = catCover(c);
             return (
               <button key={c.id} type="button" aria-pressed={on} className={`crail-tile ${on ? "on" : ""}`} onClick={() => pickCat(c.id)}>
                 <span className="crail-ph">{img && <img src={img} alt="" loading="lazy" decoding="async" />}</span>
@@ -363,18 +365,18 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
       </div>}
 
       {/* Barra de búsqueda y filtros */}
-      {chairMode && chairsCat && (
-        <section className="chair-nav" aria-label="Tipos de silla">
+      {subNav && subCat && (
+        <section className="chair-nav" aria-label={`Tipos de ${subCat.name.toLowerCase()}`}>
           <div className="chair-nav-head">
-            <h2>{chairsCat.name}</h2>
-            <p>Soluciones de mobiliario para restaurantes, hoteles y espacios gastronómicos.</p>
+            <h2>{subCat.name}</h2>
+            <p>{subNav.line}</p>
           </div>
-          <div className="chair-nav-row" role="radiogroup" aria-label="Tipo de silla">
-            {[{ key: null, label: "Todas las sillas", img: mediaUrl(chairsCat.image_path) ?? mediaUrl(products.find((p) => p.category_id === chairsCat.id)?.images[0]) }, ...CHAIR_TYPES.map((t) => {
+          <div className="chair-nav-row" role="radiogroup" aria-label={`Tipo de ${subCat.name.toLowerCase()}`} style={{ ["--n" as string]: subNav.types.length + 1 }}>
+            {[{ key: null as string | null, label: subNav.allLabel, img: catCover(subCat), n: 1 }, ...subNav.types.map((t) => {
               const list = products.filter((p) => chairTypes.get(p.id)?.has(t.key));
-              const rep = list.find((p) => p.sku === t.rep) ?? list[0];
-              return { key: t.key as ChairType | null, label: t.label, img: mediaUrl(rep?.images[0]), n: list.length };
-            }).filter((t) => t.n)].map((t) => {
+              const pick = list.find((p) => p.sku === t.rep) ?? list[0];
+              return { key: t.key as string | null, label: t.label, img: mediaUrl(pick?.images[0]), n: list.length };
+            })].filter((t) => t.n).map((t) => {
               const on = activeChair === t.key;
               return (
                 <button key={t.key ?? "todas"} type="button" role="radio" aria-checked={on} className={`chair-card${on ? " on" : ""}`} onClick={() => setChairType(t.key)}>

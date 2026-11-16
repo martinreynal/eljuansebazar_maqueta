@@ -1,0 +1,7 @@
+-- Nueva estructura del catálogo (16/11/2026). Respaldo previo en backup_products_categoria_20261116 y backup_categories_20261116.
+-- Mobiliario: Sillas, Sillones y sofás, Banquetas, Mesas, Boxes y bancos corridos, Exterior.
+-- Bazar: Vajilla, Cristalería, Cubiertos, Café y té, Cocina oriental y sushi, Bandejas y servicio, Accesorios de mesa,
+--        Coctelería y bar, Buffet y autoservicio, Utensilios de cocina.
+-- Vajilla junta Vajilla blanca, de gres, decorada y Platos/bowls (cada producto conserva su tipo en chair_tags: blanca, gres, decorada).
+-- Exterior junta «sillas y mesas» con «lounge y reposeras». Se desactivan las categorías viejas y Sets (vacía).
+-- (Aplicada con SQL directo; ver change_log del mismo día.)
