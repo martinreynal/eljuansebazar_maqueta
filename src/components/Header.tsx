@@ -69,13 +69,14 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
   const onSearch = (v: string) => {
     setQ(v);
     if (debounce.current) clearTimeout(debounce.current);
+    // En el catálogo se actualiza la búsqueda al tipear (en todo el catálogo, sin las categorías elegidas antes);
+    // desde otras páginas se espera a que termine de escribir para no abrir el catálogo con la primera letra.
+    const onCatalog = pathname === "/catalogo";
     debounce.current = setTimeout(() => {
-      const sp = new URLSearchParams(pathname === "/catalogo" ? params.toString() : "");
-      if (v.trim()) sp.set("q", v); else sp.delete("q");
-      const url = `/catalogo${sp.toString() ? `?${sp}` : ""}`;
-      if (pathname === "/catalogo") router.replace(url, { scroll: false });
+      const url = `/catalogo${v.trim() ? `?q=${encodeURIComponent(v)}` : ""}`;
+      if (onCatalog) { window.dispatchEvent(new Event("ejb:search-all")); window.history.replaceState(null, "", url); }
       else if (v.trim()) router.push(url);
-    }, 180);
+    }, onCatalog ? 180 : 450);
   };
   const searchBox = (id: string, ref?: React.Ref<HTMLInputElement>, autoFocus = false) => (
     <form className="search" role="search" onSubmit={(e) => { e.preventDefault(); onSearch(q); (e.currentTarget.querySelector("input") as HTMLInputElement)?.blur(); }}>

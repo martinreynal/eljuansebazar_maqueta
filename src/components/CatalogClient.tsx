@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDownUp, ArrowRight, Check, ChevronDown, FileDown, Filter, Search, SearchX, X } from "lucide-react";
-import { AVAILABILITY, inCategory, money, priceShown, searchable, waLink } from "@/lib/format";
+import { AVAILABILITY, inCategory, money, priceShown, waLink } from "@/lib/format";
 /* eslint-disable @next/next/no-img-element */
 import { track } from "@/lib/track";
 import { SHOW_3D } from "@/lib/features";
@@ -13,6 +13,7 @@ import type { Availability, Category, CategoryGroup, Product, Settings } from "@
 import { ProductGrid } from "./ProductCard";
 import { WaLink } from "./WaLink";
 import { defaultCompare, matsOf, norm } from "@/lib/product-order";
+import { buildIndex, matches, relevance, skuQuery } from "@/lib/product-search";
 
 /** Tipo de producto, deducido del nombre. */
 const TYPES: [string, RegExp][] = [
@@ -184,8 +185,15 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
     window.addEventListener("scroll", save, { passive: true });
     return () => { window.removeEventListener("scroll", save); cancelAnimationFrame(raf); };
   }, []);
+  // El buscador del encabezado busca en todo el catálogo: suelta las categorías elegidas
+  useEffect(() => {
+    const all = () => { setCats([]); setExplicit(false); setRailGroup("todo"); };
+    window.addEventListener("ejb:search-all", all);
+    return () => window.removeEventListener("ejb:search-all", all);
+  }, []);
   // Datos derivados para los filtros (tipo, material, color)
   const meta = useMemo(() => new Map(products.map((p) => [p.id, { type: typeOf(p), mats: matsOf(p), colors: colorsOf(p) }])), [products]);
+  const sIdx = useMemo(() => buildIndex(products, categories), [products, categories]);
 
   const setQ = (v: string) => {
     const sp = new URLSearchParams(params.toString());
@@ -194,17 +202,16 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
   };
 
   const results = useMemo(() => {
-    const words = searchable(q).split(" ").filter(Boolean);
-    const exact = q.trim().toUpperCase();
+    const qq = q.trim();
+    // Si se busca un código exacto (ej.: «CER-02» o «cer02»), se muestra solo ese producto
+    const sk = skuQuery(qq);
+    const exactHit = sk ? products.find((p) => sIdx.get(p.id)?.sku === sk) : undefined;
     const lo = parseInt(min.replace(/\D/g, "")) || 0;
     const hi = parseInt(max.replace(/\D/g, "")) || 0;
     const sel = categories.filter((c) => cats.includes(c.id));
     const r = products.filter((p) => {
-      if (words.length) {
-        const cat = categories.find((c) => c.id === p.category_id)?.name ?? "";
-        const hay = searchable(`${p.name} ${p.sku} ${cat} ${p.materials} ${p.variants.join(" ")} ${p.description}`);
-        if (!words.every((w) => hay.includes(w))) return false;
-      }
+      if (exactHit) return p.id === exactHit.id;
+      if (qq && !matches(sIdx, p, qq)) return false;
       if (sel.length && !sel.some((c) => inCategory(p, c))) return false;
       if (avail.length && !avail.includes(p.availability)) return false;
       const m = meta.get(p.id)!;
@@ -225,14 +232,15 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
       : sort === "precio-asc" ? (a.price ?? 0) - (b.price ?? 0)
       : sort === "precio-desc" ? (b.price ?? 0) - (a.price ?? 0)
       : sort === "material"
-        // Orden manual del panel (Orden de visualización) y, para el resto, por tipo, material y lo más nuevo primero
-        ? defaultCompare(a, b, (p) => meta.get(p.id)?.mats ?? [])
+        // Con búsqueda: lo más relevante primero (lo que lo dice en el nombre antes que en la descripción).
+        // Después, el orden manual del panel (Orden de visualización) y, para el resto, por tipo, material y lo más nuevo primero
+        ? (qq ? relevance(sIdx, b, qq) - relevance(sIdx, a, qq) : 0) || defaultCompare(a, b, (p) => meta.get(p.id)?.mats ?? [])
       : b.created_at.localeCompare(a.created_at);
     r.sort(cmp);
-    const i = r.findIndex((p) => p.sku === exact);
-    if (i > 0) r.unshift(...r.splice(i, 1));
     return r;
-  }, [products, categories, settings, q, cats, avail, min, max, sort, meta, types, mats, colors, extra]);
+  }, [products, categories, settings, q, cats, avail, min, max, sort, meta, sIdx, types, mats, colors, extra]);
+  // Cuántos resultados habría buscando en todo el catálogo (para ofrecerlo cuando la categoría elegida no tiene ninguno)
+  const globalHits = useMemo(() => (q.trim() ? products.filter((p) => matches(sIdx, p, q.trim())).length : 0), [products, sIdx, q]);
 
   // Opciones con cantidad, calculadas sobre lo que queda con el resto de los filtros (categoría y búsqueda)
   const pool = useMemo(() => {
@@ -392,9 +400,19 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
           ) : (
             <div className="empty">
               <div className="ic"><SearchX /></div>
-              <h3>No encontramos productos con esos filtros</h3>
-              <p>{q ? `Probá con otra palabra o revisá la ortografía de “${q}”. También podés consultarnos: puede que lo tengamos aunque no esté en la web.` : "Probá quitando algún filtro."}</p>
+              {q && globalHits > 0 ? (
+                <>
+                  <h3>No hay “{q}” en lo que elegiste</h3>
+                  <p>{`Encontramos ${globalHits} producto${globalHits === 1 ? "" : "s"} con “${q}” en otras categorías.`}</p>
+                </>
+              ) : (
+                <>
+                  <h3>No encontramos productos con esos filtros</h3>
+                  <p>{q ? `Probá con otra palabra o revisá la ortografía de “${q}”. También podés consultarnos: puede que lo tengamos aunque no esté en la web.` : "Probá quitando algún filtro."}</p>
+                </>
+              )}
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
+                {q && globalHits > 0 && <button className="btn btn-dark" onClick={() => { setCats([]); setExplicit(false); setRailGroup("todo"); setAvail([]); setTypes([]); setMats([]); setColors([]); setExtra([]); setMin(""); setMax(""); }}>Ver los {globalHits} en todo el catálogo</button>}
                 <button className="btn btn-ghost" onClick={clearAll}>Quitar filtros</button>
                 <WaLink href={waLink(settings.whatsapp, q ? `Hola, ¿tienen ${q}?` : `Hola, quería hacer una consulta.`)} channel="general" className="btn btn-wa">Preguntar por WhatsApp</WaLink>
               </div>
