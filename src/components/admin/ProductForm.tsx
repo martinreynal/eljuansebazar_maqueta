@@ -7,6 +7,7 @@ import { deleteProduct, saveProduct, updateProductFlags, type ProductInputT } fr
 import { AVAILABILITY, TAGS, slugify } from "@/lib/format";
 import type { Category, Product } from "@/lib/types";
 import { ImageUploader } from "./ImageUploader";
+import { CHAIR_TYPES, chairTypesOf, isChair, type ChairType } from "@/lib/chair-types";
 
 const num = (s: string) => (s.trim() === "" ? null : Number(s.replace(/\./g, "").replace(",", ".")));
 
@@ -19,7 +20,7 @@ export function ProductForm({ product, categories }: { product: Product | null; 
     price: p?.price != null ? String(p.price) : "", old_price: p?.old_price != null ? String(p.old_price) : "",
     price_visible: p?.price_visible ?? true, availability: p?.availability ?? "disponible", stock: p?.stock != null ? String(p.stock) : "",
     tag: p?.tag ?? "", featured: p?.featured ?? false, visible: p?.visible ?? true, images: p?.images ?? [],
-    model_url: p?.model_url ?? "",
+    model_url: p?.model_url ?? "", chair_tags: (p?.chair_tags ?? []) as ChairType[],
   });
   const [err, setErr] = useState<{ text: string; field?: string } | null>(null);
   const [ok, setOk] = useState("");
@@ -37,7 +38,7 @@ export function ProductForm({ product, categories }: { product: Product | null; 
       id: p?.id, name: f.name, sku: f.sku, slug: f.slug || undefined, category_id: f.category_id, description: f.description, materials: f.materials,
       dimensions: f.dimensions, variants: f.variants.split(",").map((s) => s.trim()).filter(Boolean), price, old_price: Number.isNaN(old) ? null : old,
       price_visible: f.price_visible, availability: f.availability, stock, tag: f.tag, featured: f.featured, visible: f.visible, images: f.images,
-      model_url: f.model_url.trim() || null,
+      model_url: f.model_url.trim() || null, chair_tags: f.chair_tags,
     };
     start(async () => {
       const r = await saveProduct(input);
@@ -75,6 +76,31 @@ export function ProductForm({ product, categories }: { product: Product | null; 
           <div className="field full"><label htmlFor="pf-var">Colores o variantes</label><input className="input" id="pf-var" value={f.variants} onChange={(e) => set("variants", e.target.value)} placeholder="Ej: Blanco, Gris, Negro" /><span className="hint">Separadas por coma.</span></div>
         </div>
       </div>
+
+      {(() => {
+        // Tipos de silla (navegación de la sección Sillas): los que salen de la descripción vienen marcados; se pueden sumar otros a mano
+        const slug = categories.find((c) => c.id === f.category_id)?.slug;
+        const draft = { name: f.name, description: f.description, materials: f.materials, chair_tags: [] } as unknown as Product;
+        if (!isChair(draft, slug)) return null;
+        const auto = chairTypesOf(draft, slug);
+        return (
+          <div className="panel">
+            <h3>Tipos de silla</h3>
+            <p className="hint" style={{ margin: "0 0 10px" }}>Definen en qué tarjetas de la sección Sillas aparece. Una silla puede estar en varias.</p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 18px" }}>
+              {CHAIR_TYPES.map((t) => {
+                const isAuto = auto.has(t.key);
+                return (
+                  <label key={t.key} className="check" title={isAuto ? "Lo indica la descripción del producto" : undefined}>
+                    <input type="checkbox" checked={isAuto || f.chair_tags.includes(t.key)} disabled={isAuto} onChange={(e) => set("chair_tags", e.target.checked ? [...f.chair_tags, t.key] : f.chair_tags.filter((x) => x !== t.key))} />
+                    {t.label}{isAuto && <span className="hint"> (por la descripción)</span>}
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
 
       <div className="panel">
         <ImageUploader value={f.images} onChange={(v) => set("images", v)} folder="products" />

@@ -14,6 +14,7 @@ import { ProductGrid } from "./ProductCard";
 import { WaLink } from "./WaLink";
 import { defaultCompare, matsOf, norm } from "@/lib/product-order";
 import { buildIndex, matches, relevance, skuQuery } from "@/lib/product-search";
+import { CHAIR_KEYS, CHAIR_TYPES, CHAIRS_SLUG, chairTypesOf, isChair, type ChairType } from "@/lib/chair-types";
 
 /** Tipo de producto, deducido del nombre. */
 const TYPES: [string, RegExp][] = [
@@ -124,6 +125,13 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
   const [min, setMin] = useState("");
   const [max, setMax] = useState("");
   const [sort, setSort] = useState("material");
+  // Sección Sillas: tipo de silla elegido en la navegación visual (?tipo=), combinable con el resto de los filtros
+  const [chairType, setChairType] = useState<ChairType | null>(() => { const t = params.get("tipo"); return t && (CHAIR_KEYS as string[]).includes(t) ? (t as ChairType) : null; });
+  const catSlug = useMemo(() => { const m = new Map(categories.map((c) => [c.id, c.slug])); return (p: Product) => m.get(p.category_id ?? ""); }, [categories]);
+  const chairsCat = categories.find((c) => c.slug === CHAIRS_SLUG);
+  const chairMode = !!chairsCat && cats.length === 1 && cats[0] === chairsCat.id;
+  const chairTypes = useMemo(() => new Map(products.map((p) => [p.id, isChair(p, catSlug(p)) ? chairTypesOf(p, catSlug(p)) : null])), [products, catSlug]);
+  const activeChair = chairMode ? chairType : null;
   const ctx = { settings, base, categories };
 
   useEffect(() => {
@@ -142,12 +150,13 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
     if (railGroup === defGroup) sp.delete("g"); else sp.set("g", railGroup);
     if (same(cats, defCats) || (railGroup !== "todo" && same(cats, idsOf(railGroup)))) sp.delete("cat");
     else sp.set("cat", categories.filter((c) => cats.includes(c.id)).map((c) => c.slug).join(","));
+    if (activeChair) sp.set("tipo", activeChair); else sp.delete("tipo");
     const url = `${pathname}${sp.toString() ? `?${sp}` : ""}`;
     // replaceState (y no router.replace): cambia la dirección sin volver a pedir la página al servidor,
     // que a veces mostraba el esqueleto de carga un instante y hacía saltar la página hacia arriba.
     if (url !== `${window.location.pathname}${window.location.search}`) window.history.replaceState(null, "", url);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [railGroup, cats]);
+  }, [railGroup, cats, activeChair]);
 
   // Posición de scroll guardada por URL (se muestran todos los productos, sin «Cargar más»)
   const [restoreY, setRestoreY] = useState<number | null>(null);
@@ -160,7 +169,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
     } else if (preset && categories.some((c) => c.id === preset && !c.is_offers)) {
       // Entrando a una categoría (por ejemplo desde el menú): ir directo a los productos
       const go = () => {
-        const el = document.querySelector(".fbar");
+        const el = (document.querySelector(".chair-nav") ?? document.querySelector(".fbar"));
         if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 96, behavior: "smooth" });
       };
       requestAnimationFrame(() => setTimeout(go, 120));
@@ -212,7 +221,11 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
     const r = products.filter((p) => {
       if (exactHit) return p.id === exactHit.id;
       if (qq && !matches(sIdx, p, qq)) return false;
-      if (sel.length && !sel.some((c) => inCategory(p, c))) return false;
+      if (chairMode) {
+        // Sillas: todas las sillas (también las de exterior) y, si se eligió un tipo, solo las de ese tipo
+        const t = chairTypes.get(p.id);
+        if (!t || (activeChair && !t.has(activeChair))) return false;
+      } else if (sel.length && !sel.some((c) => inCategory(p, c))) return false;
       if (avail.length && !avail.includes(p.availability)) return false;
       const m = meta.get(p.id)!;
       if (types.length && !types.includes(m.type)) return false;
@@ -238,15 +251,16 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
       : b.created_at.localeCompare(a.created_at);
     r.sort(cmp);
     return r;
-  }, [products, categories, settings, q, cats, avail, min, max, sort, meta, sIdx, types, mats, colors, extra]);
+  }, [products, categories, settings, q, cats, avail, min, max, sort, meta, sIdx, types, mats, colors, extra, chairMode, chairTypes, activeChair]);
   // Cuántos resultados habría buscando en todo el catálogo (para ofrecerlo cuando la categoría elegida no tiene ninguno)
   const globalHits = useMemo(() => (q.trim() ? products.filter((p) => matches(sIdx, p, q.trim())).length : 0), [products, sIdx, q]);
 
   // Opciones con cantidad, calculadas sobre lo que queda con el resto de los filtros (categoría y búsqueda)
   const pool = useMemo(() => {
     const sel = categories.filter((c) => cats.includes(c.id));
+    if (chairMode) return products.filter((p) => { const t = chairTypes.get(p.id); return !!t && (!activeChair || t.has(activeChair)); });
     return products.filter((p) => !sel.length || sel.some((c) => inCategory(p, c)));
-  }, [products, categories, cats]);
+  }, [products, categories, cats, chairMode, chairTypes, activeChair]);
   const count = (get: (p: Product) => string[]) => {
     const m = new Map<string, number>();
     for (const p of pool) for (const k of get(p)) m.set(k, (m.get(k) ?? 0) + 1);
@@ -280,7 +294,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
     // Al elegir la primera subcategoría, bajar suavemente hasta los productos
     if (adding && base.length === 0) {
       setTimeout(() => {
-        const el = document.querySelector(".fbar");
+        const el = (document.querySelector(".chair-nav") ?? document.querySelector(".fbar"));
         // Solo hacia abajo: si los productos ya están a la vista o más arriba, no mover la página
         const top = el ? el.getBoundingClientRect().top : 0;
         if (el && top > 120) window.scrollTo({ top: top + window.scrollY - 96, behavior: "smooth" });
@@ -291,6 +305,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
   const chips: { label: string; clear: () => void }[] = [
     ...(q ? [{ label: `“${q}”`, clear: () => setQ("") }] : []),
     ...(fullGroup && !explicit ? [{ label: fullGroup.name, clear: () => pickGroup("todo") }] : cats.map((id) => ({ label: categories.find((c) => c.id === id)?.name ?? id, clear: () => pickCat(id) }))),
+    ...(activeChair ? [{ label: CHAIR_TYPES.find((t) => t.key === activeChair)!.label, clear: () => setChairType(null) }] : []),
     ...avail.map((a) => ({ label: AVAILABILITY[a], clear: () => setAvail((v) => v.filter((x) => x !== a)) })),
     ...types.map((t) => ({ label: t, clear: () => setTypes((v) => v.filter((x) => x !== t)) })),
     ...mats.map((t) => ({ label: t, clear: () => setMats((v) => v.filter((x) => x !== t)) })),
@@ -299,7 +314,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
     ...(min ? [{ label: `Desde ${money(+min.replace(/\D/g, "") || 0)}`, clear: () => setMin("") }] : []),
     ...(max ? [{ label: `Hasta ${money(+max.replace(/\D/g, "") || 0)}`, clear: () => setMax("") }] : []),
   ];
-  const clearAll = () => { setCats([]); setExplicit(false); setRailGroup("todo"); setAvail([]); setTypes([]); setMats([]); setColors([]); setExtra([]); setMin(""); setMax(""); if (q) setQ(""); };
+  const clearAll = () => { setCats([]); setExplicit(false); setRailGroup("todo"); setAvail([]); setTypes([]); setMats([]); setColors([]); setExtra([]); setMin(""); setMax(""); setChairType(null); if (q) setQ(""); };
 
   const presetCat = preset ? categories.find((c) => c.id === preset) : undefined;
   const presetGroup = presetCat ? groupByKey(groupOf(presetCat) ?? "") : undefined;
@@ -348,6 +363,30 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
       </div>}
 
       {/* Barra de búsqueda y filtros */}
+      {chairMode && chairsCat && (
+        <section className="chair-nav" aria-label="Tipos de silla">
+          <div className="chair-nav-head">
+            <h2>{chairsCat.name}</h2>
+            <p>Soluciones de mobiliario para restaurantes, hoteles y espacios gastronómicos.</p>
+          </div>
+          <div className="chair-nav-row" role="radiogroup" aria-label="Tipo de silla">
+            {[{ key: null, label: "Todas las sillas", img: mediaUrl(chairsCat.image_path) ?? mediaUrl(products.find((p) => p.category_id === chairsCat.id)?.images[0]) }, ...CHAIR_TYPES.map((t) => {
+              const list = products.filter((p) => chairTypes.get(p.id)?.has(t.key));
+              const rep = list.find((p) => p.sku === t.rep) ?? list[0];
+              return { key: t.key as ChairType | null, label: t.label, img: mediaUrl(rep?.images[0]), n: list.length };
+            }).filter((t) => t.n)].map((t) => {
+              const on = activeChair === t.key;
+              return (
+                <button key={t.key ?? "todas"} type="button" role="radio" aria-checked={on} className={`chair-card${on ? " on" : ""}`} onClick={() => setChairType(t.key)}>
+                  <span className="chair-card-ph">{t.img && <img src={t.img} alt="" loading="lazy" decoding="async" />}</span>
+                  <span className="chair-card-n">{t.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       {showFilters && <div className="fbar">
         <form className="fbar-search" role="search" onSubmit={(e) => { e.preventDefault(); (e.currentTarget.querySelector("input") as HTMLInputElement)?.blur(); }}>
           <Search aria-hidden />

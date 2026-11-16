@@ -30,6 +30,8 @@ export type Product = {
   staged?: boolean;
   /** Posición manual dentro de su categoría (panel · Orden de visualización); vacío = orden automático. */
   sort_order?: number | null;
+  /** Tipos de silla asignados a mano (madera, tapizadas, metalicas, apoyabrazos, exterior, apilables). */
+  chair_tags?: string[];
   placeholder: Placeholder | null;
   created_at: string;
 };
