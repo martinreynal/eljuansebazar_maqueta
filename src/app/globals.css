@@ -2234,3 +2234,5 @@ html,body{overflow-x:clip}
 @media (max-width:720px){.chair-nav-row{display:flex;gap:10px;margin:0 -16px;padding:6px 16px 10px;scroll-snap-type:x mandatory}.chair-card{flex:0 0 112px;scroll-snap-align:start}.chair-nav-head p{font-size:13.5px}}
 .chair-card-ph img{mix-blend-mode:multiply}
 .chair-nav-row{grid-template-columns:repeat(var(--n,7),minmax(104px,1fr));max-width:calc(var(--n,7) * 152px)}
+/* Categorías sin foto ni productos todavía */
+.crail-soon{display:grid;place-items:center;width:100%;height:100%;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:repeating-linear-gradient(135deg,#f6f2ea 0 10px,#f1ece2 10px 20px);border-radius:10px}

@@ -272,7 +272,9 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
   const colorOpts = count((p) => meta.get(p.id)!.colors);
   const availOpts: [string, number][] = AV_FILTERS.map((a) => [AVAILABILITY[a], pool.filter((p) => p.availability === a).length] as [string, number]).filter(([, n]) => n > 0);
   const extraOpts: [string, number][] = ([...(SHOW_3D ? [["Con vista 3D", pool.filter((p) => p.model_url).length]] : []), ["Ofertas", pool.filter((p) => p.tag === "oferta").length]] as [string, number][]).filter(([, n]) => n > 0);
-  const catTiles = categories.filter((c) => !c.is_offers && (railGroup === "todo" || groupOf(c) === railGroup) && products.some((p) => inCategory(p, c)));
+  // Categorías elegidas que todavía no tienen productos (se muestran igual, con un aviso)
+  const emptyCats = categories.filter((c) => cats.includes(c.id) && !products.some((p) => inCategory(p, c)));
+  const catTiles = categories.filter((c) => !c.is_offers && (railGroup === "todo" || groupOf(c) === railGroup));
   const pickGroup = (g: CategoryGroup | "todo") => {
     setRailGroup(g); setCats(g === "todo" ? [] : idsOf(g)); setExplicit(false); railRef.current?.scrollTo({ left: 0 });
     // Sin grupo elegido los filtros quedan ocultos: se limpian para que no sigan aplicándose
@@ -356,7 +358,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
             const img = catCover(c);
             return (
               <button key={c.id} type="button" aria-pressed={on} className={`crail-tile ${on ? "on" : ""}`} onClick={() => pickCat(c.id)}>
-                <span className="crail-ph">{img && <img src={img} alt="" loading="lazy" decoding="async" />}</span>
+                <span className="crail-ph">{img ? <img src={img} alt="" loading="lazy" decoding="async" /> : <span className="crail-soon">Próximamente</span>}</span>
                 <span className="crail-n">{c.name}</span>
               </button>
             );
@@ -441,7 +443,12 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
           ) : (
             <div className="empty">
               <div className="ic"><SearchX /></div>
-              {q && globalHits > 0 ? (
+              {emptyCats.length && !q && !chips.some((c) => !emptyCats.some((e) => e.name === c.label)) ? (
+                <>
+                  <h3>Estamos sumando productos a {emptyCats.map((c) => c.name).join(" y ")}</h3>
+                  <p>Todavía no hay productos publicados en esta categoría. Escribinos y te contamos qué opciones tenemos disponibles.</p>
+                </>
+              ) : q && globalHits > 0 ? (
                 <>
                   <h3>No hay “{q}” en lo que elegiste</h3>
                   <p>{`Encontramos ${globalHits} producto${globalHits === 1 ? "" : "s"} con “${q}” en otras categorías.`}</p>
