@@ -2,16 +2,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SHOW_GAME } from "@/lib/features";
-import { ArrowDownUp, Boxes, ClipboardList, CaseSensitive, ChartColumn, FolderTree, ImageIcon, LogOut, Package, Palette, Settings, Sparkles, Store } from "lucide-react";
+import { isProductsArea } from "./ProductsHub";
+import { ArrowDownUp, CaseSensitive, ChartColumn, ImageIcon, LogOut, Package, Palette, Settings, Sparkles, Store } from "lucide-react";
 
 const TABS = [
   ["/admin/productos", Package, "Productos"],
-  ["/admin/contracara", ClipboardList, "Contracara"],
   ["/admin/nuevas", Sparkles, "Nuevas incorporaciones"],
   ["/admin/orden", ArrowDownUp, "Orden de visualización"],
   ["/admin/imagenes", ImageIcon, "Imágenes"],
-  ["/admin/disponibilidad", Boxes, "Disponibilidad"],
-  ["/admin/categorias", FolderTree, "Categorías"],
   ["/admin/diseno", Palette, "Diseño y textos"],
   ["/admin/textos", CaseSensitive, "Textos"],
   ["/admin/configuracion", Settings, "Configuración"],
@@ -24,7 +22,7 @@ export function AdminNav({ email, signOut }: { email: string; signOut: () => Pro
   return (
     <nav className="adm-nav" aria-label="Módulos del panel">
       {TABS.map(([h, I, t]) => (
-        <Link key={h} href={h} className="adm-link" aria-current={pathname.startsWith(h) ? "true" : undefined}>{I ? <I /> : <span className="adm-noicon" aria-hidden />}{t}</Link>
+        <Link key={h} href={h} className="adm-link" aria-current={(h === "/admin/productos" ? isProductsArea(pathname) : pathname.startsWith(h)) ? "true" : undefined}>{I ? <I /> : <span className="adm-noicon" aria-hidden />}{t}</Link>
       ))}
       <div className="sep" />
       <Link href="/" target="_blank" className="adm-link"><Store />Ver tienda</Link>

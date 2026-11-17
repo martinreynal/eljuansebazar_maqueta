@@ -113,7 +113,7 @@ export function SourcingTable({ products, categories, rows: initial }: { product
           <thead>
             <tr>
               <th>Producto</th><th>Link</th><th className="num">Precio de compra</th><th className="num">MOQ</th><th>Plazo de producción</th><th className="num">Unid. por caja</th>
-              <th>Volumen y peso embalado</th><th>Material y medidas</th><th>Certificaciones</th><th>Reposición</th><th>Fotos autorizadas</th><th />
+              <th>Volumen y peso embalado</th><th>Material y medidas</th><th>Certificaciones</th><th>Reposición</th><th>Fotos autorizadas</th>
             </tr>
           </thead>
           <tbody>
@@ -127,7 +127,10 @@ export function SourcingTable({ products, categories, rows: initial }: { product
                       <div style={{ minWidth: 0 }}>
                         <div className="src-name">{p.name}</div>
                         <small className="mono">{p.sku}</small> <small className="hint">· {catName.get(p.category_id ?? "")}{r?.supplier ? ` · ${r.supplier}` : ""}</small>
-                        <div className="src-fill" title={`${f} de ${FIELDS.length} datos`}><i style={{ width: `${(f / FIELDS.length) * 100}%` }} /></div>
+                        <div className="src-row">
+                          <div className="src-fill" title={`${f} de ${FIELDS.length} datos`}><i style={{ width: `${(f / FIELDS.length) * 100}%` }} /></div>
+                          <button className="btn btn-ghost btn-sm" onClick={() => open(p)}><Pencil />{f ? "Editar" : "Cargar"}</button>
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -141,11 +144,10 @@ export function SourcingTable({ products, categories, rows: initial }: { product
                   <td className="src-txt">{r?.certifications || "—"}</td>
                   <td className="src-txt">{r?.restock || "—"}</td>
                   <td>{r?.photos_authorized ? <span className={`src-ph ph-${r.photos_authorized}`}>{PHOTOS[r.photos_authorized]}</span> : "—"}{r?.photos_note ? <><br /><small className="hint">{r.photos_note}</small></> : null}</td>
-                  <td><button className="btn btn-ghost btn-sm" onClick={() => open(p)}><Pencil />{f ? "Editar" : "Cargar"}</button></td>
                 </tr>
               );
             })}
-            {!list.length && <tr><td colSpan={12} style={{ textAlign: "center", padding: 30 }} className="hint">No hay productos que coincidan.</td></tr>}
+            {!list.length && <tr><td colSpan={11} style={{ textAlign: "center", padding: 30 }} className="hint">No hay productos que coincidan.</td></tr>}
           </tbody>
         </table>
       </div>

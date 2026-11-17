@@ -105,7 +105,7 @@ export function ProductsTable({ products, categories }: { products: Product[]; c
   return (
     <>
       <div className="adm-h">
-        <div><h2>Productos</h2><p>{products.filter((p) => !p.archived).length} productos · {visibleCount} publicados en la tienda</p></div>
+        <div><h2>Listado de productos</h2><p>{products.filter((p) => !p.archived).length} productos · {visibleCount} publicados en la tienda</p></div>
         <Link className="btn btn-dark" href="/admin/productos/nuevo"><Plus />Nuevo producto</Link>
       </div>
       {msg && <div className={`adm-msg ${msg.ok ? "ok" : "bad"}`} role="status">{msg.text}</div>}

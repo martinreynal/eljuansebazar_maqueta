@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { AdminNav } from "@/components/admin/AdminNav";
+import { ProductsHub } from "@/components/admin/ProductsHub";
 import { getAdmin } from "@/lib/auth";
 import { signOut } from "../actions";
 
@@ -23,7 +24,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
     <div className="wrap adm">
       <div className="adm-grid">
         <AdminNav email={a.user.email ?? ""} signOut={signOut} />
-        <section style={{ minWidth: 0 }}>{children}</section>
+        <section style={{ minWidth: 0 }}><ProductsHub />{children}</section>
       </div>
     </div>
   );
