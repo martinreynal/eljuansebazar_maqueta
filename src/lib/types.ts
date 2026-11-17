@@ -23,6 +23,8 @@ export type Product = {
   featured: boolean;
   visible: boolean;
   archived: boolean;
+  /** Carpeta del archivo: "archivados" (pendientes de completar datos) o "rearchivados" (archivo histórico). */
+  archive_bin?: "archivados" | "rearchivados" | null;
   images: string[];
   /** Modelo 3D opcional (.glb/.gltf): ruta en /public/modelos o en el bucket media. */
   model_url: string | null;

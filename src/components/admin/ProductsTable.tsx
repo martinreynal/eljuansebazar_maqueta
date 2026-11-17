@@ -53,10 +53,12 @@ function CategoryPicker({ p, categories, onPick, disabled }: { p: Product; categ
   );
 }
 
+const binOf = (p: Product) => p.archive_bin ?? "archivados";
+
 export function ProductsTable({ products, categories }: { products: Product[]; categories: Category[] }) {
   const router = useRouter();
   const [q, setQ] = useState("");
-  const [show, setShow] = useState<"activos" | "archivados">("activos");
+  const [show, setShow] = useState<"activos" | "archivados" | "rearchivados">("activos");
   const [pending, start] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [confirmDel, setConfirmDel] = useState<string | null>(null);
@@ -90,7 +92,7 @@ export function ProductsTable({ products, categories }: { products: Product[]; c
     return products
       .filter((p) => !gone.has(p.id))
       .map((p) => (catOverride[p.id] ? { ...p, category_id: catOverride[p.id] } : p))
-      .filter((p) => (show === "archivados" ? p.archived : !p.archived))
+      .filter((p) => (show === "activos" ? !p.archived : p.archived && binOf(p) === show))
       .filter((p) => !w.length || w.every((x) => searchable(`${p.name} ${p.sku}`).includes(x)));
   }, [products, q, show, gone, catOverride]);
 
@@ -113,7 +115,8 @@ export function ProductsTable({ products, categories }: { products: Product[]; c
         <div className="search" style={{ display: "flex", maxWidth: 380, flex: "1 1 240px" }}><Search aria-hidden /><input type="search" placeholder="Buscar por nombre o SKU" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar productos" /></div>
         <div className="seg" role="group" aria-label="Mostrar">
           <button aria-pressed={show === "activos"} onClick={() => setShow("activos")}>Activos</button>
-          <button aria-pressed={show === "archivados"} onClick={() => setShow("archivados")}>Archivados ({products.filter((p) => p.archived).length})</button>
+          <button aria-pressed={show === "archivados"} onClick={() => setShow("archivados")}>Archivados ({products.filter((p) => p.archived && binOf(p) === "archivados").length})</button>
+          <button aria-pressed={show === "rearchivados"} onClick={() => setShow("rearchivados")}>Rearchivados ({products.filter((p) => p.archived && binOf(p) === "rearchivados").length})</button>
         </div>
       </div>
       <div className="tbl-wrap" aria-busy={pending}>
@@ -145,14 +148,15 @@ export function ProductsTable({ products, categories }: { products: Product[]; c
                   ) : (
                     <span className="row-actions">
                       <Link className="btn btn-ghost btn-sm" href={`/admin/productos/${p.id}`}><Pencil />Editar</Link>
-                      {show === "archivados" && <button className="btn btn-ghost btn-sm" onClick={() => flag(p, { archived: false }, "Producto desarchivado.")}>Desarchivar</button>}
+                      {show !== "activos" && <button className="btn btn-ghost btn-sm" onClick={() => flag(p, { archived: false }, "Producto desarchivado.")}>Desarchivar</button>}
+                      {show === "rearchivados" && <button className="btn btn-ghost btn-sm" onClick={() => flag(p, { archive_bin: "archivados" }, "Movido a Archivados.")}>A Archivados</button>}
                       <button type="button" className="icon-btn del-btn" aria-label={`Eliminar ${p.name}`} title="Eliminar producto" disabled={pending} onClick={() => setConfirmDel(p.id)}><Trash2 /></button>
                     </span>
                   )}
                 </td>
               </tr>
             ))}
-            {!rows.length && <tr><td colSpan={8} style={{ textAlign: "center", padding: 32, color: "var(--muted)" }}>{q ? "No hay productos que coincidan con la búsqueda." : show === "archivados" ? "No hay productos archivados." : "Todavía no cargaste productos."}</td></tr>}
+            {!rows.length && <tr><td colSpan={8} style={{ textAlign: "center", padding: 32, color: "var(--muted)" }}>{q ? "No hay productos que coincidan con la búsqueda." : show === "archivados" ? "No hay productos archivados." : show === "rearchivados" ? "No hay productos rearchivados." : "Todavía no cargaste productos."}</td></tr>}
           </tbody>
         </table>
       </div>

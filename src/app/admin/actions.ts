@@ -120,6 +120,7 @@ const Flags = z.object({
   stock: z.number().int().nonnegative().nullable().optional(),
   category_id: z.string().uuid().nullable().optional(),
   staged: z.boolean().optional(),
+  archive_bin: z.enum(["archivados", "rearchivados"]).optional(),
 });
 
 export async function updateProductFlags(id: string, patch: z.input<typeof Flags>): Promise<Result> {
@@ -127,12 +128,15 @@ export async function updateProductFlags(id: string, patch: z.input<typeof Flags
   if (!parsed.success || !z.string().uuid().safeParse(id).success) return { ok: false, error: "Datos inválidos." };
   try {
     const sb = await requireAdmin();
-    const { error } = await sb.from("products").update(parsed.data).eq("id", id);
+    const d = parsed.data;
+    const row = { ...d, ...(d.archived === false ? { archive_bin: null } : d.archived ? { archive_bin: d.archive_bin ?? "archivados" } : {}) };
+    const { error } = await sb.from("products").update(row).eq("id", id);
     if (error) return fail(error);
-    const d = parsed.data, pl = await productLabel(sb, id), parts: string[] = [];
+    const pl = await productLabel(sb, id), parts: string[] = [];
     if (d.visible !== undefined) parts.push(d.visible ? "ahora visible" : "ahora oculto");
     if (d.featured !== undefined) parts.push(d.featured ? "marcado como destacado" : "sin destacar");
-    if (d.archived !== undefined) parts.push(d.archived ? "archivado" : "recuperado del archivo");
+    if (d.archived !== undefined) parts.push(d.archived ? `archivado en ${row.archive_bin === "rearchivados" ? "Rearchivados" : "Archivados"}` : "recuperado del archivo");
+    else if (d.archive_bin) parts.push(`movido a ${d.archive_bin === "rearchivados" ? "Rearchivados" : "Archivados"}`);
     if (d.availability !== undefined) parts.push(`disponibilidad: ${d.availability.replace("_", " ")}`);
     if (d.stock !== undefined) parts.push(`stock: ${d.stock ?? "sin dato"}`);
     if (d.category_id !== undefined) parts.push(`movido a ${await categoryName(sb, d.category_id)}`);
@@ -156,7 +160,7 @@ export async function reviewNewProducts(input: { approve: { id: string; category
       if (error) return fail(error);
     }
     if (input.discard.length) {
-      const { error } = await sb.from("products").update({ staged: false, visible: false, archived: true }).in("id", input.discard);
+      const { error } = await sb.from("products").update({ staged: false, visible: false, archived: true, archive_bin: "archivados" }).in("id", input.discard);
       if (error) return fail(error);
     }
     const n = input.approve.length, m = input.discard.length;

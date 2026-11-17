@@ -10,7 +10,7 @@ export default async function ContracaraAdmin() {
   const a = await getAdmin();
   if (a.state !== "admin") return null;
   const [p, c, s] = await Promise.all([
-    a.sb.from("products").select("id, sku, slug, name, images, placeholder, category_id, materials, dimensions, visible, staged").eq("archived", false).order("sku"),
+    a.sb.from("products").select("id, sku, slug, name, images, placeholder, category_id, materials, dimensions, visible, staged, archived, archive_bin").or("archived.eq.false,archive_bin.eq.archivados").order("sku"),
     a.sb.from("categories").select("*").order("position"),
     a.sb.from("product_sourcing").select("*"),
   ]);

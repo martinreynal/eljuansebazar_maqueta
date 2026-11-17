@@ -125,7 +125,7 @@ export function SourcingTable({ products, categories, rows: initial }: { product
                       <div className="t"><ProductImage p={p} label={false} sizes="42px" /></div>
                       <div style={{ minWidth: 0 }}>
                         <div className="src-name">{p.name}</div>
-                        <small className="mono">{p.sku}</small> <small className="hint">· {catName.get(p.category_id ?? "")}{r?.supplier ? ` · ${r.supplier}` : ""}</small>
+                        <small className="mono">{p.sku}</small>{p.archived && <> <span className="pill">Archivado</span></>} <small className="hint">· {catName.get(p.category_id ?? "")}{r?.supplier ? ` · ${r.supplier}` : ""}</small>
                         <div className="src-row">
                           <div className="src-fill" title={`${f} de ${FIELDS.length} datos`}><i style={{ width: `${(f / FIELDS.length) * 100}%` }} /></div>
                           <button className="btn btn-ghost btn-sm" onClick={() => open(p)}><Pencil />{f ? "Editar" : "Cargar"}</button>
