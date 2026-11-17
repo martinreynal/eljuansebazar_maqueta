@@ -17,13 +17,35 @@ export type SubNav = {
   /** ¿El producto forma parte de esta sección? (Sillas suma las sillas de exterior). */
   member: (p: Product, catSlug: string | undefined) => boolean;
   typesOf: (p: Product, catSlug: string | undefined) => Set<string>;
+  /** Mostrar también las tarjetas de tipos que todavía no tienen productos. */
+  showEmpty?: boolean;
+  /** Agrupar el listado en bloques con título, uno por tipo y en este orden (cada producto va en un solo bloque). */
+  blocks?: boolean;
 };
 
 const VAJILLA_TYPES = [
-  { key: "blanca", label: "Vajilla blanca", rep: "EST-01" },
-  { key: "gres", label: "Vajilla de gres", rep: "GRL-02" },
-  { key: "decorada", label: "Vajilla decorada", rep: "FLO-02" },
+  { key: "platos", label: "Platos", rep: "EST-07" },
+  { key: "platos-pequenos", label: "Platos pequeños", rep: "CER-03" },
+  { key: "bowls", label: "Bowls y cuencos", rep: "CER-04" },
+  { key: "platos-tazas", label: "Platos para tazas" },
+  { key: "fuentes", label: "Fuentes y bandejas" },
+  { key: "juegos", label: "Juegos y sets de vajilla", rep: "EST-01" },
 ] as const;
+const VAJILLA_KEYS: string[] = VAJILLA_TYPES.map((t) => t.key);
+
+/** Tipo de pieza de vajilla según su nombre (uno solo); se puede corregir a mano desde el panel. */
+function vajillaType(p: Product): string {
+  const n = norm(p.name);
+  if (/^(set|juego|vajilla|coleccion)\b|· set x\d|\bset x\d/.test(n)) return "juegos";
+  if (/^(fuente|bandeja|azafate|plato de servir|plato de presentacion)\b/.test(n)) return "fuentes";
+  if (/^(platito|plato para taza|plato de taza|plato de cafe|plato de te)\b/.test(n)) return "platos-tazas";
+  if (/^(bowl|bol|cuenco|compotera|ensaladera|tazon)\b/.test(n)) return "bowls";
+  if (/^plato\b/.test(n)) {
+    const cm = Number(n.match(/(\d+(?:[.,]\d+)?) ?cm/)?.[1]?.replace(",", ".") ?? 0);
+    return /postre|pan\b|pequen|entrada|aperitivo/.test(n) || (cm > 0 && cm <= 20) ? "platos-pequenos" : "platos";
+  }
+  return "juegos";
+}
 
 export const SUBNAVS: Record<string, SubNav> = {
   [CHAIRS_SLUG]: {
@@ -37,17 +59,14 @@ export const SUBNAVS: Record<string, SubNav> = {
   vajilla: {
     slug: "vajilla",
     allLabel: "Toda la vajilla",
-    line: "Platos, bowls y piezas de servicio para cada estilo de mesa.",
+    line: "Platos, bowls, cuencos y piezas de servicio para cada estilo de mesa.",
     types: VAJILLA_TYPES,
+    showEmpty: true,
+    blocks: true,
     member: (_p, s) => s === "vajilla",
     typesOf: (p) => {
-      const t = norm(`${p.name}. ${p.description.split(".").slice(0, 2).join(" ")} ${p.materials}`);
-      const tags = p.chair_tags ?? [];
-      const s = new Set<string>();
-      if (tags.includes("gres") || /\bgres\b/.test(t)) s.add("gres");
-      if (tags.includes("decorada") || /decorad|marmolad/.test(t)) s.add("decorada");
-      if (tags.includes("blanca") || (/\bblanc/.test(t) && !s.has("gres") && !s.has("decorada"))) s.add("blanca");
-      return s;
+      const manual = (p.chair_tags ?? []).filter((t) => VAJILLA_KEYS.includes(t));
+      return new Set(manual.length ? manual : [vajillaType(p)]);
     },
   },
 };

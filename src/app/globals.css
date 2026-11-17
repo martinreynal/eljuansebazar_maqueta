@@ -2277,3 +2277,9 @@ html,body{overflow-x:clip}
 .src-row{display:flex;align-items:center;gap:10px;margin-top:6px}.src-row .src-fill{margin-top:0}
 .src-tbl th:first-child,.src-tbl td:first-child{position:sticky;left:0;z-index:1;background:var(--surface,#fff);box-shadow:1px 0 0 var(--line)}
 .src-tbl th:first-child{background:var(--bg);z-index:2}
+
+/* Vajilla: listado en bloques con título por tipo de pieza */
+.fmeta-blocks{align-items:flex-end}
+.vblock-h{font-family:var(--font-fraunces),Georgia,serif;font-size:clamp(24px,2.6vw,32px);font-weight:600;color:var(--forest,#1E4D3D);margin:0 12px 0 0;line-height:1.1}
+.vblock + .vblock{margin-top:34px}
+.vblock > .vblock-h{margin-bottom:16px}

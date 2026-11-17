@@ -272,6 +272,14 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
   const colorOpts = count((p) => meta.get(p.id)!.colors);
   const availOpts: [string, number][] = AV_FILTERS.map((a) => [AVAILABILITY[a], pool.filter((p) => p.availability === a).length] as [string, number]).filter(([, n]) => n > 0);
   const extraOpts: [string, number][] = ([...(SHOW_3D ? [["Con vista 3D", pool.filter((p) => p.model_url).length]] : []), ["Ofertas", pool.filter((p) => p.tag === "oferta").length]] as [string, number][]).filter(([, n]) => n > 0);
+  // Vajilla y otras secciones con bloques: el listado se parte por tipo, en el orden de las tarjetas
+  const blocks = useMemo(() => {
+    if (!subNav?.blocks) return null;
+    const keys = activeChair ? [activeChair] : subNav.types.map((t) => t.key);
+    const out = keys.map((k) => ({ key: k, label: subNav.types.find((t) => t.key === k)!.label, items: results.filter((p) => (activeChair ? chairTypes.get(p.id)?.has(k) : [...(chairTypes.get(p.id) ?? [])][0] === k)) })).filter((b) => b.items.length);
+    const rest = activeChair ? [] : results.filter((p) => !(chairTypes.get(p.id)?.size));
+    return rest.length ? [...out, { key: "otros", label: "Otros", items: rest }] : out;
+  }, [subNav, activeChair, results, chairTypes]);
   // Categorías elegidas que todavía no tienen productos (se muestran igual, con un aviso)
   const emptyCats = categories.filter((c) => cats.includes(c.id) && !products.some((p) => inCategory(p, c)));
   const catTiles = categories.filter((c) => !c.is_offers && (railGroup === "todo" || groupOf(c) === railGroup));
@@ -317,6 +325,8 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
     ...(min ? [{ label: `Desde ${money(+min.replace(/\D/g, "") || 0)}`, clear: () => setMin("") }] : []),
     ...(max ? [{ label: `Hasta ${money(+max.replace(/\D/g, "") || 0)}`, clear: () => setMax("") }] : []),
   ];
+  // Con bloques (Vajilla) no se muestran la categoría ni el tipo como etiquetas: ya están en el título y en las tarjetas
+  const extraChips = chips.filter((c) => c.label !== subCat?.name && !subNav?.types.some((t) => t.label === c.label));
   const clearAll = () => { setCats([]); setExplicit(false); setRailGroup("todo"); setAvail([]); setTypes([]); setMats([]); setColors([]); setExtra([]); setMin(""); setMax(""); setChairType(null); if (q) setQ(""); };
 
   const catCover = (c: Category) => (CATEGORY_IMG.has(c.slug) ? `/categorias/${COVER_FILE[c.slug] ?? c.slug}.jpg` : mediaUrl(c.image_path) ?? mediaUrl(products.find((p) => inCategory(p, c))?.images[0]));
@@ -378,11 +388,11 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
               const list = products.filter((p) => chairTypes.get(p.id)?.has(t.key));
               const pick = list.find((p) => p.sku === t.rep) ?? list[0];
               return { key: t.key as string | null, label: t.label, img: mediaUrl(pick?.images[0]), n: list.length };
-            })].filter((t) => t.n).map((t) => {
+            })].filter((t) => t.n || subNav.showEmpty).map((t) => {
               const on = activeChair === t.key;
               return (
                 <button key={t.key ?? "todas"} type="button" role="radio" aria-checked={on} className={`chair-card${on ? " on" : ""}`} onClick={() => setChairType(t.key)}>
-                  <span className="chair-card-ph">{t.img && <img src={t.img} alt="" loading="lazy" decoding="async" />}</span>
+                  <span className="chair-card-ph">{t.img ? <img src={t.img} alt="" loading="lazy" decoding="async" /> : <span className="crail-soon">Próximamente</span>}</span>
                   <span className="chair-card-n">{t.label}</span>
                 </button>
               );
@@ -413,12 +423,20 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
             : <p>Elegí una categoría para ver los productos.</p>}
         </div>
       )}
-      {showFilters && <div className="fmeta">
+      {showFilters && <div className={`fmeta${blocks ? " fmeta-blocks" : ""}`}>
+        {blocks ? (
+          // Vajilla: en lugar de «Filtros activos», el título del primer bloque (los demás filtros siguen como etiquetas chicas)
+          <div className="fmeta-chips">
+            <h2 className="vblock-h">{blocks[0] ? `${blocks[0].label}:` : subNav!.allLabel}</h2>
+            {extraChips.map((c) => <button key={c.label} className="chip" onClick={c.clear} aria-label={`Quitar filtro ${c.label}`}>{c.label}<X /></button>)}
+          </div>
+        ) : (
         <div className="fmeta-chips">
           {showFilters && chips.length > 0 && <span className="fmeta-l">Filtros activos:</span>}
           {showFilters && chips.map((c) => <button key={c.label} className="chip" onClick={c.clear} aria-label={`Quitar filtro ${c.label}`}>{c.label}<X /></button>)}
           {showFilters && chips.length > 0 && <button className="fmeta-clear" onClick={clearAll}>Limpiar filtros</button>}
         </div>
+        )}
         <div className="fmeta-r">
           <span className="fmeta-n"><b>{results.length}</b> producto{results.length === 1 ? "" : "s"}</span>
           <span className="fbar-sep" aria-hidden />
@@ -438,7 +456,15 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
       </div>}
 
       {showFilters && <div className="cat-full">
-          {results.length ? (
+          {results.length && blocks ? (
+            // Bloques consecutivos con título (Platos, Platos pequeños, Bowls y cuencos…)
+            blocks.map((b, i) => (
+              <section key={b.key} className="vblock" aria-label={b.label}>
+                {i > 0 && <h2 className="vblock-h">{b.label}:</h2>}
+                <ProductGrid products={b.items} ctx={ctx} priorityFirst={i === 0 ? 4 : 0} cols={cats.length === 1 ? categories.find((c) => c.id === cats[0])?.grid_cols : null} />
+              </section>
+            ))
+          ) : results.length ? (
             <ProductGrid products={results} ctx={ctx} priorityFirst={4} cols={cats.length === 1 ? categories.find((c) => c.id === cats[0])?.grid_cols : null} />
           ) : (
             <div className="empty">
