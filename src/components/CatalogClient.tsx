@@ -1,4 +1,5 @@
 "use client";
+import { GeoMark } from "./Geo";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -343,6 +344,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
       </nav>
       <div className="cat-title">
         <h1 className="page-title">{title}</h1>
+        <GeoMark className="only-d" />
         <a className="btn btn-ghost btn-sm only-d" href="/catalogo.pdf" target="_blank" rel="noopener"><FileDown />Descargar catálogo en PDF</a>
       </div>
       {/* Grupos: Mobiliario / Bazar (al elegir uno aparecen sus subcategorías) */}
@@ -380,6 +382,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
       {subNav && subCat && (
         <section className="chair-nav" aria-label={`Tipos de ${subCat.name.toLowerCase()}`}>
           <div className="chair-nav-head">
+            <GeoMark className="only-d" />
             <h2>{subCat.name}</h2>
             <p>{subNav.line}</p>
           </div>

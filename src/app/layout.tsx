@@ -12,17 +12,29 @@ import "./globals.css";
 const dmSans = localFont({
   variable: "--font-dm-sans",
   display: "swap",
+  preload: false,
   src: [{ path: "../fonts/dm-sans-latin-opsz-normal.woff2", weight: "100 1000", style: "normal" }],
 });
 const fraunces = localFont({
   variable: "--font-fraunces",
   display: "swap",
+  preload: false,
   src: [{ path: "../fonts/fraunces-latin-full-normal.woff2", weight: "100 900", style: "normal" }],
 });
 const inter = localFont({
   variable: "--font-inter",
   display: "swap",
   src: [{ path: "../fonts/inter-latin-wght-normal.woff2", weight: "100 900", style: "normal" }],
+});
+/** Títulos y nombres de producto: Cormorant Garamond (editorial). */
+const cormorant = localFont({
+  variable: "--font-cormorant",
+  display: "swap",
+  src: [
+    { path: "../fonts/cormorant-garamond-latin-500-normal.woff2", weight: "500" },
+    { path: "../fonts/cormorant-garamond-latin-600-normal.woff2", weight: "600" },
+    { path: "../fonts/cormorant-garamond-latin-700-normal.woff2", weight: "700" },
+  ],
 });
 const dmMono = localFont({
   variable: "--font-dm-mono",
@@ -58,7 +70,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const { settings, categories, products } = await getStore();
   const hasOffers = products.some((p) => p.tag === "oferta");
   return (
-    <html lang="es-AR" className={`${dmSans.variable} ${fraunces.variable} ${inter.variable} ${dmMono.variable}`}>
+    <html lang="es-AR" className={`${dmSans.variable} ${fraunces.variable} ${inter.variable} ${cormorant.variable} ${dmMono.variable}`}>
       <body>
         <StoreProvider>
           {settings.design.notice && <div className="demo-strip">{settings.design.notice}</div>}

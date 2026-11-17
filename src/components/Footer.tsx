@@ -3,9 +3,12 @@ import { formatPhone } from "@/lib/format";
 import { GROUPS, groupHref } from "@/lib/groups";
 import type { Category, Settings } from "@/lib/types";
 import { Logo } from "./Logo";
+import { GeoBand } from "./Geo";
 
 export function Footer({ settings, categories }: { settings: Settings; categories: Category[] }) {
   return (
+    <>
+    <div className="ftr-geo" aria-hidden><GeoBand n={60} /></div>
     <footer className="ftr">
       <div className="wrap">
         <div className="ftr-grid">
@@ -47,5 +50,6 @@ export function Footer({ settings, categories }: { settings: Settings; categorie
         </div>
       </div>
     </footer>
+    </>
   );
 }

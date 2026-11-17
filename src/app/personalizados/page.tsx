@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GeoMark } from "@/components/Geo";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CloudUpload, Droplet, FilePen, Layers, Package, Tag, Zap } from "lucide-react";
@@ -28,6 +29,7 @@ export default async function CustomPage() {
       <section className="sec" id="personalizados" aria-labelledby="h-custom">
         <div className="brand-sec">
           <div className="bs-copy">
+            <GeoMark />
             <span className="h2-eyebrow">Regalos empresariales</span>
             <h1 id="h-custom">Tu marca,<br />en cada detalle.</h1>
             <p>Personalizamos tazas, vasos, tablas, utensilios y más con el logo de tu empresa. Ideal para regalos de fin de año, eventos, kits de bienvenida y merchandising.</p>

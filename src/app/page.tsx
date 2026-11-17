@@ -2,6 +2,7 @@ import Link from "next/link";
 import { HomeSearch } from "@/components/HomeSearch";
 import { HeroCarousel } from "@/components/HeroCarousel";
 import { WaSteps } from "@/components/WaSteps";
+import { GeoBand, GeoMark, GeoPanel } from "@/components/Geo";
 import { ArrowRight, Clock, CloudUpload, Droplet, FileDown, FilePen, Layers, ListPlus, MessageCircle, Package, Search, Tag, Zap } from "lucide-react";
 import { ProductGrid } from "@/components/ProductCard";
 import { WaLink } from "@/components/WaLink";
@@ -54,6 +55,7 @@ export default async function Home() {
       </div>
       <section className="hero2" aria-label="Presentación">
         <div className="h2-copy">
+          <GeoMark />
           <h1>{d.heroTitle}</h1>
           <p>{d.heroText}</p>
           <div className="hero-ctas">
@@ -84,6 +86,8 @@ export default async function Home() {
         return [{ ...f, title: p.name, href: `/producto/${p.slug}`, catHref: c ? `/categoria/${c.slug}` : undefined, catLabel: c ? `Ver ${c.name.split(":")[0].toLowerCase()}` : undefined }];
       })} />
 
+      <div className="geo-sep home-geo-sep" aria-hidden><GeoBand n={36} /></div>
+
 
 
       {offers.length > 0 && (
@@ -98,6 +102,7 @@ export default async function Home() {
 
       <section className="sec" id="contacto">
         <div className="wa-banner">
+          <GeoPanel variant="terra" />
           <div>
             <h2>{d.waTitle}</h2>
             <p>{d.waText}</p>

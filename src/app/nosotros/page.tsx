@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GeoPanel } from "@/components/Geo";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -32,8 +33,11 @@ export default async function AboutPage() {
             <Link href="/catalogo" className="btn btn-ghost btn-lg">Ver catálogo <ArrowRight /></Link>
           </div>
         </div>
+        <div className="ab-img-wrap">
         <div className="ab-img">
           <Image src="/portada/ambiente-verde.jpg" alt="Salón de restaurante con banqueta verde, sillas terracota y mesas de madera servidas" fill priority sizes="(max-width: 860px) 100vw, 44vw" style={{ objectPosition: "50% 55%" }} />
+        </div>
+          <GeoPanel className="geo-float" variant="warm" />
         </div>
       </section>
       {faqs.length > 0 && (
