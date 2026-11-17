@@ -1,0 +1,3 @@
+-- Bazar con 9 categorías: Vajilla (juegos y sets), Platos, Bowls, Fuentes y bandejas, Cubiertos, Café y té, Cristalería, Servicio, Accesorios de mesa.
+-- Aplicada desde Claude el 2026-11-17 (ver change_log). Respaldo: backup_categories_20261117, backup_products_categoria_20261117.
+-- Bandejas y servicio → Servicio (slug servicio). Inactivas: cocteleria-y-bar, buffet-y-autoservicio, vajilla-oriental, utensilios-de-cocina.

@@ -83,14 +83,14 @@ const SCROLL_KEY = (url: string) => `saggio:cat:${url}`;
 /** Tarjetas de grupo del catálogo (fotos en public/catalogo-grupos, 1600×800). */
 const GROUP_CARDS: { key: CategoryGroup; name: string; line: string; img: string }[] = [
   { key: "mobiliario", name: "Mobiliario", line: "Sillas, sillones, sofás, banquetas, mesas y más.", img: "/catalogo-grupos/mobiliario.jpg" },
-  { key: "bazar", name: "Bazar", line: "Vajilla, cristalería, cubiertos, utensilios y más.", img: "/catalogo-grupos/bazar.jpg" },
+  { key: "bazar", name: "Bazar", line: "Vajilla, platos, bowls, cristalería, cubiertos y más.", img: "/catalogo-grupos/bazar.jpg" },
 ];
 const AV_FILTERS: Availability[] = ["disponible", "consultar", "sin_stock"];
 
 /** Categorías con foto preparada (public/categorias). */
 /** Archivo de portada cuando difiere del slug (versiones nuevas). */
-const COVER_FILE: Record<string, string> = { sets: "sets-3", cafe: "cafe-2", vajilla: "vajilla-blanca", "bandejas-y-servicio": "platos-y-bowls" };
-const CATEGORY_IMG = new Set(["vajilla", "bandejas-y-servicio", "vajilla-blanca", "vajilla-decorada", "platos-y-bowls", "vajilla-oriental", "cubiertos", "cristaleria", "cafe", "sofas-y-sillones", "banquetas", "boxes-y-bancos", "mesas", "sets"]);
+const COVER_FILE: Record<string, string> = { sets: "sets-3", cafe: "cafe-2", vajilla: "vajilla-blanca" };
+const CATEGORY_IMG = new Set(["vajilla", "platos", "bowls", "fuentes-y-bandejas", "servicio", "accesorios-de-mesa", "vajilla-blanca", "vajilla-decorada", "platos-y-bowls", "vajilla-oriental", "cubiertos", "cristaleria", "cafe", "sofas-y-sillones", "banquetas", "boxes-y-bancos", "mesas", "sets"]);
 
 export function CatalogClient({ products, categories, settings, base, preset, group, title }: Props) {
   const params = useSearchParams();
