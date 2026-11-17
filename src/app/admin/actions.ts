@@ -570,3 +570,45 @@ export async function resetDisplayOrder(categoryId: string): Promise<Result> {
     return fail(e);
   }
 }
+
+// ---------------------------------------------------------------- contracara (datos internos de compra)
+
+const optNum = (max: number) => z.preprocess((v) => (v === "" || v === null || v === undefined ? null : Number(String(v).replace(",", "."))), z.number().min(0).max(max).nullable());
+const Sourcing = z.object({
+  product_id: z.string().uuid(),
+  supplier: z.string().trim().max(160).default(""),
+  link: z.string().trim().max(600).refine((v) => !v || /^https?:\/\//i.test(v), "El link tiene que empezar con http:// o https://").default(""),
+  cost: optNum(1e9),
+  currency: z.enum(["USD", "ARS", "CNY", "EUR"]).default("USD"),
+  moq: z.preprocess((v) => (v === "" || v == null ? null : Number(v)), z.number().int().min(0).max(1e7).nullable()),
+  lead_time: z.string().trim().max(160).default(""),
+  units_per_box: z.preprocess((v) => (v === "" || v == null ? null : Number(v)), z.number().int().min(0).max(1e6).nullable()),
+  box_volume_m3: optNum(1000),
+  box_weight_kg: optNum(100000),
+  box_dimensions: z.string().trim().max(160).default(""),
+  material_measures: z.string().trim().max(600).default(""),
+  certifications: z.string().trim().max(600).default(""),
+  restock: z.string().trim().max(600).default(""),
+  photos_authorized: z.enum(["", "si", "no", "consultar"]).default(""),
+  photos_note: z.string().trim().max(400).default(""),
+  notes: z.string().trim().max(2000).default(""),
+});
+export type SourcingInput = z.input<typeof Sourcing>;
+
+/** Guarda la contracara (datos internos de compra y logística) de un producto. Solo administradores. */
+export async function saveSourcing(input: SourcingInput): Promise<Result<{ updated_at: string }>> {
+  const parsed = Sourcing.safeParse(input);
+  if (!parsed.success) return zodFail(parsed.error);
+  try {
+    const sb = await requireAdmin();
+    const { data: { user } } = await sb.auth.getUser();
+    const { data, error } = await sb.from("product_sourcing").upsert({ ...parsed.data, updated_at: new Date().toISOString(), updated_by: user?.email ?? "" }).select("updated_at").single();
+    if (error) return fail(error);
+    const pl = await productLabel(sb, parsed.data.product_id);
+    await logChange(sb, "Contracara", `Contracara actualizada: ${pl.name}`, "", pl.sku);
+    revalidatePath("/admin/contracara");
+    return { ok: true, data: { updated_at: data.updated_at as string } };
+  } catch (e) {
+    return fail(e);
+  }
+}

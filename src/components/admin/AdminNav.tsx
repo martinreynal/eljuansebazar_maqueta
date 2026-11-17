@@ -2,10 +2,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SHOW_GAME } from "@/lib/features";
-import { ArrowDownUp, Boxes, CaseSensitive, ChartColumn, FolderTree, ImageIcon, LogOut, Package, Palette, Settings, Sparkles, Store } from "lucide-react";
+import { ArrowDownUp, Boxes, ClipboardList, CaseSensitive, ChartColumn, FolderTree, ImageIcon, LogOut, Package, Palette, Settings, Sparkles, Store } from "lucide-react";
 
 const TABS = [
   ["/admin/productos", Package, "Productos"],
+  ["/admin/contracara", ClipboardList, "Contracara"],
   ["/admin/nuevas", Sparkles, "Nuevas incorporaciones"],
   ["/admin/orden", ArrowDownUp, "Orden de visualización"],
   ["/admin/imagenes", ImageIcon, "Imágenes"],
