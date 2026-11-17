@@ -112,8 +112,7 @@ export function SourcingTable({ products, categories, rows: initial }: { product
         <table className="tbl src-tbl">
           <thead>
             <tr>
-              <th>Producto</th><th>Link</th><th className="num">Precio de compra</th><th className="num">MOQ</th><th>Plazo de producción</th><th className="num">Unid. por caja</th>
-              <th>Volumen y peso embalado</th><th>Material y medidas</th><th>Certificaciones</th><th>Reposición</th><th>Fotos autorizadas</th>
+              <th className="c-prod">Producto</th><th className="c-buy">Compra</th><th className="c-box">Embalaje</th><th>Material y medidas</th><th>Certificaciones</th><th>Reposición</th><th className="c-ph">Fotos</th>
             </tr>
           </thead>
           <tbody>
@@ -134,12 +133,22 @@ export function SourcingTable({ products, categories, rows: initial }: { product
                       </div>
                     </div>
                   </td>
-                  <td>{r?.link ? <a className="src-link" href={r.link} target="_blank" rel="noopener noreferrer" title={r.link}><ExternalLink />Abrir</a> : "—"}</td>
-                  <td className="num">{money(r?.cost ?? null, r?.currency ?? "USD")}</td>
-                  <td className="num">{num(r?.moq ?? null)}</td>
-                  <td>{r?.lead_time || "—"}</td>
-                  <td className="num">{num(r?.units_per_box ?? null)}</td>
-                  <td>{r && (r.box_volume_m3 != null || r.box_weight_kg != null || r.box_dimensions) ? <>{num(r.box_volume_m3, " m³")} · {num(r.box_weight_kg, " kg")}{r.box_dimensions ? <><br /><small className="hint">{r.box_dimensions}</small></> : null}</> : "—"}</td>
+                  <td>
+                    <dl className="src-kv">
+                      <dt>Precio</dt><dd>{money(r?.cost ?? null, r?.currency ?? "USD")}</dd>
+                      <dt>MOQ</dt><dd>{num(r?.moq ?? null, " u.")}</dd>
+                      <dt>Plazo</dt><dd>{r?.lead_time || "—"}</dd>
+                      <dt>Link</dt><dd>{r?.link ? <a className="src-link" href={r.link} target="_blank" rel="noopener noreferrer" title={r.link}><ExternalLink />Abrir</a> : "—"}</dd>
+                    </dl>
+                  </td>
+                  <td>
+                    <dl className="src-kv">
+                      <dt>Por caja</dt><dd>{num(r?.units_per_box ?? null, " u.")}</dd>
+                      <dt>Volumen</dt><dd>{num(r?.box_volume_m3 ?? null, " m³")}</dd>
+                      <dt>Peso</dt><dd>{num(r?.box_weight_kg ?? null, " kg")}</dd>
+                      {r?.box_dimensions ? <><dt>Caja</dt><dd>{r.box_dimensions}</dd></> : null}
+                    </dl>
+                  </td>
                   <td className="src-txt">{r?.material_measures || <span className="hint">{[p.materials, p.dimensions].filter(Boolean).join(" · ") || "—"}</span>}</td>
                   <td className="src-txt">{r?.certifications || "—"}</td>
                   <td className="src-txt">{r?.restock || "—"}</td>

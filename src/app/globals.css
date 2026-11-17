@@ -2283,3 +2283,16 @@ html,body{overflow-x:clip}
 .vblock-h{font-family:var(--font-fraunces),Georgia,serif;font-size:clamp(24px,2.6vw,32px);font-weight:600;color:var(--forest,#1E4D3D);margin:0 12px 0 0;line-height:1.1}
 .vblock + .vblock{margin-top:34px}
 .vblock > .vblock-h{margin-bottom:16px}
+/* Contracara: tabla que entra completa en pantalla (datos agrupados en Compra y Embalaje) */
+.src-tbl{min-width:0!important;width:100%;table-layout:fixed}
+.src-tbl .c-prod{width:27%}.src-tbl .c-buy{width:17%}.src-tbl .c-box{width:15%}.src-tbl .c-ph{width:9%}
+.src-tbl .pt{min-width:0!important}
+.src-tbl td{overflow-wrap:anywhere}
+.src-txt{min-width:0!important;max-width:none!important}
+.src-name{max-width:none}
+.src-kv{display:grid;grid-template-columns:auto 1fr;gap:3px 8px;margin:0;font-size:12.5px}
+.src-kv dt{color:var(--muted);font-weight:600}
+.src-kv dd{margin:0;font-variant-numeric:tabular-nums}
+.src-tbl th:first-child,.src-tbl td:first-child{position:static;box-shadow:none}
+@media (max-width:1180px){.src-tbl{min-width:980px!important}}
+.src-tbl th{white-space:normal;overflow-wrap:anywhere;line-height:1.35}
