@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
-  ChevronDown, ChevronRight, ClipboardList, FileDown, LayoutGrid, Menu, Search, Stamp, Tag, Users, X,
+  ChevronDown, ChevronRight, ClipboardList, FileDown, LayoutGrid, Menu, Search, Tag, Users, X,
 } from "lucide-react";
 import { msgGeneral, waLink } from "@/lib/format";
 import { GROUPS, groupHref, groupOf } from "@/lib/groups";
@@ -127,7 +127,6 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
             </div>
           </div>
           {hasOffers && <Link href="/ofertas" className="promo" aria-current={pathname === "/ofertas" ? "page" : undefined}>Ofertas</Link>}
-          <Link href="/personalizados">Personalizados</Link>
           <Link href="/nosotros" className="nav-faq">Nosotros</Link>
         </nav>
 
@@ -154,7 +153,7 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
         <div className="drawer-head"><h3>{name}</h3><button className="icon-btn" onClick={() => setMenu(false)} aria-label="Cerrar menú"><X /></button></div>
         <div className="drawer-body">
           <nav className="m-nav">
-            {([["/", LayoutGrid, "Catálogo"], ["/ofertas", Tag, "Ofertas"], ["/personalizados", Stamp, "Productos con tu logo"], ["/nosotros", Users, "Nosotros"], ["/lista", ClipboardList, "Lista de consulta"]] as const).filter(([h]) => hasOffers || h !== "/ofertas").map(([h, I, t]) => (
+            {([["/", LayoutGrid, "Catálogo"], ["/ofertas", Tag, "Ofertas"], ["/nosotros", Users, "Nosotros"], ["/lista", ClipboardList, "Lista de consulta"]] as const).filter(([h]) => hasOffers || h !== "/ofertas").map(([h, I, t]) => (
               <Link key={h} href={h} onClick={() => setMenu(false)}><I />{t}<ChevronRight /></Link>
             ))}
             <a href="/catalogo.pdf" target="_blank" rel="noopener"><FileDown />Catálogo en PDF<ChevronRight /></a>

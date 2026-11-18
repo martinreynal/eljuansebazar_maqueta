@@ -21,7 +21,6 @@ export function Footer({ settings, categories }: { settings: Settings; categorie
             <ul>
               {GROUPS.map((g) => <li key={g.key}><Link href={groupHref(g.key)}>{g.name}</Link></li>)}
               {categories.some((c) => c.is_offers) && <li><Link href="/ofertas">Ofertas</Link></li>}
-              <li><Link href="/personalizados">Personalizados</Link></li>
               <li><Link href="/">Todo el catálogo</Link></li>
             </ul>
           </div>
