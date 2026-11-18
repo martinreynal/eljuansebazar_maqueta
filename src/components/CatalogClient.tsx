@@ -1,4 +1,5 @@
 "use client";
+import { CategoryIcon } from "./CategoryIcon";
 import { GeoMark } from "./Geo";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -81,9 +82,9 @@ let lastPop = 0;
 if (typeof window !== "undefined") window.addEventListener("popstate", () => { lastPop = Date.now(); });
 const SCROLL_KEY = (url: string) => `saggio:cat:${url}`;
 /** Tarjetas de grupo del catálogo (fotos en public/catalogo-grupos, 1600×800). */
-const GROUP_CARDS: { key: CategoryGroup; name: string; line: string; img: string }[] = [
-  { key: "mobiliario", name: "Mobiliario", line: "Camas, sillas, sillones, sofás, mesas, banquetas, exterior y más.", img: "/catalogo-grupos/mobiliario.jpg" },
-  { key: "bazar", name: "Bazar", line: "Vajilla, platos, bowls, cristalería, cubiertos y más.", img: "/catalogo-grupos/bazar.jpg" },
+const GROUP_CARDS: { key: CategoryGroup; name: string; line: string; img: string; pos: string; tone: "forest" | "terra" }[] = [
+  { key: "bazar", name: "Bazar", line: "Vajilla, cristalería y equipamiento profesional", img: "/catalogo-grupos/bazar.jpg", pos: "70% 60%", tone: "forest" },
+  { key: "mobiliario", name: "Mobiliario", line: "Muebles para restaurantes, hoteles y más", img: "/catalogo-grupos/mobiliario.jpg", pos: "62% 55%", tone: "terra" },
 ];
 const AV_FILTERS: Availability[] = ["disponible", "consultar", "sin_stock"];
 
@@ -348,35 +349,40 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
         <a className="btn btn-ghost btn-sm only-d" href="/catalogo.pdf" target="_blank" rel="noopener"><FileDown />Descargar catálogo en PDF</a>
       </div>
       {/* Grupos: Mobiliario / Bazar (al elegir uno aparecen sus subcategorías) */}
-      <div className="gcards" role="tablist" aria-label="Grupos de categorías">
+      <div className={`ch-banners compact${railGroup !== "todo" ? " picked" : ""}`} role="tablist" aria-label="Grupos de categorías">
         {GROUP_CARDS.map((g) => {
           const on = railGroup === g.key;
           return (
-            <button key={g.key} type="button" role="tab" aria-selected={on} className={`gcard ${on ? "on" : ""}`} onClick={() => pickGroup(on ? "todo" : g.key)}>
-              <img className="gcard-img" src={g.img} alt="" loading="eager" decoding="async" />
-              <span className="gcard-txt">
+            <button key={g.key} type="button" role="tab" aria-selected={on} className={`ch-banner ${g.tone}${on ? " on" : ""}`} onClick={() => pickGroup(on ? "todo" : g.key)}>
+              <img className="ch-banner-img" src={g.img} alt="" loading="eager" decoding="async" style={{ objectPosition: g.pos }} />
+              <span className="ch-shape" aria-hidden />
+              <span className="ch-banner-t">
                 <b>{g.name}</b>
-                <span>{g.line}</span>
-                <i className="gcard-go" aria-hidden><ArrowRight /></i>
+                <i aria-hidden />
+                <small>{g.line}</small>
+                <span className="ch-go" aria-hidden>{on ? <Check /> : <ArrowRight />}</span>
               </span>
             </button>
           );
         })}
       </div>
-      {railGroup !== "todo" && <div className="crail">
-        <div className={`crail-track g-${railGroup}`} ref={railRef} role="group" aria-label="Categorías (podés elegir varias)" style={{ ["--n" as string]: catTiles.length }}>
-          {catTiles.map((c) => {
-            const on = subPicked && cats.includes(c.id);
-            const img = catCover(c);
-            return (
-              <button key={c.id} type="button" aria-pressed={on} className={`crail-tile ${on ? "on" : ""}`} onClick={() => pickCat(c.id)}>
-                <span className="crail-ph">{img ? <img src={img} alt="" loading="lazy" decoding="async" /> : <span className="crail-soon">Próximamente</span>}</span>
-                <span className="crail-n">{c.name}</span>
-              </button>
-            );
-          })}
+      {railGroup !== "todo" && (
+        <div className={`ch-group ${railGroup} cat-rail`} ref={railRef}>
+          <ul className="ch-tiles" role="group" aria-label="Categorías (podés elegir varias)" style={{ ["--n" as string]: catTiles.length }}>
+            {catTiles.map((c) => {
+              const on = subPicked && cats.includes(c.id);
+              return (
+                <li key={c.id}>
+                  <button type="button" aria-pressed={on} className={`ch-tile${on ? " on" : ""}`} onClick={() => pickCat(c.id)}>
+                    <CategoryIcon slug={c.slug} group={railGroup} />
+                    <span>{c.name}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
         </div>
-      </div>}
+      )}
 
       {/* Barra de búsqueda y filtros */}
       {subNav && subCat && (

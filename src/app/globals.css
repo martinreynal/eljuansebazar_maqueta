@@ -2732,3 +2732,29 @@ textarea.ig-in{line-height:1.45}
   .ch-go{width:36px;height:36px;margin-top:10px}
   .ch-shape{width:74%}
 }
+/* Catálogo por grupo/categoría: mismos banners e íconos que la portada */
+button.ch-banner{width:100%;border:0;padding:0;margin:0;font:inherit;text-align:left;cursor:pointer;background:none}
+.ch-banner-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease,ease)}
+.ch-banner:hover .ch-banner-img{transform:scale(1.04)}
+.ch-banners.compact{margin-bottom:6px}
+.ch-banners.compact .ch-banner{height:clamp(150px,12vw,184px)}
+.ch-banners.compact .ch-banner-t b{font-size:clamp(34px,3.2vw,46px)}
+.ch-banners.compact .ch-banner-t i{margin:10px 0 8px}
+.ch-banners.compact .ch-go{width:38px;height:38px;margin-top:12px}
+.ch-banners.picked .ch-banner:not(.on){opacity:.62;filter:saturate(.7)}
+.ch-banners.picked .ch-banner:not(.on):hover{opacity:.9;filter:none}
+.ch-banner.on{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--forest),0 18px 40px -26px rgba(22,59,47,.5)}
+.ch-banner.terra.on{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--terra),0 18px 40px -26px rgba(169,83,47,.5)}
+.cat-rail{margin-top:16px}
+button.ch-tile{width:100%;font:inherit;cursor:pointer}
+.ch-tile.on{border:2px solid var(--forest);background:color-mix(in srgb,var(--forest) 8%,#fff);box-shadow:0 10px 22px -16px rgba(22,59,47,.6)}
+.ch-group.mobiliario .ch-tile.on{border-color:var(--terra);background:color-mix(in srgb,var(--terra) 9%,#fff)}
+.ch-tile.on span{color:var(--forest);font-weight:700}
+.ch-group.mobiliario .ch-tile.on span{color:var(--terra-dark)}
+@media (max-width:860px){.ch-banners.compact .ch-banner{height:clamp(120px,32vw,160px)}}
+@media (max-width:600px){.ch-banners.compact{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.ch-banners.compact .ch-banner-t small{display:none}.ch-banners.compact .ch-banner-t{width:80%;padding:14px}.ch-banners.compact .ch-banner-t b{font-size:26px}.ch-banners.compact .ch-shape{width:84%}.ch-banners.compact .ch-go{width:30px;height:30px}}
+.ch-banners.compact .ch-banner-t{padding:18px clamp(18px,2.4vw,30px)}
+.ch-banners.compact .ch-banner-t b{font-size:clamp(32px,2.8vw,42px)}
+.ch-banners.compact .ch-banner-t small{font-size:11px;line-height:1.45;letter-spacing:.18em}
+.ch-banners.compact .ch-banner-t i{margin:8px 0 7px}
+.ch-banners.compact .ch-go{margin-top:10px}
