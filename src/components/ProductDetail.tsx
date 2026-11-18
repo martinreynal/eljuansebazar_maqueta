@@ -32,16 +32,6 @@ const FEATURE_ICON: Record<FeatureKey, React.ReactNode> = {
   apilable: <Layers />, exterior: <Sun />, tapizado: <Sofa />, personalizable: <Stamp />, profesional: <ChefHat />,
 };
 
-/** Primeras oraciones de la descripción (resumen comercial breve). */
-function brief(d: string, max = 175): { short: string; cut: boolean } {
-  const t = d.trim();
-  if (t.length <= max) return { short: t, cut: false };
-  const sentences = t.match(/[^.!?]+[.!?]+(\s|$)/g) ?? [t];
-  let out = "";
-  for (const s of sentences) { if ((out + s).length > max && out) break; out += s; }
-  return { short: out.trim() || t.slice(0, max).trim() + "…", cut: out.trim().length < t.length };
-}
-
 export function ProductDetail({ p, category, group, subtype, settings, base }: {
   p: Product; category?: Category; group: "bazar" | "mobiliario" | null; subtype?: { label: string; href: string } | null; settings: Settings; base: string;
 }) {
@@ -61,7 +51,7 @@ export function ProductDetail({ p, category, group, subtype, settings, base }: {
   const wa = waLink(settings.whatsapp, msgProduct(base, p, variant, qty));
   const features = featuresOf(p, group);
   const specs = specsOf(p, category?.slug);
-  const desc = brief(p.description || "");
+  const desc = (p.description || "").trim();
 
   const ctaRef = useRef<HTMLDivElement>(null);
   const [ctaVisible, setCtaVisible] = useState(true);
@@ -164,7 +154,7 @@ export function ProductDetail({ p, category, group, subtype, settings, base }: {
             <div className="price pdx-price">{money(p.price!)}{p.tag === "oferta" && p.old_price ? <s>{money(p.old_price)}</s> : null}</div>
           )}
 
-          {desc.short && <p className="pdx-desc">{desc.short}{desc.cut && <> <a href="#ficha" className="pdx-more">Ver más</a></>}</p>}
+          {desc && <p className="pdx-desc">{desc}</p>}
 
           {features.length > 0 && (
             <ul className="pdx-feats" aria-label="Características principales">
@@ -220,7 +210,6 @@ export function ProductDetail({ p, category, group, subtype, settings, base }: {
           <dl className="pdx-table">
             {sheet.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
           </dl>
-          {desc.cut && <div className="pdx-longdesc"><h3>Descripción</h3><p>{p.description}</p></div>}
         </div>
       </section>
 
