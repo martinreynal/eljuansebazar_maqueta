@@ -76,7 +76,7 @@ const ProductInput = z.object({
   featured: z.boolean(),
   visible: z.boolean(),
   images: z.array(z.string().regex(/^(products\/[\w.-]+|\/catalogo\/[\w.-]+)$/)).max(10),
-  chair_tags: z.array(z.enum(["madera", "tapizadas", "metalicas", "apoyabrazos", "exterior", "apilables", "blanca", "gres", "decorada", "platos", "platos-pequenos", "bowls", "platos-tazas", "fuentes", "juegos"])).max(15).default([]),
+  chair_tags: z.array(z.enum(["madera", "tapizadas", "metalicas", "apoyabrazos", "exterior", "apilables", "sillones", "blanca", "gres", "decorada", "platos", "platos-pequenos", "bowls", "platos-tazas", "fuentes", "juegos"])).max(15).default([]),
   model_url: z.preprocess(
     (v) => (typeof v === "string" && v.trim() === "" ? null : v),
     z.string().trim().regex(/^(\/modelos\/[\w.-]+\.(glb|gltf)|models\/[\w.-]+\.(glb|gltf))$/, "El modelo 3D tiene que ser un archivo .glb o .gltf en /modelos/ o en la carpeta models del almacenamiento.").nullable(),

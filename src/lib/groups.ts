@@ -2,10 +2,10 @@ import type { Category, CategoryGroup } from "./types";
 
 /** Grandes grupos del catálogo. Cada categoría es una subcategoría de uno de ellos. */
 export const GROUPS: { key: CategoryGroup; name: string; line: string }[] = [
-  { key: "bazar", name: "Bazar", line: "Vajilla, cristalería, cubiertos, bar y utensilios" },
-  { key: "mobiliario", name: "Mobiliario", line: "Sillas, mesas, banquetas, sillones y exterior" },
+  { key: "bazar", name: "Bazar", line: "Vajilla, platos, cristalería, cubiertos y servicio" },
+  { key: "mobiliario", name: "Mobiliario", line: "Sillas, sillones, sofás, mesas, banquetas, exterior y más" },
 ];
-const MOBILIARIO = new Set(["sillas", "sofas-y-sillones", "banquetas", "boxes-y-bancos", "mesas", "bases-y-tapas", "mesas-auxiliares", "sets", "exterior", "exterior-lounge"]);
+const MOBILIARIO = new Set(["camas-y-cabeceras", "mesas-de-luz-y-auxiliares", "armarios-y-almacenamiento", "escritorios", "sillas", "sofas-y-lounge", "mesas", "banquetas", "mostradores-y-recepcion", "mobiliario-para-eventos", "exterior", "mobiliario-de-servicio", "sofas-y-sillones", "boxes-y-bancos", "bases-y-tapas", "mesas-auxiliares", "sets", "exterior-lounge"]);
 
 /** Grupo de una categoría (si falta el dato, se deduce: lo que no es mobiliario es bazar). */
 export function groupOf(c: Pick<Category, "slug" | "is_offers"> & { grupo?: CategoryGroup | null }): CategoryGroup | null {

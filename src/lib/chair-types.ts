@@ -9,11 +9,12 @@ export const CHAIR_TYPES = [
   { key: "apoyabrazos", label: "Con apoyabrazos", rep: "SIL-202" },
   { key: "exterior", label: "Exterior", rep: "EXT-088" },
   { key: "apilables", label: "Apilables", rep: "SIL-254" },
+  { key: "sillones", label: "Sillones y butacas", rep: "SOF-047" },
 ] as const;
 export type ChairType = (typeof CHAIR_TYPES)[number]["key"];
 export const CHAIR_KEYS = CHAIR_TYPES.map((t) => t.key) as ChairType[];
 
-/** Categoría principal de sillas: la navegación por tipos aparece cuando es la única elegida. */
+/** Categoría «Sillas y sillones»: la navegación por tipos aparece cuando es la única elegida. */
 export const CHAIRS_SLUG = "sillas";
 
 /** ¿Es una silla? Las de la categoría Sillas y las sillas de las categorías de exterior. */
@@ -31,6 +32,7 @@ export function chairTypesOf(p: Product, catSlug: string | undefined): Set<Chair
   if (/apoyabrazos|con brazos/.test(t)) s.add("apoyabrazos");
   if (catSlug?.startsWith("exterior") || /exterior/.test(t)) s.add("exterior");
   if (/apilable/.test(t)) s.add("apilables");
+  if (/^(sillon|butaca|poltrona)\b/.test(norm(p.name))) s.add("sillones");
   for (const k of p.chair_tags ?? []) if ((CHAIR_KEYS as string[]).includes(k)) s.add(k as ChairType);
   return s;
 }

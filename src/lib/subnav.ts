@@ -25,7 +25,7 @@ export type SubNav = {
 export const SUBNAVS: Record<string, SubNav> = {
   [CHAIRS_SLUG]: {
     slug: CHAIRS_SLUG,
-    allLabel: "Todas las sillas",
+    allLabel: "Todas las sillas y sillones",
     line: "Soluciones de mobiliario para restaurantes, hoteles y espacios gastronómicos.",
     types: CHAIR_TYPES,
     member: (p, s) => isChair(p, s),

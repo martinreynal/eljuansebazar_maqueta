@@ -1,0 +1,5 @@
+-- Mobiliario con 12 categorías (aplicada desde Claude el 2026-11-18; ver change_log).
+-- Respaldo: backup_categories_20261118, backup_products_categoria_20261118.
+-- sofas-y-sillones → sofas-y-lounge; muebles-auxiliares → mesas-de-luz-y-auxiliares; muebles-de-servicio-y-almacenamiento → mobiliario-de-servicio.
+-- Nuevas: camas-y-cabeceras, armarios-y-almacenamiento, escritorios, mostradores-y-recepcion, mobiliario-para-eventos.
+-- Inactivas: boxes-y-bancos (→ sofas-y-lounge), exterior-lounge (→ exterior).
