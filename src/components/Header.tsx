@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
-  ChevronDown, ChevronRight, ClipboardList, FileDown, House, LayoutGrid, Menu, Search, Stamp, Tag, Users, X,
+  ChevronDown, ChevronRight, ClipboardList, FileDown, LayoutGrid, Menu, Search, Stamp, Tag, Users, X,
 } from "lucide-react";
 import { msgGeneral, waLink } from "@/lib/format";
 import { GROUPS, groupHref, groupOf } from "@/lib/groups";
@@ -90,7 +90,7 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
     </form>
   );
   const hasOffers = categories.some((c) => c.is_offers);
-  const inCatalog = pathname.startsWith("/catalogo") || /^\/(categoria|producto|ofertas)/.test(pathname);
+  const inCatalog = pathname === "/" || pathname.startsWith("/catalogo") || /^\/(categoria|producto|ofertas)/.test(pathname);
   const waHref = waLink(whatsapp, msgGeneral(name));
 
   return (
@@ -103,7 +103,7 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
 
         <nav className="nav only-d" aria-label="Secciones">
           <div className="nav-dd" ref={catsRef} onMouseLeave={() => setCats(false)}>
-            <Link href="/catalogo" aria-current={inCatalog ? "page" : undefined} onMouseEnter={() => setCats(true)} onFocus={() => setCats(true)}>
+            <Link href="/" aria-current={inCatalog ? "page" : undefined} onMouseEnter={() => setCats(true)} onFocus={() => setCats(true)}>
               Catálogo
             </Link>
             <button type="button" className="nav-dd-btn" aria-label="Ver categorías" aria-expanded={cats} aria-haspopup="true" onClick={() => setCats((v) => !v)}><ChevronDown /></button>
@@ -121,7 +121,7 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
                 ))}
               </div>
               <div className="dd-foot">
-                <Link href="/catalogo" role="menuitem">Ver todo el catálogo<ChevronRight /></Link>
+                <Link href="/" role="menuitem">Ver todo el catálogo<ChevronRight /></Link>
                 <a href="/catalogo.pdf" target="_blank" rel="noopener" role="menuitem"><FileDown />Descargar PDF</a>
               </div>
             </div>
@@ -154,7 +154,7 @@ export function Header({ name, tagline, whatsapp, categories }: Props) {
         <div className="drawer-head"><h3>{name}</h3><button className="icon-btn" onClick={() => setMenu(false)} aria-label="Cerrar menú"><X /></button></div>
         <div className="drawer-body">
           <nav className="m-nav">
-            {([["/", House, "Inicio"], ["/catalogo", LayoutGrid, "Catálogo"], ["/ofertas", Tag, "Ofertas"], ["/personalizados", Stamp, "Productos con tu logo"], ["/nosotros", Users, "Nosotros"], ["/lista", ClipboardList, "Lista de consulta"]] as const).filter(([h]) => hasOffers || h !== "/ofertas").map(([h, I, t]) => (
+            {([["/", LayoutGrid, "Catálogo"], ["/ofertas", Tag, "Ofertas"], ["/personalizados", Stamp, "Productos con tu logo"], ["/nosotros", Users, "Nosotros"], ["/lista", ClipboardList, "Lista de consulta"]] as const).filter(([h]) => hasOffers || h !== "/ofertas").map(([h, I, t]) => (
               <Link key={h} href={h} onClick={() => setMenu(false)}><I />{t}<ChevronRight /></Link>
             ))}
             <a href="/catalogo.pdf" target="_blank" rel="noopener"><FileDown />Catálogo en PDF<ChevronRight /></a>

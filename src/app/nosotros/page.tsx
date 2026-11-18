@@ -30,7 +30,7 @@ export default async function AboutPage() {
           </div>
           <div className="ab-cta-btns">
             <WaLink href={wa} channel="general" className="btn btn-wa btn-lg">Escribinos por WhatsApp</WaLink>
-            <Link href="/catalogo" className="btn btn-ghost btn-lg">Ver catálogo <ArrowRight /></Link>
+            <Link href="/" className="btn btn-ghost btn-lg">Ver catálogo <ArrowRight /></Link>
           </div>
         </div>
         <div className="ab-img-wrap">

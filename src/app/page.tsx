@@ -1,116 +1,77 @@
-import Link from "next/link";
-import { HomeSearch } from "@/components/HomeSearch";
-import { HeroCarousel } from "@/components/HeroCarousel";
-import { WaSteps } from "@/components/WaSteps";
-import { GeoBand, GeoMark, GeoPanel } from "@/components/Geo";
-import { ArrowRight, Clock, CloudUpload, Droplet, FileDown, FilePen, Layers, ListPlus, MessageCircle, Package, Search, Tag, Zap } from "lucide-react";
-import { ProductGrid } from "@/components/ProductCard";
-import { WaLink } from "@/components/WaLink";
-import { getStore } from "@/lib/data";
-import { siteUrl } from "@/lib/env";
-import { msgCustom, msgGeneral, msgQuote, waLink } from "@/lib/format";
-import { GROUPS, groupHref } from "@/lib/groups";
+import type { Metadata } from "next";
 import Image from "next/image";
-/* eslint-disable @next/next/no-img-element */
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { CategoryIcon } from "@/components/CategoryIcon";
+import { HomeSearch } from "@/components/HomeSearch";
+import { getStore } from "@/lib/data";
+import { GROUPS, groupHref, groupOf } from "@/lib/groups";
+import type { CategoryGroup } from "@/lib/types";
 
 export const revalidate = 300;
+export const metadata: Metadata = {
+  title: { absolute: "Saggio · Equipamiento para gastronomía y hotelería" },
+  description: "Vajilla, cristalería, cubiertos y mobiliario para restaurantes, hoteles y cafeterías. Elegí la categoría y pedí tu cotización por WhatsApp.",
+  alternates: { canonical: "/" },
+};
 
-
-
-/** Accesos grandes de la portada: los dos grupos del catálogo. */
-const HERO_GROUPS = [
-  { title: "Mobiliario", line: "Espacios que inspiran hospitalidad.", href: "/categoria/mobiliario", img: "/catalogo-grupos/mobiliario.jpg", pos: "60% 55%" },
-  { title: "Bazar", line: "Detalles que hacen la diferencia.", href: "/categoria/bazar", img: "/catalogo-grupos/bazar.jpg", pos: "60% 55%" },
-];
-/** Carrusel de productos destacados (fotos en public/destacados, 2048×768). side = lado del texto; fx = encuadre en celular. */
-const FEATURED: { sku: string; eyebrow: string; line: string; img: string; alt: string; side: "left" | "right"; fx: number }[] = [
-  { sku: "SOF-063", eyebrow: "Sillón", line: "Estructura de madera en A y tapizado verde petróleo: un clásico moderno para lobbies y salas de espera.", img: "/destacados/sillon-loano-2.jpg", alt: "Sillón Loano tapizado en verde petróleo con estructura de madera", side: "left", fx: 75 },
-  { sku: "BAN-057", eyebrow: "Banqueta", line: "Respaldo de esterilla y asiento de cuero suela: estilo bistró para la barra.", img: "/destacados/banqueta-castelsardo-2.jpg", alt: "Banqueta Castelsardo con respaldo de esterilla y asiento de cuero", side: "left", fx: 73 },
-  { sku: "MES-010", eyebrow: "Mesa", line: "Madera cálida y doble base de acero para el día a día del salón.", img: "/destacados/mesa-larrajo.jpg", alt: "Mesa Larrajo con tapa de madera y doble pie negro", side: "left", fx: 62 },
-  { sku: "SIL-232", eyebrow: "Silla", line: "Madera cálida sobre estructura de acero negro: resistente para el ritmo del salón.", img: "/destacados/silla-canelli-2.jpg", alt: "Silla Canelli con asiento y respaldo de madera y estructura negra", side: "left", fx: 70 },
-  { sku: "SIL-226", eyebrow: "Silla", line: "Esterilla natural y caño cromado: un clásico del diseño para salones con estilo.", img: "/destacados/silla-mandello.jpg", alt: "Silla Mandello de esterilla con marco negro y estructura de caño cromado", side: "right", fx: 28 },
-  { sku: "SOF-056", eyebrow: "Sillón", line: "Brazos curvos de madera y almohadón mullido: confort cálido para espacios de descanso.", img: "/destacados/sillon-san-teodoro-2.jpg", alt: "Sillón San Teodoro tapizado en crudo con estructura de madera curva", side: "left", fx: 74 },
-  { sku: "BAN-096", eyebrow: "Banqueta", line: "Respaldo envolvente y asiento en cuero suela sobre madera clara: calidez a la altura de la barra.", img: "/destacados/banqueta-ziano-2.jpg", alt: "Banqueta Ziano de madera clara con asiento y respaldo de cuero suela", side: "left", fx: 72 },
-  { sku: "EXT-102", eyebrow: "Mesa de exterior", line: "Tapa de listones símil madera y pie de aluminio: lista para terrazas y veredas.", img: "/destacados/mesa-petritoli-2.jpg", alt: "Mesa Petritoli cuadrada con tapa de listones y pie central de aluminio", side: "right", fx: 34 },
+/** Banners de los dos grupos del catálogo. */
+const BANNERS: { key: CategoryGroup; title: string; line: string; img: string; pos: string; tone: "forest" | "terra" }[] = [
+  { key: "bazar", title: "Bazar", line: "Vajilla, cristalería y equipamiento profesional", img: "/catalogo-grupos/bazar.jpg", pos: "70% 60%", tone: "forest" },
+  { key: "mobiliario", title: "Mobiliario", line: "Muebles para restaurantes, hoteles y más", img: "/catalogo-grupos/mobiliario.jpg", pos: "62% 55%", tone: "terra" },
 ];
 
-
+/** Portada = catálogo: los dos grupos y todas sus categorías con íconos. */
 export default async function Home() {
-  const store = await getStore();
-  const { settings, categories, products } = store;
-  const d = settings.design;
-  const base = siteUrl(settings.site_url);
-  const ctx = { settings, base, categories };
-  const offers = products.filter((p) => p.tag === "oferta").slice(0, 4);
-  const realCats = categories.filter((c) => !c.is_offers);
+  const { categories } = await getStore();
+  const cats = categories.filter((c) => !c.is_offers);
 
   return (
-    <div className="wrap">
-      <div className="m-quick only-m">
-        <HomeSearch />
-        <nav className="quick-cats" aria-label="Categorías">
-          {GROUPS.map((g) => <Link key={g.key} className="qc-group" href={groupHref(g.key)}>{g.name}</Link>)}
-          {realCats.map((c) => <Link key={c.id} href={`/categoria/${c.slug}`}>{c.name}</Link>)}
-        </nav>
+    <div className="wrap ch">
+      <div className="m-quick only-m"><HomeSearch /></div>
+
+      <header className="ch-head">
+        <span className="ch-eyebrow">Equipamiento para gastronomía y hotelería</span>
+        <h1>Encontrá lo que necesitás<br className="only-d" /> para tu proyecto</h1>
+      </header>
+
+      <div className="ch-banners">
+        {BANNERS.map((b, i) => (
+          <Link key={b.key} href={groupHref(b.key)} className={`ch-banner ${b.tone}`}>
+            <Image src={b.img} alt="" fill priority={i === 0} sizes="(max-width: 860px) 100vw, 50vw" style={{ objectPosition: b.pos }} />
+            <span className="ch-shape" aria-hidden />
+            <span className="ch-banner-t">
+              <b>{b.title}</b>
+              <i aria-hidden />
+              <small>{b.line}</small>
+              <span className="ch-go" aria-hidden><ArrowRight /></span>
+            </span>
+          </Link>
+        ))}
       </div>
-      <section className="hero2" aria-label="Presentación">
-        <div className="h2-copy">
-          <GeoMark />
-          <h1>{d.heroTitle}</h1>
-          <p>{d.heroText}</p>
-          <div className="hero-ctas">
-            <Link className="btn btn-cta btn-lg" href="/catalogo">{d.heroCta}<ArrowRight /></Link>
-            <WaLink href={waLink(settings.whatsapp, msgQuote(settings.business_name))} channel="quote" className="btn btn-ghost btn-lg">Pedir cotización</WaLink>
-          </div>
-        </div>
-        <div className="h2-groups">
-          {HERO_GROUPS.map((g, i) => (
-            <Link key={g.href} className="h2-group" href={g.href}>
-              <Image src={g.img} alt="" fill priority={i === 0} sizes="(max-width: 860px) 100vw, 56vw" style={{ objectPosition: g.pos }} />
-              <span className="hg-txt">
-                <b>{g.title}</b>
-                <i aria-hidden />
-                <small>{g.line}</small>
-                <span className="hg-go" aria-hidden><ArrowRight /></span>
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
 
-
-      <HeroCarousel slides={FEATURED.flatMap((f) => {
-        const p = products.find((x) => x.sku === f.sku);
-        if (!p) return [];
-        const c = categories.find((x) => x.id === p.category_id);
-        return [{ ...f, title: p.name, href: `/producto/${p.slug}`, catHref: c ? `/categoria/${c.slug}` : undefined, catLabel: c ? `Ver ${c.name.split(":")[0].toLowerCase()}` : undefined }];
-      })} />
-
-      <div className="geo-sep home-geo-sep" aria-hidden><GeoBand n={36} /></div>
-
-
-
-      {offers.length > 0 && (
-        <section className="sec" aria-labelledby="h-off">
-          <div className="band">
-            <div className="sec-head"><div><span className="eyebrow">Promoción</span><h2 id="h-off" style={{ marginTop: 6 }}>{d.promoTitle}</h2><p>{d.promoText}</p></div><Link href="/ofertas">Todas las ofertas <ArrowRight /></Link></div>
-            <ProductGrid products={offers} ctx={ctx} rail />
-          </div>
-        </section>
-      )}
-
-
-      <section className="sec" id="contacto">
-        <div className="wa-banner">
-          <GeoPanel variant="terra" />
-          <div>
-            <h2>{d.waTitle}</h2>
-            <p>{d.waText}</p>
-            <WaSteps wa={waLink(settings.whatsapp, msgGeneral(settings.business_name))} hours={settings.hours} />
-          </div>
-          <WaLink href={waLink(settings.whatsapp, msgGeneral(settings.business_name))} channel="general" className="btn btn-wa btn-lg">Escribinos por WhatsApp</WaLink>
-        </div>
-      </section>
+      {GROUPS.map((g) => {
+        const list = cats.filter((c) => groupOf(c) === g.key);
+        if (!list.length) return null;
+        return (
+          <section key={g.key} className={`ch-group ${g.key}`} aria-labelledby={`ch-${g.key}`}>
+            <h2 id={`ch-${g.key}`} className="ch-gh">
+              <span className="ch-leaf" aria-hidden />
+              <Link href={groupHref(g.key)}>{g.name}</Link>
+            </h2>
+            <ul className="ch-tiles" style={{ ["--n" as string]: list.length }}>
+              {list.map((c) => (
+                <li key={c.id}>
+                  <Link href={`/categoria/${c.slug}`} className="ch-tile">
+                    <CategoryIcon slug={c.slug} group={g.key} />
+                    <span>{c.name}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        );
+      })}
     </div>
   );
 }

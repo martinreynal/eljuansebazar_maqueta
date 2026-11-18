@@ -6,7 +6,7 @@ export default function NotFound() {
       <div className="empty">
         <h3>No encontramos esta página</h3>
         <p>Puede que el producto se haya dado de baja o que el enlace no sea correcto.</p>
-        <Link className="btn btn-dark" href="/catalogo">Ir al catálogo</Link>
+        <Link className="btn btn-dark" href="/">Ir al catálogo</Link>
       </div>
     </div>
   );

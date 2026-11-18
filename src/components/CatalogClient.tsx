@@ -334,8 +334,8 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
   const presetCat = preset ? categories.find((c) => c.id === preset) : undefined;
   const presetGroup = presetCat ? groupByKey(groupOf(presetCat) ?? "") : undefined;
   const crumbs = preset
-    ? [["Inicio", "/"], ["Catálogo", "/catalogo"], ...(presetGroup ? [[presetGroup.name, groupHref(presetGroup.key)]] : []), [title, ""]]
-    : group ? [["Inicio", "/"], ["Catálogo", "/catalogo"], [title, ""]] : [["Inicio", "/"], ["Catálogo", ""]];
+    ? [["Catálogo", "/"], ...(presetGroup ? [[presetGroup.name, groupHref(presetGroup.key)]] : []), [title, ""]]
+    : group ? [["Catálogo", "/"], [title, ""]] : [["Catálogo", "/"], [q ? "Búsqueda" : "Todos los productos", ""]];
 
   return (
     <div className="wrap">

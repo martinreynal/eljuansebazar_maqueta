@@ -64,10 +64,9 @@ export default async function ProductPage({ params }: Params) {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Inicio", item: base },
-        { "@type": "ListItem", position: 2, name: "Catálogo", item: `${base}/catalogo` },
-        ...(category ? [{ "@type": "ListItem", position: 3, name: category.name, item: `${base}/categoria/${category.slug}` }] : []),
-        { "@type": "ListItem", position: category ? 4 : 3, name: p.name },
+        { "@type": "ListItem", position: 1, name: "Catálogo", item: `${base}/` },
+        ...(category ? [{ "@type": "ListItem", position: 2, name: category.name, item: `${base}/categoria/${category.slug}` }] : []),
+        { "@type": "ListItem", position: category ? 3 : 2, name: p.name },
       ],
     },
   ];
@@ -75,10 +74,10 @@ export default async function ProductPage({ params }: Params) {
     <div className="pdx-page">
     <GeoEdges />
     <div className="wrap">
-      <Link className="back-m only-m" href={category ? `/categoria/${category.slug}` : "/catalogo"}><ChevronLeft />{category ? category.name : "Catálogo"}</Link>
+      <Link className="back-m only-m" href={category ? `/categoria/${category.slug}` : "/"}><ChevronLeft />{category ? category.name : "Catálogo"}</Link>
       <nav className="crumbs only-d" aria-label="Ruta de navegación">
-        <Link href="/">Inicio</Link><span aria-hidden>›</span>
-        {category ? <><Link href={`/categoria/${category.slug}`}>{category.name}</Link><span aria-hidden>›</span></> : <><Link href="/catalogo">Catálogo</Link><span aria-hidden>›</span></>}
+        <Link href="/">Catálogo</Link><span aria-hidden>›</span>
+        {category && <><Link href={`/categoria/${category.slug}`}>{category.name}</Link><span aria-hidden>›</span></>}
         {subtype && <><Link href={subtype.href}>{subtype.label}</Link><span aria-hidden>›</span></>}
         <span aria-current="page">{p.name}</span>
       </nav>

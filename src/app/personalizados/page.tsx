@@ -5,7 +5,9 @@ import Link from "next/link";
 import { ArrowRight, CloudUpload, Droplet, FilePen, Layers, Package, Tag, Zap } from "lucide-react";
 import { WaLink } from "@/components/WaLink";
 import { BrandMock, type MockStyle } from "@/components/BrandMock";
+import { HeroCarousel } from "@/components/HeroCarousel";
 import { getStore } from "@/lib/data";
+import { FEATURED } from "@/lib/featured";
 import { msgCustom, waLink } from "@/lib/format";
 
 export const revalidate = 300;
@@ -23,7 +25,13 @@ const BRAND_WORKS: { title: string; sku: string; cat: string; tech: string; img:
 ];
 
 export default async function CustomPage() {
-  const { settings, categories } = await getStore();
+  const { settings, categories, products } = await getStore();
+  // Destacados: si el producto no está publicado, la placa lleva a su categoría
+  const slides = FEATURED.map((f) => {
+    const p = products.find((x) => x.sku === f.sku);
+    const c = categories.find((x) => x.id === p?.category_id) ?? categories.find((x) => x.slug === f.cat);
+    return { ...f, title: p?.name ?? f.name, href: p ? `/producto/${p.slug}` : `/categoria/${c?.slug ?? f.cat}`, catHref: c ? `/categoria/${c.slug}` : undefined, catLabel: c ? `Ver ${c.name.toLowerCase()}` : undefined };
+  });
   return (
     <div className="wrap">
       <section className="sec" id="personalizados" aria-labelledby="h-custom">
@@ -58,6 +66,10 @@ export default async function CustomPage() {
           <li><span className="n">2</span><FilePen aria-hidden /><span><b>Te enviamos boceto y presupuesto</b>Ves cómo queda antes de confirmar.</span></li>
           <li><span className="n">3</span><Package aria-hidden /><span><b>Producimos y enviamos</b>A tu oficina o a cualquier punto del país.</span></li>
         </ol>
+      </section>
+
+      <section className="sec pz-feat" aria-label="Productos destacados">
+        <HeroCarousel slides={slides} />
       </section>
     </div>
   );

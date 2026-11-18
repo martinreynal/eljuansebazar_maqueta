@@ -70,7 +70,7 @@ export function ListClient({ products, settings, base }: { products: Product[]; 
         <div className="ic"><ClipboardList /></div>
         <h3>Tu lista está vacía</h3>
         <p>Agregá productos con el botón de lista y después mandanos todo junto en un solo mensaje de WhatsApp. No hace falta registrarse.</p>
-        <Link className="btn btn-dark" href="/catalogo">Explorar el catálogo</Link>
+        <Link className="btn btn-dark" href="/">Explorar el catálogo</Link>
       </div>
     );
 
@@ -103,7 +103,7 @@ export function ListClient({ products, settings, base }: { products: Product[]; 
           <ul className="lc-list">
             {items.map((i) => <Row key={`${i.sku}|${i.variant}`} i={i} p={bySku.get(i.sku)!} index={list.indexOf(i)} />)}
           </ul>
-          <Link className="link-btn lc-more" href="/catalogo"><Plus />Agregar más productos</Link>
+          <Link className="link-btn lc-more" href="/"><Plus />Agregar más productos</Link>
         </section>
 
         <aside className="summary" aria-label="Resumen de la consulta">

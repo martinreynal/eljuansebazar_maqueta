@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ClipboardList, House, LayoutGrid, MessageCircle, Search } from "lucide-react";
+import { ClipboardList, LayoutGrid, MessageCircle, Search } from "lucide-react";
 import { msgGeneral, waLink } from "@/lib/format";
 import { useStore } from "./store/StoreProvider";
 import { WaLink } from "./WaLink";
@@ -11,7 +11,7 @@ export function Chrome({ name, whatsapp }: { name: string; whatsapp: string }) {
   const pathname = usePathname();
   const { list } = useStore();
   if (pathname.startsWith("/admin")) return null;
-  const tabs = [["/", House, "Inicio"], ["/catalogo", LayoutGrid, "Catálogo"]] as const;
+  const tabs = [["/", LayoutGrid, "Catálogo"]] as const;
   const wa = waLink(whatsapp, msgGeneral(name));
   return (
     <>
@@ -20,7 +20,7 @@ export function Chrome({ name, whatsapp }: { name: string; whatsapp: string }) {
       </WaLink>}
       <nav className="tabbar" aria-label="Navegación principal">
         {tabs.map(([h, I, t]) => {
-          const current = h === "/" ? pathname === "/" : pathname.startsWith(h) || (h === "/catalogo" && /^\/(categoria|producto|ofertas)/.test(pathname));
+          const current = pathname === "/" || /^\/(catalogo|categoria|producto|ofertas)/.test(pathname);
           return <Link key={h} href={h} aria-current={current ? "page" : undefined}><I /><span>{t}</span></Link>;
         })}
         <button type="button" onClick={() => window.dispatchEvent(new Event("ejb:search"))}><Search /><span>Buscar</span></button>
