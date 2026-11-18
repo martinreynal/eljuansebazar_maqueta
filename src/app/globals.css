@@ -2480,3 +2480,13 @@ h1,.page-title{line-height:1.04}
 /* Tarjetas sin foto todavía: módulo geométrico en lugar de rayado */
 .crail-soon{font-size:10.5px;letter-spacing:.06em;color:var(--forest);background:radial-gradient(circle at 0 100%,var(--g-peach) 0 40%,transparent 40.5%),radial-gradient(circle at 100% 0,var(--g-cream) 0 46%,transparent 46.5%),var(--g-ivory)}
 .chair-nav-head .geo-mark{width:58px;margin-bottom:12px}
+/* Contracara: secciones del formulario y planilla INGES */
+.src-form .src-sec{grid-column:1/-1;margin:10px 0 -2px;padding-top:12px;border-top:1px solid var(--line);font-family:var(--f-ui);font-size-adjust:none;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--terra-dark)}
+.src-form .src-sec:first-child{margin-top:0;padding-top:0;border-top:0}
+.src-form .src-sec-note{grid-column:1/-1;margin:-4px 0 2px;font-size:12.5px;color:var(--muted)}
+.src-fill.inges i{background:var(--g-terra)}
+.src-row + .src-row{margin-top:2px}
+.lens-actions{flex-wrap:wrap}
+.src-tbl .c-prod{width:24%}.src-tbl .c-buy{width:14%}.src-tbl .c-box{width:13%}.src-tbl .c-imp{width:15%}.src-tbl .c-ph{width:8%}
+.src-kv-txt{grid-template-columns:auto minmax(0,1fr)}
+.src-tbl .c-imp{width:16%}

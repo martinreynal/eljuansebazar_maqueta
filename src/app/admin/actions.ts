@@ -577,16 +577,23 @@ export async function resetDisplayOrder(categoryId: string): Promise<Result> {
 
 // ---------------------------------------------------------------- contracara (datos internos de compra)
 
-const optNum = (max: number) => z.preprocess((v) => (v === "" || v === null || v === undefined ? null : Number(String(v).replace(",", "."))), z.number().min(0).max(max).nullable());
+/** Enteros: acepta «10.000» o «10 000» (separador de miles). */
+const optInt = (max: number) => z.preprocess((v) => (v === "" || v === null || v === undefined ? null : Number(String(v).replace(/[.\s]/g, ""))), z.number().int().min(0).max(max).nullable());
+const optNum = (max: number) => z.preprocess((v) => {
+  if (v === "" || v === null || v === undefined) return null;
+  if (typeof v === "number") return v;
+  const s = String(v).trim().replace(/\s/g, "");
+  return Number(s.includes(",") ? s.replace(/\./g, "").replace(",", ".") : s);
+}, z.number().min(0).max(max).nullable());
 const Sourcing = z.object({
   product_id: z.string().uuid(),
   supplier: z.string().trim().max(160).default(""),
   link: z.string().trim().max(600).refine((v) => !v || /^https?:\/\//i.test(v), "El link tiene que empezar con http:// o https://").default(""),
   cost: optNum(1e9),
   currency: z.enum(["USD", "ARS", "CNY", "EUR"]).default("USD"),
-  moq: z.preprocess((v) => (v === "" || v == null ? null : Number(v)), z.number().int().min(0).max(1e7).nullable()),
+  moq: optInt(1e7),
   lead_time: z.string().trim().max(160).default(""),
-  units_per_box: z.preprocess((v) => (v === "" || v == null ? null : Number(v)), z.number().int().min(0).max(1e6).nullable()),
+  units_per_box: optInt(1e6),
   box_volume_m3: optNum(1000),
   box_weight_kg: optNum(100000),
   box_dimensions: z.string().trim().max(160).default(""),
@@ -596,6 +603,23 @@ const Sourcing = z.object({
   photos_authorized: z.enum(["", "si", "no", "consultar"]).default(""),
   photos_note: z.string().trim().max(400).default(""),
   notes: z.string().trim().max(2000).default(""),
+  // Planilla de clasificación INGES
+  inges_order: z.string().trim().max(80).default(""),
+  customs_name: z.string().trim().max(300).default(""),
+  customs_description: z.string().trim().max(2000).default(""),
+  origin: z.string().trim().max(120).default(""),
+  operating_details: z.string().trim().max(2000).default(""),
+  material_composition: z.string().trim().max(600).default(""),
+  sample: z.string().trim().max(300).default(""),
+  customs_notes: z.string().trim().max(2000).default(""),
+  total_pcs: optInt(1e9),
+  total_cartons: optInt(1e8),
+  total_cbm: optNum(1e6),
+  fob_djai: optNum(1e9),
+  net_weight_g: optNum(1e7),
+  shipping_mode: z.enum(["", "maritimo", "aereo"]).default(""),
+  loading_port: z.string().trim().max(160).default(""),
+  hs_code: z.string().trim().max(40).default(""),
 });
 export type SourcingInput = z.input<typeof Sourcing>;
 
