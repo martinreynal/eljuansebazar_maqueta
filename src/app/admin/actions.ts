@@ -1,5 +1,6 @@
 "use server";
 
+import type { SourcingRow } from "@/lib/sourcing";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -583,7 +584,7 @@ const optNum = (max: number) => z.preprocess((v) => {
   if (v === "" || v === null || v === undefined) return null;
   if (typeof v === "number") return v;
   const s = String(v).trim().replace(/\s/g, "");
-  return Number(s.includes(",") ? s.replace(/\./g, "").replace(",", ".") : s);
+  return Number(s.includes(",") ? s.replace(/\./g, "").replace(",", ".") : /^\d{1,3}(\.\d{3})+$/.test(s) ? s.replace(/\./g, "") : s);
 }, z.number().min(0).max(max).nullable());
 const Sourcing = z.object({
   product_id: z.string().uuid(),
@@ -624,18 +625,18 @@ const Sourcing = z.object({
 export type SourcingInput = z.input<typeof Sourcing>;
 
 /** Guarda la contracara (datos internos de compra y logística) de un producto. Solo administradores. */
-export async function saveSourcing(input: SourcingInput): Promise<Result<{ updated_at: string }>> {
+export async function saveSourcing(input: SourcingInput): Promise<Result<{ updated_at: string; row: SourcingRow }>> {
   const parsed = Sourcing.safeParse(input);
   if (!parsed.success) return zodFail(parsed.error);
   try {
     const sb = await requireAdmin();
     const { data: { user } } = await sb.auth.getUser();
-    const { data, error } = await sb.from("product_sourcing").upsert({ ...parsed.data, updated_at: new Date().toISOString(), updated_by: user?.email ?? "" }).select("updated_at").single();
+    const { data, error } = await sb.from("product_sourcing").upsert({ ...parsed.data, updated_at: new Date().toISOString(), updated_by: user?.email ?? "" }).select("*").single();
     if (error) return fail(error);
     const pl = await productLabel(sb, parsed.data.product_id);
     await logChange(sb, "Contracara", `Contracara actualizada: ${pl.name}`, "", pl.sku);
     revalidatePath("/admin/contracara");
-    return { ok: true, data: { updated_at: data.updated_at as string } };
+    return { ok: true, data: { updated_at: data.updated_at as string, row: data as SourcingRow } };
   } catch (e) {
     return fail(e);
   }

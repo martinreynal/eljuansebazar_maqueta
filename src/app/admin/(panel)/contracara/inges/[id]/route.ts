@@ -27,7 +27,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
   // Foto principal, convertida a JPG cuadrado con fondo blanco (Excel no admite WebP)
   let photo: { data: Buffer; px: number } | null = null;
-  const img = (p.images as string[] | null)?.[0];
+  const imgs = (p.images as string[] | null) ?? [];
+  const n = Number(new URL(req.url).searchParams.get("foto") ?? 0);
+  const img = imgs[Number.isInteger(n) && n >= 0 && n < imgs.length ? n : 0];
   if (img) {
     try {
       const url = img.startsWith("/") ? new URL(img, req.url).toString() : mediaUrl(img);
