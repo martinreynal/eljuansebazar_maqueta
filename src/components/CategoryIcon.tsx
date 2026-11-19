@@ -1,3 +1,5 @@
+import { BAZAR_ICONS } from "./BazarIcons";
+
 /**
  * Íconos ilustrados de las categorías (planos, geométricos, en la paleta de la marca).
  * Cada uno se dibuja en una caja de 64 × 64. Si una categoría no tiene ícono propio, se usa uno genérico de su grupo.
@@ -142,6 +144,9 @@ const FALLBACK: Record<string, React.ReactNode> = {
 };
 
 export function CategoryIcon({ slug, group }: { slug: string; group?: string | null }) {
+  // Bazar: íconos ilustrados de la marca (caja de 100 × 100)
+  const art = BAZAR_ICONS[slug];
+  if (art) return <svg className="cat-ic" viewBox="0 0 100 100" aria-hidden focusable="false">{art}</svg>;
   const icon = ICONS[slug] ?? FALLBACK[group ?? ""] ?? ICONS.platos;
   return <svg className="cat-ic" viewBox="0 0 64 64" aria-hidden focusable="false">{icon}</svg>;
 }
