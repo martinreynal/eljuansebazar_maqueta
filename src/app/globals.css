@@ -2846,3 +2846,5 @@ button.ch-tile{width:100%;font:inherit;cursor:pointer}
 @media (max-width:600px){.hh{--colw:58px}}
 .hh-art-svg{width:calc(100% + var(--bleed) - var(--colw))}
 @media (max-width:1000px){.hh-art-svg{width:calc(100% + 2 * var(--bleed) - var(--colw))}.hh-col{right:calc(-1 * var(--bleed))}}
+/* Texto de la presentación más a la izquierda (dentro del círculo, cerca del borde de la pantalla) */
+.hh-copy{margin-left:min(0px,calc(clamp(28px,4vw,72px) - var(--bleed)));max-width:620px}
