@@ -185,7 +185,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
         const hdr = document.querySelector(".hdr")?.getBoundingClientRect().height ?? 84;
         if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - hdr, behavior: "smooth" });
       };
-      requestAnimationFrame(() => setTimeout(go, 350));
+      requestAnimationFrame(() => setTimeout(go, 700));
     }
     mounted.current = true;
   }, []);
