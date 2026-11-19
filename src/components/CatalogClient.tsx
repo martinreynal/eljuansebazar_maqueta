@@ -1,4 +1,5 @@
 "use client";
+import { HomeHero } from "./HomeHero";
 import { GroupShape } from "./GroupShape";
 import { CategoryIcon } from "./CategoryIcon";
 import { GeoMark } from "./Geo";
@@ -6,7 +7,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDownUp, ArrowRight, Check, ChevronDown, FileDown, Filter, Search, SearchX, X } from "lucide-react";
-import { AVAILABILITY, inCategory, money, priceShown, waLink } from "@/lib/format";
+import { AVAILABILITY, inCategory, money, msgQuote, priceShown, waLink } from "@/lib/format";
 /* eslint-disable @next/next/no-img-element */
 import { track } from "@/lib/track";
 import { SHOW_3D } from "@/lib/features";
@@ -77,7 +78,7 @@ function FilterMenu({ label, options, value, onChange, more = false }: { label: 
   );
 }
 
-type Props = { products: Product[]; categories: Category[]; settings: Settings; base: string; preset?: string; group?: CategoryGroup; title: string };
+type Props = { products: Product[]; categories: Category[]; settings: Settings; base: string; preset?: string; group?: CategoryGroup; title: string; home?: boolean };
 // Al volver atrás (popstate) el catálogo recupera cuántos productos mostraba y la posición de scroll
 let lastPop = 0;
 if (typeof window !== "undefined") window.addEventListener("popstate", () => { lastPop = Date.now(); });
@@ -94,7 +95,7 @@ const AV_FILTERS: Availability[] = ["disponible", "consultar", "sin_stock"];
 const COVER_FILE: Record<string, string> = { sets: "sets-3", cafe: "cafe-2", vajilla: "vajilla-blanca" };
 const CATEGORY_IMG = new Set(["vajilla", "platos", "bowls", "fuentes-y-bandejas", "servicio", "decoracion-y-presentacion", "vajilla-blanca", "vajilla-decorada", "platos-y-bowls", "vajilla-oriental", "cubiertos", "cristaleria", "cafe", "sofas-y-lounge", "banquetas", "mesas", "sets"]);
 
-export function CatalogClient({ products, categories, settings, base, preset, group, title }: Props) {
+export function CatalogClient({ products, categories, settings, base, preset, group, title, home = false }: Props) {
   const params = useSearchParams();
   const pathname = usePathname();
   const q = params.get("q") ?? "";
@@ -291,6 +292,16 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
     // Sin grupo elegido los filtros quedan ocultos: se limpian para que no sigan aplicándose
     if (g === "todo") { setAvail([]); setTypes([]); setMats([]); setColors([]); setExtra([]); setMin(""); setMax(""); }
   };
+  // Portada: «Ver catálogo completo» muestra todos los productos de las dos secciones
+  const allIds = categories.filter((c) => !c.is_offers).map((c) => c.id);
+  const pickAll = () => {
+    setRailGroup("todo"); setCats(allIds); setExplicit(true);
+    setTimeout(() => document.getElementById("cat-results")?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+  };
+  const pickGroupHome = (g: CategoryGroup | "todo") => {
+    pickGroup(g);
+    if (g !== "todo") setTimeout(() => railRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+  };
   // Filtros visibles solo con un grupo elegido (o en búsquedas y en Ofertas)
   // Productos y filtros solo con una subcategoría elegida (o en búsquedas, Ofertas y páginas de subcategoría)
   const fullGroup = GROUPS.find((g) => { const ids = idsOf(g.key); return ids.length > 0 && ids.length === cats.length && ids.every((i) => cats.includes(i)); });
@@ -318,7 +329,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
 
   const chips: { label: string; clear: () => void }[] = [
     ...(q ? [{ label: `“${q}”`, clear: () => setQ("") }] : []),
-    ...(fullGroup && !explicit ? [{ label: fullGroup.name, clear: () => pickGroup("todo") }] : cats.map((id) => ({ label: categories.find((c) => c.id === id)?.name ?? id, clear: () => pickCat(id) }))),
+    ...(cats.length === allIds.length && allIds.length > 1 ? [{ label: "Todo el catálogo", clear: () => pickGroup("todo") }] : fullGroup && !explicit ? [{ label: fullGroup.name, clear: () => pickGroup("todo") }] : cats.map((id) => ({ label: categories.find((c) => c.id === id)?.name ?? id, clear: () => pickCat(id) }))),
     ...(activeChair && subNav ? [{ label: subNav.types.find((t) => t.key === activeChair)!.label, clear: () => setChairType(null) }] : []),
     ...avail.map((a) => ({ label: AVAILABILITY[a], clear: () => setAvail((v) => v.filter((x) => x !== a)) })),
     ...types.map((t) => ({ label: t, clear: () => setTypes((v) => v.filter((x) => x !== t)) })),
@@ -341,6 +352,9 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
 
   return (
     <div className="wrap">
+      {home ? (
+        <HomeHero group={railGroup} onGroup={pickGroupHome} onAll={pickAll} wa={waLink(settings.whatsapp, msgQuote(settings.business_name || "Saggio"))} />
+      ) : (<>
       <nav className="crumbs only-d" aria-label="Ruta de navegación">
         {crumbs.map(([t, h], i) => (h ? <span key={i} style={{ display: "contents" }}><Link href={h}>{t}</Link><span aria-hidden>›</span></span> : <span key={i} aria-current="page">{t}</span>))}
       </nav>
@@ -367,6 +381,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
           );
         })}
       </div>
+      </>)}
       {railGroup !== "todo" && (
         <div className={`ch-group ${railGroup} cat-rail`} ref={railRef}>
           <ul className="ch-tiles" role="group" aria-label="Categorías (podés elegir varias)" style={{ ["--n" as string]: catTiles.length }}>
@@ -411,7 +426,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
         </section>
       )}
 
-      {showFilters && <div className="fbar">
+      {showFilters && <div className="fbar" id="cat-results">
         <form className="fbar-search" role="search" onSubmit={(e) => { e.preventDefault(); (e.currentTarget.querySelector("input") as HTMLInputElement)?.blur(); }}>
           <Search aria-hidden />
           <input id="cat-q" type="search" placeholder="Buscar producto…" aria-label="Buscar por nombre o código de producto" enterKeyHint="search" value={q} onChange={(e) => setQ(e.target.value)} autoComplete="off" />
@@ -426,7 +441,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
         </div>
       </div>}
 
-      {!showFilters && (
+      {!showFilters && !(home && railGroup === "todo") && (
         <div className="cat-pick-hint">
           {railGroup === "todo"
             ? <p>Elegí <b>Mobiliario</b> o <b>Bazar</b> para ver sus categorías.</p>

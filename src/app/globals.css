@@ -2792,3 +2792,57 @@ button.ch-tile{width:100%;font:inherit;cursor:pointer}
   .ch-banners:not(.compact) .ch-go{margin-top:14px;width:42px;height:42px}
   .ch-banners.compact .ch-banner{height:clamp(146px,11vw,166px)}
 }
+
+/* =====================================================================
+   PORTADA (catálogo): presentación con composición geométrica + accesos Bazar / Mobiliario
+   ===================================================================== */
+.hh{--bleed:max(20px,calc((100vw - 1240px) / 2 + 20px));display:grid;grid-template-columns:minmax(0,.74fr) minmax(0,1fr);gap:clamp(16px,1.8vw,26px);margin:clamp(10px,1.6vw,20px) 0 clamp(24px,3vw,36px)}
+.hh-art{position:relative;min-width:0;display:flex;align-items:center}
+.hh-art-svg{position:absolute;top:0;bottom:0;right:0;left:calc(-1 * var(--bleed));width:calc(100% + var(--bleed));height:100%;z-index:0}
+.hh-copy{position:relative;z-index:1;width:min(78%,520px);padding:clamp(28px,4vw,56px) 0}
+.hh-copy h1{font-size:clamp(38px,3.9vw,60px);line-height:1;color:var(--forest);letter-spacing:-.01em;text-wrap:balance}
+.hh-copy p{margin-top:clamp(14px,1.6vw,20px);font-size:clamp(15px,1.2vw,18px);line-height:1.5;color:var(--ink);max-width:40ch}
+.hh-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:clamp(18px,2.2vw,28px)}
+.hh-cta .btn{height:50px;padding:0 20px;font-size:15.5px;border-radius:10px}
+.hh-cta .btn .lucide{width:18px;height:18px}
+.hh-quote{background:rgba(255,255,255,.55);border:1.5px solid var(--forest);color:var(--forest)}
+.hh-quote:hover{background:#fff}
+.hh-banners{display:grid;grid-template-rows:auto auto;gap:clamp(14px,1.4vw,20px);margin:0}
+.hh-banners .ch-banner{height:clamp(190px,15vw,226px)!important}
+.hh-banners .ch-banner-t small{margin-top:10px}
+.hh-banners .ch-banner-t b{font-size:clamp(40px,3.6vw,58px)}
+.hh-banners .ch-go{width:50px;height:50px;margin-top:16px}
+.hh-banners .ch-go .lucide{width:22px;height:22px}
+@media (max-width:1000px){
+  .hh{grid-template-columns:minmax(0,1fr)}
+  .hh-art-svg{left:calc(-1 * var(--bleed));right:calc(-1 * var(--bleed));width:auto;preserveAspectRatio:none}
+  .hh-copy{width:min(80%,520px)}
+  .hh-banners .ch-banner{height:auto!important;aspect-ratio:2.35/1}
+}
+@media (max-width:600px){
+  .hh{--bleed:16px}
+  .hh-copy{width:76%;padding:26px 0}
+  .hh-copy h1{font-size:32px}
+  .hh-copy p{font-size:14.5px}
+  .hh-cta .btn{height:44px;font-size:14.5px;padding:0 14px}
+  .hh-banners .ch-banner-t b{font-size:30px}
+  .hh-banners .ch-banner-t small{font-size:10px;letter-spacing:.14em;margin-top:6px}
+  .hh-banners .ch-go{width:34px;height:34px;margin-top:8px}
+}
+.hh{grid-template-columns:minmax(0,.84fr) minmax(0,1fr)}
+.hh-banners.ch-banners{grid-template-columns:minmax(0,1fr)}
+.hh-copy{width:min(80%,540px)}
+.hh-copy h1{font-size:clamp(36px,3.5vw,56px)}
+.hh-copy p{max-width:36ch}
+@media (max-width:1000px){.hh{grid-template-columns:minmax(0,1fr)}}
+.hh{--colw:clamp(70px,7.4vw,128px)}
+.hh-art-svg{right:var(--colw);width:auto}
+.hh-col{position:absolute;top:0;right:0;width:var(--colw);height:100%;z-index:0}
+.hh-copy{width:auto;max-width:560px;padding:clamp(22px,2.6vw,40px) calc(var(--colw) + clamp(18px,2vw,32px)) clamp(22px,2.6vw,40px) 0}
+.hh-banners{grid-template-rows:1fr 1fr}
+.hh-banners .ch-banner{height:auto!important;min-height:clamp(180px,13.5vw,214px)}
+.hh-cta{flex-wrap:wrap}
+@media (max-width:1000px){.hh-art-svg{right:var(--colw)}.hh-col{right:calc(-1 * var(--bleed))}.hh-copy{padding-right:calc(var(--colw) + 8px)}.hh-banners .ch-banner{min-height:0}}
+@media (max-width:600px){.hh{--colw:58px}}
+.hh-art-svg{width:calc(100% + var(--bleed) - var(--colw))}
+@media (max-width:1000px){.hh-art-svg{width:calc(100% + 2 * var(--bleed) - var(--colw))}.hh-col{right:calc(-1 * var(--bleed))}}
