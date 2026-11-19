@@ -1,4 +1,5 @@
 import { BAZAR_ICONS } from "./BazarIcons";
+import { MOBILIARIO_ICONS } from "./MobiliarioIcons";
 
 /**
  * Íconos ilustrados de las categorías (planos, geométricos, en la paleta de la marca).
@@ -145,7 +146,7 @@ const FALLBACK: Record<string, React.ReactNode> = {
 
 export function CategoryIcon({ slug, group }: { slug: string; group?: string | null }) {
   // Bazar: íconos ilustrados de la marca (caja de 100 × 100)
-  const art = BAZAR_ICONS[slug];
+  const art = BAZAR_ICONS[slug] ?? MOBILIARIO_ICONS[slug];
   if (art) return <svg className="cat-ic" viewBox="0 0 100 100" aria-hidden focusable="false">{art}</svg>;
   const icon = ICONS[slug] ?? FALLBACK[group ?? ""] ?? ICONS.platos;
   return <svg className="cat-ic" viewBox="0 0 64 64" aria-hidden focusable="false">{icon}</svg>;

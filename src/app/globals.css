@@ -2866,3 +2866,5 @@ button.ch-tile{width:100%;font:inherit;cursor:pointer}
 .cat-rail .ch-tile .cat-ic[viewBox="0 0 100 100"]{width:clamp(64px,5.6vw,84px)!important}
 .cat-rail .ch-tile{min-height:104px}
 @media (max-width:860px){.cat-rail .ch-tile .cat-ic[viewBox="0 0 100 100"]{width:58px!important}}
+/* Mobiliario: 9 categorías en 3 hileras de 3 (igual que Bazar) */
+.cat-rail.mobiliario .ch-tiles{grid-template-columns:repeat(3,minmax(0,1fr))!important}

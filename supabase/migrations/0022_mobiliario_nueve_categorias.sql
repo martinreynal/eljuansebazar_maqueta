@@ -1,0 +1,3 @@
+-- Mobiliario con 9 categorías (aplicada desde Claude el 2026-11-19; ver change_log).
+-- Inactivas: mobiliario-para-eventos, exterior, mobiliario-de-servicio. De exterior se movieron sillas/sillones, mesas, banquetas y sofás a sus categorías.
+-- Respaldo: backup_products_categoria_20261119, backup_categories_20261119.
