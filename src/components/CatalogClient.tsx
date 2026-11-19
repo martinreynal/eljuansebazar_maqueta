@@ -1,4 +1,5 @@
 "use client";
+import { GroupShape } from "./GroupShape";
 import { CategoryIcon } from "./CategoryIcon";
 import { GeoMark } from "./Geo";
 import Link from "next/link";
@@ -83,8 +84,8 @@ if (typeof window !== "undefined") window.addEventListener("popstate", () => { l
 const SCROLL_KEY = (url: string) => `saggio:cat:${url}`;
 /** Tarjetas de grupo del catálogo (fotos en public/catalogo-grupos, 1600×800). */
 const GROUP_CARDS: { key: CategoryGroup; name: string; line: string; img: string; pos: string; tone: "forest" | "terra" }[] = [
-  { key: "bazar", name: "Bazar", line: "Vajilla, cristalería y equipamiento profesional", img: "/catalogo-grupos/bazar.jpg", pos: "70% 60%", tone: "forest" },
-  { key: "mobiliario", name: "Mobiliario", line: "Muebles para restaurantes, hoteles y más", img: "/catalogo-grupos/mobiliario.jpg", pos: "62% 55%", tone: "terra" },
+  { key: "mobiliario", name: "Mobiliario", line: "Muebles para restaurantes, hoteles y más", img: "/catalogo-grupos/mobiliario.jpg", pos: "50% 55%", tone: "terra" },
+  { key: "bazar", name: "Bazar", line: "Vajilla, cristalería y equipamiento profesional", img: "/catalogo-grupos/bazar.jpg", pos: "45% 60%", tone: "forest" },
 ];
 const AV_FILTERS: Availability[] = ["disponible", "consultar", "sin_stock"];
 
@@ -355,7 +356,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
           return (
             <button key={g.key} type="button" role="tab" aria-selected={on} className={`ch-banner ${g.tone}${on ? " on" : ""}`} onClick={() => pickGroup(on ? "todo" : g.key)}>
               <img className="ch-banner-img" src={g.img} alt="" loading="eager" decoding="async" style={{ objectPosition: g.pos }} />
-              <span className="ch-shape" aria-hidden />
+              <GroupShape group={g.key} />
               <span className="ch-banner-t">
                 <b>{g.name}</b>
                 <i aria-hidden />

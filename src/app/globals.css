@@ -2758,3 +2758,37 @@ button.ch-tile{width:100%;font:inherit;cursor:pointer}
 .ch-banners.compact .ch-banner-t small{font-size:11px;line-height:1.45;letter-spacing:.18em}
 .ch-banners.compact .ch-banner-t i{margin:8px 0 7px}
 .ch-banners.compact .ch-go{margin-top:10px}
+
+/* Accesos Bazar / Mobiliario: figuras del isotipo como superficie de color (sin deformar) */
+.ch-shape{display:none}
+.ch-iso{position:absolute;top:0;bottom:0;height:100%;width:auto;aspect-ratio:651.3/322;max-width:none;z-index:1;transition:transform .45s var(--ease,ease)}
+.ch-iso.iso-t{right:0;fill:var(--g-forest);transform-origin:100% 0}
+.ch-iso.iso-b{left:0;fill:var(--g-terra);transform-origin:0 100%}
+.ch-banner:hover .ch-iso{transform:scale(1.03)}
+.ch-banner .ch-banner-t{width:auto;inset:0 auto 0 0;max-width:52%}
+.ch-banner.forest .ch-banner-t{inset:0 0 0 auto;left:auto;right:0;max-width:44%;padding-right:clamp(20px,3vw,40px);padding-left:0}
+.ch-banner.forest .ch-go{align-self:flex-end}
+.ch-banner.forest.on .ch-go{align-self:flex-end}
+@media (max-width:860px){
+  .ch-banner{height:auto;aspect-ratio:2.35/1}
+  .ch-banner.forest .ch-banner-t{max-width:48%;padding-right:18px}
+  .ch-banner .ch-banner-t{max-width:56%}
+}
+@media (max-width:600px){
+  .ch-banners.compact{grid-template-columns:minmax(0,1fr)}
+  .ch-banners.compact .ch-banner{height:auto;aspect-ratio:3.1/1}
+  .ch-banners.compact .ch-banner-t{max-width:60%}
+  .ch-banners.compact .ch-banner.forest .ch-banner-t{max-width:52%}
+}
+/* La foto ocupa la parte que deja libre la figura (así el sillón y la vajilla quedan a la vista) */
+.ch-banner.terra>img{left:34%!important;width:66%!important}
+.ch-banner.forest>img{left:0!important;width:66%!important}
+/* Altura pensada para que la figura (proporción fija del logo) ocupe ~60 % y la foto se vea */
+@media (min-width:861px){
+  .ch-banners:not(.compact) .ch-banner{height:clamp(196px,14.6vw,228px)}
+  .ch-banners:not(.compact) .ch-banner-t{padding-block:18px}
+  .ch-banners:not(.compact) .ch-banner-t b{font-size:clamp(38px,3.6vw,54px)}
+  .ch-banners:not(.compact) .ch-banner-t i{margin:10px 0 9px}
+  .ch-banners:not(.compact) .ch-go{margin-top:14px;width:42px;height:42px}
+  .ch-banners.compact .ch-banner{height:clamp(146px,11vw,166px)}
+}

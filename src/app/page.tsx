@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { CategoryIcon } from "@/components/CategoryIcon";
+import { GroupShape } from "@/components/GroupShape";
 import { HomeSearch } from "@/components/HomeSearch";
 import { getStore } from "@/lib/data";
 import { GROUPS, groupHref, groupOf } from "@/lib/groups";
@@ -17,8 +18,8 @@ export const metadata: Metadata = {
 
 /** Banners de los dos grupos del catálogo. */
 const BANNERS: { key: CategoryGroup; title: string; line: string; img: string; pos: string; tone: "forest" | "terra" }[] = [
-  { key: "bazar", title: "Bazar", line: "Vajilla, cristalería y equipamiento profesional", img: "/catalogo-grupos/bazar.jpg", pos: "70% 60%", tone: "forest" },
-  { key: "mobiliario", title: "Mobiliario", line: "Muebles para restaurantes, hoteles y más", img: "/catalogo-grupos/mobiliario.jpg", pos: "62% 55%", tone: "terra" },
+  { key: "mobiliario", title: "Mobiliario", line: "Muebles para restaurantes, hoteles y más", img: "/catalogo-grupos/mobiliario.jpg", pos: "50% 55%", tone: "terra" },
+  { key: "bazar", title: "Bazar", line: "Vajilla, cristalería y equipamiento profesional", img: "/catalogo-grupos/bazar.jpg", pos: "45% 60%", tone: "forest" },
 ];
 
 /** Portada = catálogo: los dos grupos y todas sus categorías con íconos. */
@@ -39,7 +40,7 @@ export default async function Home() {
         {BANNERS.map((b, i) => (
           <Link key={b.key} href={groupHref(b.key)} className={`ch-banner ${b.tone}`}>
             <Image src={b.img} alt="" fill priority={i === 0} sizes="(max-width: 860px) 100vw, 50vw" style={{ objectPosition: b.pos }} />
-            <span className="ch-shape" aria-hidden />
+            <GroupShape group={b.key} />
             <span className="ch-banner-t">
               <b>{b.title}</b>
               <i aria-hidden />
