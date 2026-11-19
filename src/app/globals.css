@@ -2898,3 +2898,19 @@ button.ch-tile{width:100%;font:inherit;cursor:pointer}
 .hh-art-poster{display:block;min-height:clamp(260px,30vw,560px);background:#F8ECE1}
 .hh-poster{position:absolute;inset:0;width:100%;height:100%}
 @media (max-width:1000px){.hh-art-poster{min-height:0;aspect-ratio:3/2}}
+
+/* Categorías del grupo elegido: grilla 3×3 que ocupa toda la pantalla (sin ver el pie), tarjetas grandes con el ícono al centro */
+.cat-rail{--rail-h:calc(100svh - 84px - 2 * clamp(14px,1.6vw,22px));margin-top:0;padding-block:clamp(14px,1.6vw,22px);scroll-margin-top:84px}
+.cat-rail .ch-tiles{grid-auto-rows:calc((var(--rail-h) - 2 * clamp(12px,1.2vw,18px)) / 3);gap:clamp(12px,1.2vw,18px)!important}
+.cat-rail .ch-tile{flex-direction:column!important;justify-content:center!important;align-items:center!important;text-align:center!important;gap:clamp(10px,1.4vh,18px)!important;padding:14px!important;min-height:0!important;height:100%;border-radius:10px}
+.cat-rail .ch-tile .cat-ic,.cat-rail .ch-tile .cat-ic[viewBox="0 0 100 100"]{width:auto!important;height:min(58%,190px);max-width:70%}
+.cat-rail .ch-tile span{font-size:clamp(15px,1.15vw,19px)!important;font-weight:600}
+.cat-rail .ch-tile:hover .cat-ic{transform:scale(1.06)}
+@media (max-width:860px){
+  .cat-rail{--rail-h:auto;padding-block:14px}
+  .cat-rail .ch-tiles{grid-auto-rows:auto}
+  .cat-rail .ch-tile{aspect-ratio:1;padding:10px!important}
+  .cat-rail .ch-tile .cat-ic,.cat-rail .ch-tile .cat-ic[viewBox="0 0 100 100"]{height:52%}
+  .cat-rail .ch-tile span{font-size:12.5px!important}
+}
+@media (max-width:860px){.cat-rail{min-height:calc(100svh - 64px - 64px)}.cat-rail .ch-tiles{align-content:start}}

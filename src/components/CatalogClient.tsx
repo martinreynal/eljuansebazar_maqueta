@@ -182,7 +182,8 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
       // Entrando a Bazar o Mobiliario: ir a sus categorías
       const go = () => {
         const el = document.querySelector(".cat-rail");
-        if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 110, behavior: "smooth" });
+        const hdr = document.querySelector(".hdr")?.getBoundingClientRect().height ?? 84;
+        if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - hdr, behavior: "smooth" });
       };
       requestAnimationFrame(() => setTimeout(go, 120));
     }
@@ -302,7 +303,11 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
   const allIds = categories.filter((c) => !c.is_offers).map((c) => c.id);
   const pickGroupHome = (g: CategoryGroup | "todo") => {
     pickGroup(g);
-    if (g !== "todo") setTimeout(() => railRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+    if (g !== "todo") setTimeout(() => {
+      const el = railRef.current; if (!el) return;
+      const hdr = document.querySelector(".hdr")?.getBoundingClientRect().height ?? 84;
+      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - hdr, behavior: "smooth" });
+    }, 60);
   };
   // Filtros visibles solo con un grupo elegido (o en búsquedas y en Ofertas)
   // Productos y filtros solo con una subcategoría elegida (o en búsquedas, Ofertas y páginas de subcategoría)
@@ -443,7 +448,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
         </div>
       </div>}
 
-      {!showFilters && !(home && railGroup === "todo") && (
+      {!showFilters && !home && (
         <div className="cat-pick-hint">
           {railGroup === "todo"
             ? <p>Elegí <b>Mobiliario</b> o <b>Bazar</b> para ver sus categorías.</p>
