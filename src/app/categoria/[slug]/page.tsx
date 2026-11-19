@@ -36,7 +36,7 @@ export default async function CategoryPage({ params }: Params) {
   if (g) {
     return (
       <Suspense fallback={<CatalogSkeleton />}>
-        <CatalogClient key={g.key} products={products} categories={categories} settings={settings} base={siteUrl(settings.site_url)} group={g.key} title={g.name} />
+        <CatalogClient key={g.key} products={products} categories={categories} settings={settings} base={siteUrl(settings.site_url)} group={g.key} title={g.name} home />
       </Suspense>
     );
   }
@@ -44,7 +44,7 @@ export default async function CategoryPage({ params }: Params) {
   if (!c) notFound();
   return (
     <Suspense fallback={<CatalogSkeleton />}>
-      <CatalogClient key={c.id} products={products} categories={categories} settings={settings} base={siteUrl(settings.site_url)} preset={c.id} title={c.name} />
+      <CatalogClient key={c.id} products={products} categories={categories} settings={settings} base={siteUrl(settings.site_url)} preset={c.id} title={c.name} home />
     </Suspense>
   );
 }
