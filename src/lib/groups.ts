@@ -3,7 +3,7 @@ import type { Category, CategoryGroup } from "./types";
 /** Grandes grupos del catálogo. Cada categoría es una subcategoría de uno de ellos. */
 export const GROUPS: { key: CategoryGroup; name: string; line: string }[] = [
   { key: "bazar", name: "Bazar", line: "Vajilla, platos, cristalería, cubiertos y servicio" },
-  { key: "mobiliario", name: "Mobiliario", line: "Sillas, sillones, sofás, mesas, banquetas, exterior y más" },
+  { key: "mobiliario", name: "Mobiliario", line: "Camas, sillas, sillones, sofás, mesas, banquetas y más" },
 ];
 const MOBILIARIO = new Set(["camas-y-cabeceras", "mesas-de-luz-y-auxiliares", "armarios-y-almacenamiento", "escritorios", "sillas", "sofas-y-lounge", "mesas", "banquetas", "mostradores-y-recepcion", "mobiliario-para-eventos", "exterior", "mobiliario-de-servicio", "sofas-y-sillones", "boxes-y-bancos", "bases-y-tapas", "mesas-auxiliares", "sets", "exterior-lounge"]);
 
