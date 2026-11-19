@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useTransition } from "react";
-import { ArrowLeft, Calculator, Check, ChevronLeft, ChevronRight, FileSpreadsheet, Loader2, Save } from "lucide-react";
+import { ArrowLeft, Calculator, Check, ChevronLeft, ChevronRight, FileSpreadsheet, Link2, Loader2, Save } from "lucide-react";
 import { saveSourcing, type SourcingInput } from "@/app/admin/actions";
 import { CUR, INGES_FIELDS, calcCartons, calcCbm, countFilled, toNum, valuesOf, type SourcingRow, type SourcingValues } from "@/lib/sourcing";
 import type { Product } from "@/lib/types";
@@ -99,6 +99,7 @@ export function IngesSheet({ p, catName, row, prev, next, pos, total }: { p: Pro
         </div>
         <div className="ig-acts">
           <span className={`ig-state ${dirty ? "dirty" : ""}`} role="status">{saving ? "Guardando…" : dirty ? "Cambios sin guardar" : msg?.ok ? "Guardado" : `${filled} de ${INGES_FIELDS.length} datos`}</span>
+          {v.link && <a className="btn btn-ghost" href={v.link} target="_blank" rel="noopener noreferrer" title={v.link}><Link2 />Link del producto</a>}
           <button className="btn btn-dark" onClick={() => save()} disabled={saving || !dirty}>{saving ? <Loader2 className="spin" /> : <Save />}Guardar</button>
           <button className="btn btn-terra" onClick={exportXlsx} disabled={saving}><FileSpreadsheet />Exportar a Excel</button>
         </div>

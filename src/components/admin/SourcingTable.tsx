@@ -174,6 +174,9 @@ export function SourcingTable({ products, categories, rows: initial }: { product
               <div className="ct-actions" role="cell">
                 <button className="btn btn-terra" onClick={() => open(p)}><Pencil />{fb || fi ? "Editar" : "Cargar"}</button>
                 <Link className="btn ct-btn-inges" href={`/admin/contracara/planilla/${p.id}`}><FileSpreadsheet />INGES</Link>
+                {r?.link
+                  ? <a className="btn ct-btn-link" href={r.link} target="_blank" rel="noopener noreferrer" title={r.link}><Link2 />Link del producto</a>
+                  : <button type="button" className="btn ct-btn-link empty" onClick={() => open(p)} title="Todavía no tiene link: cargalo en Editar"><Link2 />Agregar link</button>}
                 <button className="btn ct-btn-ph" onClick={() => setPhotos({ p, i: 0 })} disabled={!p.images.length}><Images />Ver fotos</button>
                 {r?.photos_authorized ? <span className={`src-ph ph-${r.photos_authorized}`} title="Fotos autorizadas">Fotos: {PHOTOS[r.photos_authorized]}</span> : null}
               </div>

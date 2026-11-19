@@ -2889,3 +2889,8 @@ button.ch-tile{width:100%;font:inherit;cursor:pointer}
 @media (max-width:480px){.wrap:has(> .hh){padding-inline:16px}}
 .hh-copy{max-width:none}
 @media (max-width:600px){.hh-copy{padding-right:calc(var(--colw) + 14px)}.hh-copy h1{font-size:28px}.hh{--colw:46px}}
+/* Contracara: acceso directo al link del producto (proveedor) */
+.ct-btn-link{background:var(--forest);border:1.5px solid var(--forest);color:#fff}
+.ct-btn-link:hover{background:var(--forest-dark,#163B2F)}
+.ct-btn-link.empty{background:#fff;color:var(--ink-2);border:1.5px dashed var(--stone,#bbb)}
+.ct-btn-link.empty:hover{border-color:var(--forest);color:var(--forest)}
