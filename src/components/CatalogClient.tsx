@@ -7,7 +7,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDownUp, ArrowRight, Check, ChevronDown, FileDown, Filter, Search, SearchX, X } from "lucide-react";
-import { AVAILABILITY, inCategory, money, msgQuote, priceShown, waLink } from "@/lib/format";
+import { AVAILABILITY, inCategory, money, priceShown, waLink } from "@/lib/format";
 /* eslint-disable @next/next/no-img-element */
 import { track } from "@/lib/track";
 import { SHOW_3D } from "@/lib/features";
@@ -299,12 +299,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
     // Sin grupo elegido los filtros quedan ocultos: se limpian para que no sigan aplicándose
     if (g === "todo") { setAvail([]); setTypes([]); setMats([]); setColors([]); setExtra([]); setMin(""); setMax(""); }
   };
-  // Portada: «Ver catálogo completo» muestra todos los productos de las dos secciones
   const allIds = categories.filter((c) => !c.is_offers).map((c) => c.id);
-  const pickAll = () => {
-    setRailGroup("todo"); setCats(allIds); setExplicit(true);
-    setTimeout(() => document.getElementById("cat-results")?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
-  };
   const pickGroupHome = (g: CategoryGroup | "todo") => {
     pickGroup(g);
     if (g !== "todo") setTimeout(() => railRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
@@ -360,7 +355,7 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
   return (
     <div className="wrap">
       {home ? (
-        <HomeHero group={railGroup} onGroup={pickGroupHome} onAll={pickAll} wa={waLink(settings.whatsapp, msgQuote(settings.business_name || "Saggio"))} />
+        <HomeHero group={railGroup} onGroup={pickGroupHome} />
       ) : (<>
       <nav className="crumbs only-d" aria-label="Ruta de navegación">
         {crumbs.map(([t, h], i) => (h ? <span key={i} style={{ display: "contents" }}><Link href={h}>{t}</Link><span aria-hidden>›</span></span> : <span key={i} aria-current="page">{t}</span>))}

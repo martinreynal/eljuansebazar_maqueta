@@ -2894,3 +2894,7 @@ button.ch-tile{width:100%;font:inherit;cursor:pointer}
 .ct-btn-link:hover{background:var(--forest-dark,#163B2F)}
 .ct-btn-link.empty{background:#fff;color:var(--ink-2);border:1.5px dashed var(--stone,#bbb)}
 .ct-btn-link.empty:hover{border-color:var(--forest);color:var(--forest)}
+/* Portada: póster geométrico en lugar del texto de presentación */
+.hh-art-poster{display:block;min-height:clamp(260px,30vw,560px);background:#F8ECE1}
+.hh-poster{position:absolute;inset:0;width:100%;height:100%}
+@media (max-width:1000px){.hh-art-poster{min-height:0;aspect-ratio:3/2}}

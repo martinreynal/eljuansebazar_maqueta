@@ -1,44 +1,39 @@
 "use client";
 import { ArrowRight, Check } from "lucide-react";
 import type { CategoryGroup } from "@/lib/types";
+import { WORDMARK } from "@/lib/logo-paths";
 import { GroupShape } from "./GroupShape";
-import { WaLink } from "./WaLink";
 
 const BANNERS: { key: CategoryGroup; name: string; line: string; img: string; pos: string; tone: "forest" | "terra" }[] = [
   { key: "bazar", name: "Bazar", line: "Vajilla, cristalería y equipamiento profesional", img: "/catalogo-grupos/bazar.jpg", pos: "45% 60%", tone: "forest" },
   { key: "mobiliario", name: "Mobiliario", line: "Muebles para restaurantes, hoteles y más", img: "/catalogo-grupos/mobiliario.jpg", pos: "50% 55%", tone: "terra" },
 ];
 
-/** Composición geométrica del panel de presentación, con los colores del logo (verde bosque y terracota sobre crema). */
-function HeroArt() {
+/** Póster geométrico de la marca (verde bosque y terracota sobre crema) con el logotipo SAGGIO. Llena el panel. */
+function HeroPoster() {
+  const F = "#1E4D3D", T = "#C96F4A", C = "#F8ECE1";
   return (
-    <svg className="hh-art-svg" viewBox="0 0 712 740" preserveAspectRatio="xMaxYMid slice" aria-hidden focusable="false">
-      <defs>
-        <radialGradient id="hh-cream" cx="38%" cy="40%" r="62%">
-          <stop offset="0" stopColor="#FCF4EC" />
-          <stop offset=".62" stopColor="#F9EAE0" />
-          <stop offset="1" stopColor="#EDC3AE" />
-        </radialGradient>
-      </defs>
-      <rect x="-800" width="1512" height="740" fill="#C96F4A" />
-      <circle cx="-40" cy="760" r="300" fill="#1E4D3D" />
-      <circle cx="520" cy="-10" r="232" fill="#1E4D3D" />
-      <circle cx="455" cy="720" r="200" fill="#E3A68C" />
-      <circle cx="292" cy="392" r="378" fill="url(#hh-cream)" />
-    </svg>
-  );
-}
-
-/** Columna de módulos del borde derecho del panel (ancho fijo; se estira en alto). */
-function HeroColumn() {
-  return (
-    <svg className="hh-col" viewBox="0 0 132 740" preserveAspectRatio="none" aria-hidden focusable="false">
-      <rect width="132" height="290" fill="#C96F4A" />
-      <path d="M132 92V290H0A132 198 0 0 1 132 92Z" fill="#1E4D3D" />
-      <rect y="290" width="132" height="256" fill="#F5E4DA" />
-      <path d="M132 290V546A132 128 0 0 1 0 418A132 128 0 0 1 132 290Z" fill="#C96F4A" />
-      <rect y="546" width="132" height="194" fill="#1E4D3D" />
-      <path d="M0 546H132A132 132 0 0 1 0 678Z" fill="#F5E4DA" />
+    <svg className="hh-poster" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Saggio">
+      <rect width="600" height="400" fill={C} />
+      <circle cx="600" cy="230" r="150" fill={T} />
+      <rect width="100" height="100" fill={T} />
+      <path d="M100 0A100 100 0 0 0 200 100A100 100 0 0 0 100 0Z" fill={F} />
+      <path d="M300 100H200A100 100 0 0 1 300 0Z" fill={F} />
+      <path d="M400 100A100 100 0 0 1 600 100Z" fill={F} />
+      <path d="M100 100V200H0A100 100 0 0 0 100 100Z" fill={T} />
+      <path d="M100 100H200A100 100 0 0 1 100 200Z" fill={F} />
+      <path d="M200 100H300A100 100 0 0 1 200 200Z" fill={T} />
+      <rect x="300" y="100" width="100" height="100" fill={F} />
+      <path d="M400 200H300A100 100 0 0 1 400 100Z" fill={C} />
+      <path d="M0 200A100 100 0 0 1 0 400Z" fill={F} />
+      <path d="M300 200A100 100 0 0 0 400 300A100 100 0 0 0 300 200Z" fill={T} />
+      <rect x="400" y="200" width="100" height="100" fill={C} />
+      <path d="M400 300A100 100 0 0 1 500 200V300Z" fill={F} />
+      <path d="M305 400A95 95 0 0 1 400 305V400Z" fill={T} />
+      <path d="M400 300H500A100 100 0 0 1 400 400Z" fill={F} />
+      <rect x="500" y="300" width="100" height="100" fill={T} />
+      <path d="M500 300A100 100 0 0 1 600 400H500Z" fill={F} />
+      <g transform="translate(112 326) scale(0.145)"><path fill={F} fillRule="evenodd" d={WORDMARK} /></g>
     </svg>
   );
 }
@@ -47,20 +42,12 @@ function HeroColumn() {
  * Portada: panel de presentación (texto + composición geométrica) y los dos accesos, Bazar y Mobiliario,
  * con las figuras del isotipo. Los accesos eligen el grupo: debajo aparecen sus categorías (misma dinámica del catálogo).
  */
-export function HomeHero({ group, onGroup, onAll, wa }: { group: CategoryGroup | "todo"; onGroup: (g: CategoryGroup | "todo") => void; onAll: () => void; wa: string }) {
+export function HomeHero({ group, onGroup }: { group: CategoryGroup | "todo"; onGroup: (g: CategoryGroup | "todo") => void }) {
   return (
     <section className="hh" aria-label="Presentación">
-      <div className="hh-art">
-        <HeroArt />
-        <HeroColumn />
-        <div className="hh-copy">
-          <h1>Equipamiento profesional para la hospitalidad</h1>
-          <p>Mobiliario, vajilla, cristalería y bazar para hoteles y restaurantes, con diseño, calidad y asesoramiento experto.</p>
-          <div className="hh-cta">
-            <button type="button" className="btn btn-terra btn-lg" onClick={onAll}>Ver catálogo completo<ArrowRight /></button>
-            <WaLink href={wa} channel="quote" className="btn hh-quote btn-lg">Pedir cotización</WaLink>
-          </div>
-        </div>
+      <div className="hh-art hh-art-poster">
+        <h1 className="sr-only">Saggio · Equipamiento profesional para la hospitalidad: mobiliario, vajilla, cristalería y bazar para hoteles y restaurantes</h1>
+        <HeroPoster />
       </div>
       <div className={`hh-banners ch-banners${group !== "todo" ? " picked" : ""}`} role="tablist" aria-label="Grupos del catálogo">
         {BANNERS.map((b) => {
