@@ -23,8 +23,7 @@ function HeroPoster() {
       <path d="M100 100V200H0A100 100 0 0 0 100 100Z" fill={T} />
       <path d="M100 100H200A100 100 0 0 1 100 200Z" fill={F} />
       <path d="M200 100H300A100 100 0 0 1 200 200Z" fill={T} />
-      <rect x="300" y="100" width="100" height="100" fill={F} />
-      <path d="M400 200H300A100 100 0 0 1 400 100Z" fill={C} />
+      <path d="M300 100H400A100 100 0 0 0 300 200Z" fill={F} />
       <path d="M0 200A100 100 0 0 1 0 400Z" fill={F} />
       <path d="M300 200A100 100 0 0 0 400 300A100 100 0 0 0 300 200Z" fill={T} />
       <rect x="400" y="200" width="100" height="100" fill={C} />
