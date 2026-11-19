@@ -178,14 +178,14 @@ export function CatalogClient({ products, categories, settings, base, preset, gr
         if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 96, behavior: "smooth" });
       };
       requestAnimationFrame(() => setTimeout(go, 120));
-    } else if (group && home) {
+    } else if (home && (group || (urlGroup && urlGroup !== "todo"))) {
       // Entrando a Bazar o Mobiliario: ir a sus categorías
       const go = () => {
         const el = document.querySelector(".cat-rail");
         const hdr = document.querySelector(".hdr")?.getBoundingClientRect().height ?? 84;
         if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - hdr, behavior: "smooth" });
       };
-      requestAnimationFrame(() => setTimeout(go, 120));
+      requestAnimationFrame(() => setTimeout(go, 350));
     }
     mounted.current = true;
   }, []);
