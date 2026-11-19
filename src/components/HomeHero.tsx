@@ -9,21 +9,21 @@ const BANNERS: { key: CategoryGroup; name: string; line: string; img: string; po
   { key: "mobiliario", name: "Mobiliario", line: "Muebles para restaurantes, hoteles y más", img: "/catalogo-grupos/mobiliario.jpg", pos: "50% 55%", tone: "terra" },
 ];
 
-/** Composición geométrica (modernismo italiano) del panel de presentación. Se recorta contra el borde izquierdo. */
+/** Composición geométrica del panel de presentación, con los colores del logo (verde bosque y terracota sobre crema). */
 function HeroArt() {
   return (
     <svg className="hh-art-svg" viewBox="0 0 712 740" preserveAspectRatio="xMaxYMid slice" aria-hidden focusable="false">
       <defs>
         <radialGradient id="hh-cream" cx="38%" cy="40%" r="62%">
-          <stop offset="0" stopColor="#FCF2E7" />
-          <stop offset=".62" stopColor="#FBEBDD" />
-          <stop offset="1" stopColor="#F6B597" />
+          <stop offset="0" stopColor="#FCF4EC" />
+          <stop offset=".62" stopColor="#F9EAE0" />
+          <stop offset="1" stopColor="#EDC3AE" />
         </radialGradient>
       </defs>
-      <rect x="-800" width="1512" height="740" fill="#D7652C" />
-      <circle cx="-40" cy="760" r="300" fill="#E7A23A" />
-      <circle cx="520" cy="-10" r="232" fill="#E7A23A" />
-      <circle cx="455" cy="720" r="200" fill="#F4A07F" />
+      <rect x="-800" width="1512" height="740" fill="#C96F4A" />
+      <circle cx="-40" cy="760" r="300" fill="#1E4D3D" />
+      <circle cx="520" cy="-10" r="232" fill="#1E4D3D" />
+      <circle cx="455" cy="720" r="200" fill="#E3A68C" />
       <circle cx="292" cy="392" r="378" fill="url(#hh-cream)" />
     </svg>
   );
@@ -33,12 +33,12 @@ function HeroArt() {
 function HeroColumn() {
   return (
     <svg className="hh-col" viewBox="0 0 132 740" preserveAspectRatio="none" aria-hidden focusable="false">
-      <rect width="132" height="290" fill="#E7A23A" />
+      <rect width="132" height="290" fill="#C96F4A" />
       <path d="M132 92V290H0A132 198 0 0 1 132 92Z" fill="#1E4D3D" />
-      <rect y="290" width="132" height="256" fill="#F6A98A" />
-      <path d="M132 290V546A132 128 0 0 1 0 418A132 128 0 0 1 132 290Z" fill="#D7652C" />
+      <rect y="290" width="132" height="256" fill="#F5E4DA" />
+      <path d="M132 290V546A132 128 0 0 1 0 418A132 128 0 0 1 132 290Z" fill="#C96F4A" />
       <rect y="546" width="132" height="194" fill="#1E4D3D" />
-      <path d="M0 546H132A132 132 0 0 1 0 678Z" fill="#F7E3CF" />
+      <path d="M0 546H132A132 132 0 0 1 0 678Z" fill="#F5E4DA" />
     </svg>
   );
 }
