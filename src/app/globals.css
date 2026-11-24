@@ -2956,3 +2956,7 @@ button.ch-tile{width:100%;font:inherit;cursor:pointer}
   .hh-screen .ch-banner.forest .ch-banner-t{top:0;bottom:auto;height:var(--hh-isoh)}
   .hh-screen .ch-banner.terra .ch-banner-t{top:auto;bottom:0;height:var(--hh-isoh)}
 }
+
+/* Póster con imagen (mosaico 2000×2000) */
+.hh-poster{object-fit:cover;object-position:50% 50%;display:block}
+@media (max-width:1000px){.hh-art-poster{aspect-ratio:4/3}}
