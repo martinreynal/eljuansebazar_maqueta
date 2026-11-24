@@ -2883,10 +2883,10 @@ button.ch-tile{width:100%;font:inherit;cursor:pointer}
 }
 @media (max-width:600px){.hh-copy{padding-left:20px;width:auto}}
 /* En la portada todo usa el mismo ancho (encabezado, presentación, categorías, productos y pie): más aprovechamiento y simetría */
-.wrap:has(> .hh),body:has(.hh) .hdr-in,body:has(.hh) .ftr>.wrap{max-width:1688px;padding-inline:24px}
+.wrap:has(> .hh),.wrap:has(> .hh-screen),body:has(.hh) .hdr-in,body:has(.hh) .ftr>.wrap{max-width:1688px;padding-inline:24px}
 .hh{width:auto;margin-left:0;transform:none}
 .hh-cta .btn{flex:0 0 auto}
-@media (max-width:480px){.wrap:has(> .hh){padding-inline:16px}}
+@media (max-width:480px){.wrap:has(> .hh),.wrap:has(> .hh-screen){padding-inline:16px}}
 .hh-copy{max-width:none}
 @media (max-width:600px){.hh-copy{padding-right:calc(var(--colw) + 14px)}.hh-copy h1{font-size:28px}.hh{--colw:46px}}
 /* Contracara: acceso directo al link del producto (proveedor) */
@@ -2914,3 +2914,45 @@ button.ch-tile{width:100%;font:inherit;cursor:pointer}
   .cat-rail .ch-tile span{font-size:12.5px!important}
 }
 @media (max-width:860px){.cat-rail{min-height:calc(100svh - 64px - 64px)}.cat-rail .ch-tiles{align-content:start}}
+
+/* =====================================================================
+   PORTADA: la primera pantalla (computadora) muestra solo encabezado, póster y accesos; el pie queda abajo.
+   Alturas calculadas con el alto y el ancho de la ventana (sin tamaños fijos):
+   - cada acceso mide lo que deja la pantalla, pero nunca más que ancho/2,6 (así la figura del isotipo no tapa la foto);
+   - el bloque se centra en el alto disponible, con el mismo aire arriba y abajo.
+   ===================================================================== */
+@media (min-width:1001px){
+  .hh-screen{
+    --hh-pad:clamp(14px,2.2vh,28px);
+    --hh-gap:clamp(14px,1.6vw,24px);
+    --hh-cw:min(calc(100vw - 48px),1640px);
+    --hh-bw:calc((var(--hh-cw) - var(--hh-gap)) / 2);
+    --hh-bh:max(150px,min(calc((100svh - var(--hdr-h,84px) - 2 * var(--hh-pad) - var(--hh-gap)) / 2),calc(var(--hh-bw) / 2.6)));
+    min-height:calc(100svh - var(--hdr-h,84px));
+    display:flex;flex-direction:column;justify-content:center;
+    padding-block:var(--hh-pad);
+  }
+  .hh-screen .hh{margin:0;gap:var(--hh-gap)}
+  .hh-screen .hh-banners{gap:var(--hh-gap);grid-template-rows:var(--hh-bh) var(--hh-bh)}
+  .hh-screen .hh-banners .ch-banner{height:var(--hh-bh)!important;min-height:0!important}
+  .hh-screen .hh-art-poster{min-height:0}
+  .hh-screen .hh-banners .ch-banner-t b{font-size:clamp(34px,min(3.4vw,7vh),58px)}
+  .hh-screen .hh-banners .ch-banner-t small{font-size:clamp(10px,min(.9vw,1.6vh),13.5px)}
+  .hh-screen .hh-banners .ch-go{width:clamp(36px,5vh,50px);height:clamp(36px,5vh,50px);margin-top:clamp(8px,1.6vh,16px)}
+}
+/* Pantallas altas: los accesos crecen con la pantalla; la figura del isotipo conserva su proporción y un tope de ~70 % del ancho
+   (Bazar apoyada arriba a la derecha, Mobiliario abajo a la izquierda), así la foto sigue a la vista */
+@media (min-width:1001px){
+  .hh-screen{
+    --hh-bh:max(150px,min(calc((100svh - var(--hdr-h,84px) - 2 * var(--hh-pad) - var(--hh-gap)) / 2),calc(var(--hh-bw) / 1.9)));
+    --hh-isoh:min(var(--hh-bh),calc(var(--hh-bw) * .70 / 2.0226));
+  }
+  .hh-screen .ch-iso{height:var(--hh-isoh)}
+  .hh-screen .ch-iso.iso-t{top:0;bottom:auto}
+  .hh-screen .ch-iso.iso-b{top:auto;bottom:0}
+  .hh-screen .ch-banner>img{left:0!important;width:100%!important}
+  .hh-screen .ch-banner.forest>img{object-position:30% 62%!important}
+  .hh-screen .ch-banner.terra>img{object-position:72% 55%!important}
+  .hh-screen .ch-banner.forest .ch-banner-t{top:0;bottom:auto;height:var(--hh-isoh)}
+  .hh-screen .ch-banner.terra .ch-banner-t{top:auto;bottom:0;height:var(--hh-isoh)}
+}
