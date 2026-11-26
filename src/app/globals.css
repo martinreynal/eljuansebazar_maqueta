@@ -2964,3 +2964,43 @@ button.ch-tile{width:100%;font:inherit;cursor:pointer}
 /* Portada: sin la franja geométrica sobre el pie */
 body:has(.hh-screen) .ftr-geo{display:none}
 body:has(.hh-screen) .ftr{margin-top:48px}
+
+/* ===== Portada v3: presentación centrada + accesos Bazar / Mobiliario a todo el ancho ===== */
+.hh-screen.hv{display:flex;flex-direction:column;gap:clamp(14px,2.4vh,28px);padding-block:clamp(14px,3vh,40px) clamp(14px,2.6vh,32px)}
+.hv-intro{text-align:center;display:flex;flex-direction:column;align-items:center;gap:clamp(6px,1.2vh,14px)}
+.hv-eyebrow{display:flex;align-items:center;justify-content:center;gap:clamp(12px,1.6vw,22px);font-size:clamp(11px,.85vw,13px);font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--terra-dark,#A9532F);margin:0}
+.hv-eyebrow::before,.hv-eyebrow::after{content:"";width:clamp(28px,4.4vw,64px);height:1px;background:currentColor;opacity:.55}
+.hv-intro h1{margin:0;font-family:var(--f-display);font-weight:600;color:var(--forest);line-height:1.02;letter-spacing:-.005em;font-size:clamp(30px,min(4.2vw,6.4vh),66px);text-wrap:balance}
+.hv-lead{margin:0;max-width:52ch;font-size:clamp(14px,min(1.15vw,2vh),18px);line-height:1.55;color:var(--ink);text-wrap:balance}
+.hv-banners.ch-banners{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(14px,2.4vh,28px);margin:0}
+/* Cada acceso es un contenedor: la figura del isotipo y el texto se dimensionan con su ancho y alto (sin medidas fijas) */
+.hh-screen.hv .ch-banner{--isw:min(67cqw,202.3cqh);--ish:calc(var(--isw) / 2.0226);height:auto!important;min-height:0!important;aspect-ratio:2.2/1;container-type:size}
+.hh-screen.hv .ch-banner.terra{--isw:min(58cqw,166cqh)}
+.hh-screen.hv .ch-banner>img{left:0!important;width:100%!important}
+.hh-screen.hv .ch-banner.forest>img{object-position:18% 60%!important}
+.hh-screen.hv .ch-banner.terra>img{object-position:85% 55%!important}
+.hh-screen.hv .ch-iso{width:var(--isw);height:var(--ish)}
+.hh-screen.hv .ch-iso.iso-t{top:0;bottom:auto;right:0}
+.hh-screen.hv .ch-iso.iso-b{top:auto;bottom:0;left:0}
+.hh-screen.hv .ch-banner .ch-banner-t{height:var(--ish);max-width:none;width:calc(var(--isw) * .6);justify-content:center;padding:0}
+.hh-screen.hv .ch-banner.forest .ch-banner-t{top:0;bottom:auto;left:auto;right:calc(var(--isw) * .07)}
+.hh-screen.hv .ch-banner.terra .ch-banner-t{top:auto;bottom:0;left:calc(var(--isw) * .09)}
+.hh-screen.hv .ch-banner-t b{font-size:clamp(26px,min(18cqh,8.5cqw),96px);line-height:.95}
+.hh-screen.hv .ch-banner-t small{margin-top:clamp(5px,3cqh,18px);font-size:clamp(9px,min(5.4cqh,2.1cqw),20px);letter-spacing:.2em;line-height:1.6;max-width:24ch}
+.hh-screen.hv .ch-go{width:clamp(30px,min(17cqh,6.4cqw),72px);height:clamp(30px,min(17cqh,6.4cqw),72px);margin-top:clamp(8px,6cqh,30px)}
+.hh-screen.hv .ch-go .lucide{width:42%;height:42%}
+
+/* Computadora: la portada ocupa justo la primera pantalla; los accesos reparten el alto que queda */
+@media (min-width:1001px){
+  .hh-screen.hv{min-height:0;height:max(600px,calc(100svh - var(--hdr-h,84px)));justify-content:flex-start}
+  .hv-banners.ch-banners{flex:1;min-height:0;grid-template-rows:minmax(0,1fr) minmax(0,1fr)}
+  .hh-screen.hv .ch-banner{aspect-ratio:3.05/1;height:100%!important;width:auto;max-width:100%;justify-self:center}
+}
+@media (max-width:1000px){.hh-screen.hv{padding-block:18px 8px}}
+@media (max-width:600px){
+  .hv-eyebrow{letter-spacing:.18em}
+  .hh-screen.hv .ch-banner{aspect-ratio:1.75/1}
+  .hh-screen.hv .ch-banner{--isw:min(84cqw,202cqh)}
+  .hh-screen.hv .ch-banner.terra{--isw:min(80cqw,166cqh)}
+  .hh-screen.hv .ch-banner-t small{letter-spacing:.12em}
+}

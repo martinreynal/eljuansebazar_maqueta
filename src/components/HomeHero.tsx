@@ -9,24 +9,8 @@ const BANNERS: { key: CategoryGroup; name: string; line: string; img: string; po
   { key: "mobiliario", name: "Mobiliario", line: "Muebles para restaurantes, hoteles y más", img: "/catalogo-grupos/mobiliario.jpg", pos: "50% 55%", tone: "terra" },
 ];
 
-/** Póster de la marca: mosaico geométrico (verde bosque y terracota sobre crema). Llena el panel, recortando parejo los bordes. */
-function HeroPoster() {
-  return (
-    <img
-      className="hh-poster"
-      src="/catalogo-grupos/poster.webp"
-      srcSet="/catalogo-grupos/poster-1000.webp 1000w, /catalogo-grupos/poster.webp 2000w"
-      sizes="(max-width: 1000px) 100vw, 50vw"
-      alt=""
-      loading="eager"
-      decoding="async"
-      fetchPriority="high"
-    />
-  );
-}
-
 /**
- * Portada: panel de presentación (texto + composición geométrica) y los dos accesos, Bazar y Mobiliario,
+ * Portada: presentación centrada (antetítulo, título y bajada) y los dos accesos, Bazar y Mobiliario, a todo el ancho,
  * con las figuras del isotipo. Los accesos eligen el grupo: debajo aparecen sus categorías (misma dinámica del catálogo).
  */
 export function HomeHero({ group, onGroup }: { group: CategoryGroup | "todo"; onGroup: (g: CategoryGroup | "todo") => void }) {
@@ -42,13 +26,13 @@ export function HomeHero({ group, onGroup }: { group: CategoryGroup | "todo"; on
   }, []);
 
   return (
-    <div className="hh-screen">
-    <section className="hh" aria-label="Presentación">
-      <div className="hh-art hh-art-poster">
-        <h1 className="sr-only">Saggio · Equipamiento profesional para la hospitalidad: mobiliario, vajilla, cristalería y bazar para hoteles y restaurantes</h1>
-        <HeroPoster />
-      </div>
-      <div className={`hh-banners ch-banners${group !== "todo" ? " picked" : ""}`} role="tablist" aria-label="Grupos del catálogo">
+    <div className="hh-screen hv">
+      <header className="hv-intro">
+        <p className="hv-eyebrow">Soluciones para hospitalidad</p>
+        <h1>Bazar y Mobiliario Profesional</h1>
+        <p className="hv-lead">Una selección curada de vajilla, cristalería, equipamiento y mobiliario para restaurantes, hoteles y más.</p>
+      </header>
+      <div className={`hv-banners ch-banners${group !== "todo" ? " picked" : ""}`} role="tablist" aria-label="Grupos del catálogo">
         {BANNERS.map((b) => {
           const on = group === b.key;
           return (
@@ -64,7 +48,6 @@ export function HomeHero({ group, onGroup }: { group: CategoryGroup | "todo"; on
           );
         })}
       </div>
-    </section>
     </div>
   );
 }
