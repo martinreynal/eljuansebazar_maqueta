@@ -2960,3 +2960,7 @@ button.ch-tile{width:100%;font:inherit;cursor:pointer}
 /* Póster con imagen (mosaico 2000×2000) */
 .hh-poster{object-fit:cover;object-position:50% 50%;display:block}
 @media (max-width:1000px){.hh-art-poster{aspect-ratio:4/3}}
+
+/* Portada: sin la franja geométrica sobre el pie */
+body:has(.hh-screen) .ftr-geo{display:none}
+body:has(.hh-screen) .ftr{margin-top:48px}
