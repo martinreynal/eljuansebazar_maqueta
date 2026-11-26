@@ -30,7 +30,7 @@ export function HomeHero({ group, onGroup }: { group: CategoryGroup | "todo"; on
       <header className="hv-intro">
         <p className="hv-eyebrow">Soluciones para hospitalidad</p>
         <h1>Bazar y Mobiliario Profesional</h1>
-        <p className="hv-lead">Una selección curada de vajilla, cristalería, equipamiento y mobiliario para restaurantes, hoteles y más.</p>
+        <p className="hv-lead">Abastecimiento integral de productos para empresas, establecimientos y proyectos de cualquier escala.</p>
       </header>
       <div className={`hv-banners ch-banners${group !== "todo" ? " picked" : ""}`} role="tablist" aria-label="Grupos del catálogo">
         {BANNERS.map((b) => {
