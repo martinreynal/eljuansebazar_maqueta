@@ -2994,7 +2994,8 @@ body:has(.hh-screen) .ftr{margin-top:48px}
 @media (min-width:1001px){
   .hh-screen.hv{min-height:0;height:max(600px,calc(100svh - var(--hdr-h,84px)));justify-content:flex-start}
   .hv-banners.ch-banners{flex:1;min-height:0;grid-template-rows:minmax(0,1fr) minmax(0,1fr)}
-  .hh-screen.hv .ch-banner{aspect-ratio:3.05/1;height:100%!important;width:auto;max-width:100%;justify-self:center}
+  .hh-screen.hv .ch-banner{aspect-ratio:3.6/1;height:100%!important;width:auto;max-width:min(100%,1520px);justify-self:center}
+  .hh-screen.hv{gap:clamp(12px,2vh,24px);padding-block:clamp(12px,2.4vh,32px) clamp(18px,3.2vh,40px)}
 }
 @media (max-width:1000px){.hh-screen.hv{padding-block:18px 8px}}
 @media (max-width:600px){
